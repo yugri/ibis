@@ -1,5 +1,5 @@
 import pymongo
-from scrapy.conf import settings
+from django.conf import settings
 
 
 class MongoDBPipeline(object):

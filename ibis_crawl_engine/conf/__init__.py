@@ -16,6 +16,21 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+MONGODB_SERVER = "localhost"
+MONGODB_PORT = 27017
+MONGODB_DB = "ibis_news_db"
+MONGODB_COLLECTION = "articles"
+
+###################
+# Celery settings #
+###################
+CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+CELERY_RESULT_BACKEND = 'mongodb://localhost:27017/'
+CELERY_MONGODB_BACKEND_SETTINGS = {
+    'database': MONGODB_DB,
+    'taskmeta_collection': 'task_meta',
+}
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -38,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crawl_engine',
 ]
 
 MIDDLEWARE_CLASSES = [
