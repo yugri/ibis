@@ -2,14 +2,14 @@
 
 ### Requirements:
 
-*[MongoDB] - Modern NoSQL database
+* [MongoDB] - Modern NoSQL database
 
 ### Local setup
 
 It's recommended to use separated virtualenv for local setup
 
 ```sh
-$ git clone [repo-url]
+$ git clone [git-repo-url]
 ```
 
 ```sh
@@ -25,4 +25,4 @@ celery -A ibis_crawl_engine worker -l info
 ```
 
   [MongoDB]: <https://www.mongodb.com/>
-  [repo-url]: <https://yugritsai@bitbucket.org/teamoffortune/ibis_crawl_engine.git>
+  [git-repo-url]: <https://yugritsai@bitbucket.org/teamoffortune/ibis_crawl_engine.git>
