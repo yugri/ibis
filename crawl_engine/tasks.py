@@ -8,7 +8,7 @@ from celery.utils.log import get_task_logger
 
 
 @shared_task
-def run_default_spider(query):
+def run_default_spider(query_url, issue_id):
     # logger = get_task_logger(__name__)
     process = CrawlerProcess(get_project_settings())
     # logger.info("Crawler process initialised...")

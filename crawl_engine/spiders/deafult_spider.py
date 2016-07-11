@@ -1,6 +1,7 @@
 import logging
 from scrapy import Spider
 from scrapy.spiders import CrawlSpider
+
 from crawl_engine.items import NewsItem
 
 
@@ -18,7 +19,7 @@ class DefaultNewsSpider(Spider):
         if query_url is not None:
             self.query_url = query_url
         else:
-            raise BaseException("Define a --query_url parameter please"),
+            raise BaseException("Define a --query_url parameter please")
 
     def parse(self, response):
         self.logger.info("Crawler initialisation...")

@@ -96,3 +96,13 @@ MONGODB_SERVER = "localhost"
 MONGODB_PORT = 27017
 MONGODB_DB = "ibis_news_db"
 MONGODB_COLLECTION = "articles"
+
+###################
+# Celery settings #
+###################
+BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+RESULT_BACKEND = 'mongodb://localhost:27017/'
+MONGODB_BACKEND_SETTINGS = {
+    'database': MONGODB_DB,
+    'taskmeta_collection': 'task_meta',
+}
