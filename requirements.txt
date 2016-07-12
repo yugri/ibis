@@ -3,6 +3,7 @@ anyjson==0.3.3
 billiard==3.3.0.23
 celery==3.1.23
 Django==1.9.7
+djangorestframework==3.3.3
 kombu==3.0.35
 pymongo==3.2.2
 pytz==2016.4

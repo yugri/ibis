@@ -1,3 +1,16 @@
+from crawl_engine import tasks
 from django.contrib import admin
+from crawl_engine.models import Article
 
-# Register your models here.
+
+class TasksAdmin(admin.ModelAdmin):
+    list_display = ['task_id', 'tstamp']
+    ordering = ['tstamp']
+    actions = ['crawl_url']
+
+
+class ArticleAdmin(admin.ModelAdmin):
+    list_display = ['article_url', 'title', 'author']
+
+
+admin.site.register(Article, ArticleAdmin)

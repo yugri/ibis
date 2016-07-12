@@ -1,21 +1,18 @@
+from django.conf import settings
+from crawl_engine.models import Article
 from celery import shared_task
+import requests, bs4
 
 
 @shared_task
-def run_base_crawler(query_url, issue_id):
-    """
-    Should return parsed_data dictionary or raise an exception
-    :param query_url:
-    :param issue_id:
-    :return: dict
-    """
-    parser_data = dict()
-    parser_data["title"] = ''
-    parser_data["body"] = ''
-    parser_data["query_url"] = query_url
-    parser_data["issue_id"] = issue_id
+def crawl_url(url, issue_id):
+    r = requests.get(url)
+    text = r.text
 
-    return parser_data
+    article = Article(article_url=url, title="Some title", body="Big body")
+    article.save()
+
+    return article
 
 
 @shared_task
