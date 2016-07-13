@@ -65,7 +65,7 @@ DEFAULT_FILE_STORAGE = 'config.s3_config.MediaStorage'
 
 # Static Assets
 # ------------------------
-STATICFILES_STORAGE = 'config.s3_config.StaticStorage'
+STATICFILES_STORAGE = 'ibis_crawl_engine.s3_config.StaticStorage'
 STATICFILES_LOCATION = 'static'
 COMPRESS_URL = "https://%s.s3.amazonaws.com/%s/" % (AWS_STORAGE_BUCKET_NAME, STATICFILES_LOCATION)
 
