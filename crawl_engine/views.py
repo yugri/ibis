@@ -22,7 +22,10 @@ class AddTaskURLView(APIView):
         data = request.data
         serializer = TaskURLSerializer(data=data)
         if serializer.is_valid():
-            result = crawl_url.delay(data['url'], data['issue_id'])
+            task = crawl_url.delay(data['url'], data['issue_id'])
+            data['task_result'] = task.result
+            data['task_traceback'] = task.traceback
+
             return JSONResponse(serializer.data, status=201)
         return JSONResponse(serializer.errors, status=400)
 

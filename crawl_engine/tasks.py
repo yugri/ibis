@@ -1,18 +1,16 @@
 from django.conf import settings
-from crawl_engine.models import Article
 from celery import shared_task
+from crawl_engine.spiders.single_url_parser import ArticleParser
 import requests, bs4
 
 
 @shared_task
 def crawl_url(url, issue_id):
-    r = requests.get(url)
-    text = r.text
 
-    article = Article(article_url=url, title="Some title", body="Big body")
-    article.save()
+    parser = ArticleParser(url, issue_id)
+    result = parser.run()
 
-    return article
+    return result
 
 
 @shared_task
