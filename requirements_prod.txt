@@ -1,0 +1,4 @@
+-r requirements.txt
+
+boto==2.41.0
+gunicorn
