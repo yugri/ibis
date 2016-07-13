@@ -135,3 +135,5 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+# Ignore django's settings.py
+ibis_crawl_engine/settings.py
