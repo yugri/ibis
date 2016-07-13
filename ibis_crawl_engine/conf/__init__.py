@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'pipeline',
     'rest_framework',
     'crawl_engine',
+    'dashboard',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -74,7 +75,7 @@ ROOT_URLCONF = 'ibis_crawl_engine.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['dashboard/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
