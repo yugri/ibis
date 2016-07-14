@@ -13,7 +13,6 @@ def parseStrDate(dateString):
         return None
 
 
-# Try to extract from the article URL - simple but might work as a fallback
 def _extractFromURL(url):
 
     #Regex by Newspaper3k  - https://github.com/codelucas/newspaper/blob/master/newspaper/urls.py
@@ -148,7 +147,6 @@ def _extractFromMeta(parsedHTML):
 
 
 def _extractFromHTMLTag(parsedHTML):
-    #<time>
     for time in parsedHTML.findAll("time"):
         datetime = time.get('datetime', '')
         if len(datetime) > 0:
@@ -166,7 +164,6 @@ def _extractFromHTMLTag(parsedHTML):
         if dateText is not None:
             return parseStrDate(dateText)
 
-    #class=
     for tag in parsedHTML.find_all(class_=re.compile("published|pubdate|timestamp|article_date|articledate|date",re.IGNORECASE)):
         dateText = tag.string
         if dateText is None:

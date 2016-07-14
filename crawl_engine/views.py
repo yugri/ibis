@@ -1,12 +1,11 @@
 from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
+from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 from rest_framework.views import APIView
-
+from rest_framework.response import Response
 from crawl_engine.models import Article
 from rest_framework import viewsets
-from crawl_engine.serializers import ArticleSerializer, TaskURLSerializer
+from crawl_engine.serializers import ArticleSerializer, TaskURLSerializer, TaskURLListSerializer
 from crawl_engine.tasks import crawl_url
 
 
@@ -18,16 +17,28 @@ class ArticleListSet(viewsets.ModelViewSet):
 
 class AddTaskURLView(APIView):
 
+    # renderer_classes = (JSONRenderer,)
+
     def post(self, request, *args, **kwargs):
         data = request.data
-        serializer = TaskURLSerializer(data=data)
-        if serializer.is_valid():
-            task = crawl_url.delay(data['url'], data['issue_id'])
-            data['task_result'] = task.result
-            data['task_traceback'] = task.traceback
-
-            return JSONResponse(serializer.data, status=201)
-        return JSONResponse(serializer.errors, status=400)
+        single = data.get('single')
+        tasks = []
+        if single:
+            serializer = TaskURLSerializer(data=data)
+            if serializer.is_valid():
+                task = crawl_url.delay(data['url_list'][0], data['issue_id'])
+                tasks.append(task.id)
+                data['tasks'] = tasks
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            serializer = TaskURLListSerializer(data=data)
+            if serializer.is_valid():
+                for url in data.get('url_list'):
+                    task = crawl_url.delay(url, data['issue_id'])
+                    tasks.append(task.id)
+                data['tasks'] = tasks
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class JSONResponse(HttpResponse):

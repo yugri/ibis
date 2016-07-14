@@ -15,6 +15,7 @@ class ArticleParser:
         self.issue_id = issue_id
 
     def run(self):
+        # Instantiate newspaper's Article api
         page = Article(self.url)
         page.download()
         page.parse()
@@ -24,13 +25,14 @@ class ArticleParser:
         text = page.text if page.text else extractArticleText(page.html)
         date = extractArticlePublishedDate(self.url, page.html)
 
+        # Set our article DB model instance
         article = storage()
 
         article.article_url = page.url
         article.title = title
         try:
             article.authors = author if author else article.authors[0]
-        except:
+        except IndexError:
             article.authors = ''
 
         article.body = re.sub('\n+', '\n', re.sub(' +', ' ', text))

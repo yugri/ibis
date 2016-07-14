@@ -1,3 +1,5 @@
+from rest_framework.exceptions import ValidationError
+
 from crawl_engine.models import Article
 from rest_framework import serializers
 
@@ -12,3 +14,42 @@ class ArticleSerializer(serializers.HyperlinkedModelSerializer):
 class TaskURLSerializer(serializers.Serializer):
     url = serializers.CharField(read_only=True)
     issue_id = serializers.CharField(required=False, allow_blank=True, max_length=50)
+
+    def to_internal_value(self, data):
+        url_list = data.get('url_list')
+        issue_id = data.get('issue_id')
+
+        # Validate the data
+        if not url_list:
+            raise ValidationError({
+                'url': 'This field is required'
+            })
+        if not issue_id:
+            pass
+
+        return {
+            'url': url_list,
+            'issue_id': issue_id
+        }
+
+
+class TaskURLListSerializer(serializers.Serializer):
+    url_list = serializers.CharField(read_only=True)
+    issue_id = serializers.CharField(required=False, allow_blank=True, max_length=50)
+
+    def to_internal_value(self, data):
+        url_list = data.get('url_list')
+        issue_id = data.get('issue_id')
+
+        #Validate the data
+        if not url_list or not isinstance(url_list, list):
+            raise ValidationError({
+                'url_list': 'You should specify the url\'s list'
+            })
+        if not issue_id:
+            pass
+
+        return {
+            'url_list': url_list,
+            'issue_id': issue_id
+        }
