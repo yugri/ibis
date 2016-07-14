@@ -1,4 +1,5 @@
 import os
+from newspaper import settings as news
 
 from django.utils import six
 
@@ -85,5 +86,4 @@ ACCOUNT_EMAIL_CONFIRMATION_EMAIL = True
 PIPELINE_YUGLIFY_BINARY = '/usr/local/bin/yuglify'
 PIPELINE_ENABLED = True
 
-# Newspaper module conf
-TOP_DIRECTORY = BASE_DIR
+news.TOP_DIRECTORY = BASE_DIR
