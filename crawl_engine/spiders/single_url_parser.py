@@ -4,7 +4,6 @@ from crawl_engine.models import Article as storage
 from crawl_engine.utils.articleAuthorExtractor import extractArticleAuthor
 from crawl_engine.utils.articleDateExtractor import extractArticlePublishedDate
 from crawl_engine.utils.articleTextExtractor import extractArticleText, extractArticleTitle
-import requests
 
 
 class ArticleParser:
