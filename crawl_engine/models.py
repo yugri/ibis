@@ -8,7 +8,7 @@ class Article(models.Model):
     title = models.CharField(max_length=240, blank=True)
     body = models.TextField(blank=True)
     authors = models.CharField(max_length=240, blank=True)
-    post_date_created = models.DateTimeField(blank=True)
+    post_date_created = models.CharField(max_length=50, blank=True)
     post_date_crawled = models.DateField(auto_now_add=True, null=True)
 
 

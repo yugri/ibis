@@ -164,7 +164,8 @@ def _extractFromHTMLTag(parsedHTML):
         if dateText is not None:
             return parseStrDate(dateText)
 
-    for tag in parsedHTML.find_all(class_=re.compile("published|pubdate|timestamp|article_date|articledate|date",re.IGNORECASE)):
+    for tag in parsedHTML.find_all(class_=re.compile("published|pubdate|timestamp|article_date|articledate|date",
+                                                     re.IGNORECASE)):
         dateText = tag.string
         if dateText is None:
             dateText = tag.text
