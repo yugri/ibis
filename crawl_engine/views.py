@@ -39,7 +39,7 @@ class AddTaskURLView(APIView):
             serializer = TaskURLListSerializer(data=data)
             if serializer.is_valid():
 
-                for url in processor.urls_from_file():
+                for url in data['url_list']:
                     task = crawl_url.delay(url, data['issue_id'])
                     tasks.append(task.id)
                 data['tasks'] = tasks
@@ -48,6 +48,9 @@ class AddTaskURLView(APIView):
 
 
 class UrlsProcessor:
+    """
+    Only for demonstration use
+    """
     urls = ''
 
     def urls_from_file(self, file='/home/yuri/dev/ibis_crawl_engine/items_news_keywords_13.json'):

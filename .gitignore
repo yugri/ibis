@@ -139,3 +139,4 @@ fabric.properties
 # Ignore django's settings.py
 ibis_crawl_engine/settings.py
 items_news_keywords_13.json
+local_tests.py
