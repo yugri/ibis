@@ -4,10 +4,10 @@ from crawl_engine.models import Article
 from rest_framework import serializers
 
 
-class ArticleSerializer(serializers.HyperlinkedModelSerializer):
+class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = ('article_url', 'title', 'body', 'author', 'post_date_created',
+        fields = ('article_url', 'title', 'body', 'authors', 'post_date_created',
                   'post_date_crawled')
 
 

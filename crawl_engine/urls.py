@@ -10,5 +10,8 @@ router.register(r'articles', ArticleListSet)
 urlpatterns = [
     url(r'^api/', include(router.urls, namespace='api')),
     url(r'add-task-url/', AddTaskURLView.as_view()),
+    url(r'articles/', ArticleListSet.as_view({
+        'get': 'list',
+    })),
     url(r'^', include('rest_framework.urls', namespace='rest_framework')),
 ]

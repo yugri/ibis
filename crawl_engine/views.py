@@ -1,6 +1,7 @@
 import json
 
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 from rest_framework.views import APIView
@@ -11,7 +12,7 @@ from crawl_engine.serializers import ArticleSerializer, TaskURLSerializer, TaskU
 from crawl_engine.tasks import crawl_url
 
 
-class ArticleListSet(viewsets.ModelViewSet):
+class ArticleListSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Article.objects.all().order_by('-post_date_crawled')
     serializer_class = ArticleSerializer
