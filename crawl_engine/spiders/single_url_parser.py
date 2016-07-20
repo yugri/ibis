@@ -1,6 +1,5 @@
 import re
-from newspaper import Article
-from crawl_engine.models import Article as storage
+from newspaper import Article as np
 from crawl_engine.utils.articleAuthorExtractor import extractArticleAuthor
 from crawl_engine.utils.articleDateExtractor import extractArticlePublishedDate
 from crawl_engine.utils.articleTextExtractor import extractArticleText, extractArticleTitle
@@ -15,7 +14,7 @@ class ArticleParser:
 
     def run(self):
         # Instantiate newspaper's Article api
-        page = Article(self.url)
+        page = np(self.url)
         page.download()
         page.parse()
 
@@ -25,10 +24,12 @@ class ArticleParser:
         date = extractArticlePublishedDate(self.url, page.html)
 
         # Set our article DB model instance
-        article = storage()
+        from crawl_engine.models import Article
+        article = Article()
 
         article.article_url = page.url
         article.title = title
+        article.top_image_url = page.top_image
         try:
             article.authors = author if author else article.authors[0]
         except IndexError:

@@ -1,5 +1,5 @@
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 DEBUG = True
 
@@ -37,3 +37,7 @@ ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = True
 ACCOUNT_EMAIL_CONFIRMATION_EMAIL = True
 
 PIPELINE_ENABLED = False
+
+AWS_ACCESS_KEY_ID = 'AKIAIWBLWFT2XKFAAMUA'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'crawler-storage'
