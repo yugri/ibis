@@ -6,7 +6,6 @@ Requirements:
     https://pypi.python.org/pypi/langdetect
 """
 from readability.readability import Document
-import urllib
 import justext
 from langdetect import detect
 
@@ -43,7 +42,7 @@ def _someTestGuessLanguageModule():
     print(guess_all_supported_language)
 
     print(len(justext_lang & guess_lang))
-#_someTestGuessLanguageModule()
+
 
 def extractArticleText(html):
     try:
@@ -51,11 +50,7 @@ def extractArticleText(html):
         readable_html = Document(html).summary()
         lang_name = guess_language.guessLanguageName(readable_html)
 
-        #print(lang_name)
-        #print('###########')
         title = Document(html).short_title()
-        #print(title)
-        #print('###########')
         paragraphs = justext.justext(readable_html, justext.get_stoplist(lang_name))
 
         article_paragraphs = []
@@ -67,15 +62,9 @@ def extractArticleText(html):
     except:
         return ''
 
+
 def extractArticleTitle(html):
     try:
         return Document(html).short_title()
     except:
         return ''
-"""
-url = 'https://translate.google.com.ua/translate?sl=en&tl=uk&js=y&prev=_t&hl=uk&ie=UTF-8&u=http%3A%2F%2Findianexpress.com%2Farticle%2Findia%2Findia-news-india%2Fmaharashtra-cabinet-expansion-didnt-demand-berth-or-indulge-in-blackmail-sena-chief-uddhav-thackeray-2901359%2F&edit-text=&act=url'
-request = urllib.request.Request(url)
-request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
-html = urllib.request.urlopen(request).read()
-print(get_article_text(html))
-"""
