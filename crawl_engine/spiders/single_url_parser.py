@@ -46,6 +46,8 @@ class ArticleParser:
         # Detect article source language at this point.
         # If language is 'en' we save an <article.translated_title>
         # and <article.translated_body> same as <title> and <body>.
+        title_lang = ''
+        text_lang = ''
         try:
             title_lang = detect(article.title)
         except LangDetectException as e:
