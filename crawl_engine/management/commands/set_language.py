@@ -1,6 +1,7 @@
 import logging
 from django.core.management.base import BaseCommand, CommandError
 from langdetect import detect
+from langdetect.detector import LangDetectException
 
 from crawl_engine.models import Article
 
@@ -13,8 +14,19 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         articles = Article.objects.all()
         for article in articles:
-            title_lang = detect(article.title)
-            body_lang = detect(article.body)
+
+            try:
+                title_lang = detect(article.title)
+            except LangDetectException as e:
+                logger.error(e)
+                pass
+
+            try:
+                body_lang = detect(article.body)
+            except LangDetectException as e:
+                logger.error(e)
+                pass
+
             if title_lang == 'en' and body_lang == 'en':
                 article.translated_title = article.title
                 article.translated_body = article.body

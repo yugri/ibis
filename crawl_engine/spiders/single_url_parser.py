@@ -1,9 +1,13 @@
 import re
+import logging
+from langdetect.lang_detect_exception import LangDetectException
 from newspaper import Article as np
 from crawl_engine.utils.articleAuthorExtractor import extractArticleAuthor
 from crawl_engine.utils.articleDateExtractor import extractArticlePublishedDate
 from crawl_engine.utils.articleTextExtractor import extractArticleText, extractArticleTitle
 from langdetect import detect
+
+logger = logging.getLogger(__name__)
 
 
 class ArticleParser:
@@ -42,8 +46,18 @@ class ArticleParser:
         # Detect article source language at this point.
         # If language is 'en' we save an <article.translated_title>
         # and <article.translated_body> same as <title> and <body>.
-        title_lang = detect(title)
-        text_lang = detect(text)
+        try:
+            title_lang = detect(article.title)
+        except LangDetectException as e:
+            logger.error(e)
+            pass
+
+        try:
+            text_lang = detect(article.body)
+        except LangDetectException as e:
+            logger.error(e)
+            pass
+
         if title_lang == 'en' and text_lang == 'en':
             article.translated_title = title
             article.translated_body = text
