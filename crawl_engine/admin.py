@@ -10,7 +10,8 @@ class TasksAdmin(admin.ModelAdmin):
 
 
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ['article_url', 'title', 'authors']
+    list_display = ['article_url', 'title', 'authors', 'translated']
+    list_filter = ('translated',)
 
 
 admin.site.register(Article, ArticleAdmin)
