@@ -13,6 +13,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         articles = Article.objects.all()
+        title_lang = ''
+        body_lang = ''
         for article in articles:
 
             try:
