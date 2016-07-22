@@ -33,7 +33,7 @@ class Command(BaseCommand):
                 article.translated_body = article.body
                 article.translated = True
 
-            article.source_language = body_lang if body_lang == title_lang else None
+            article.source_language = body_lang if body_lang == title_lang else ''
             article.save()
 
         logger.info('Language detection completed')
