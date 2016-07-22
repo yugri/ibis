@@ -3,9 +3,9 @@ import requests
 from PIL import Image
 from django.core.files.base import ContentFile
 from django.db import models
+
+
 from crawl_engine.tasks import translate_content
-import hashlib
-# Create your models here.
 
 
 class Article(models.Model):
@@ -27,10 +27,6 @@ class Article(models.Model):
         if img_url and not self.top_image:
             filename = str(hash(img_url))
             self.set_image(img_url, filename)
-
-        # Initiate the translation task at this point if needed
-        if not self.translated:
-            translate_content.delay(self.title, self.body, self.pk, self.source_language)
 
         super(Article, self).save(*args, **kwargs)
 
