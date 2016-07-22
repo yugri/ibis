@@ -7,8 +7,7 @@ from langdetect import detect
 
 
 class ArticleParser:
-    # url = None
-    # issue_id = None
+
     def __init__(self, url, issue_id):
         self.url = url
         self.issue_id = issue_id
@@ -54,6 +53,14 @@ class ArticleParser:
         article.save()
 
         return article.id
+
+    def download_image(self, article_instance):
+        article_url = self.url
+        page = np(self.url)
+        page.download()
+        page.parse()
+        article_instance.top_image_url = page.top_image
+        article_instance.save()
 
 
 

@@ -1,11 +1,10 @@
 import io
+from time import sleep
+
 import requests
 from PIL import Image
 from django.core.files.base import ContentFile
 from django.db import models
-
-
-from crawl_engine.tasks import translate_content
 
 
 class Article(models.Model):
@@ -32,6 +31,7 @@ class Article(models.Model):
 
     def set_image(self, url, filename):
         try:
+            sleep(1)
             r = requests.get(url, stream=True)
         except requests.ConnectionError as e:
             r = None
