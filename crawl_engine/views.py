@@ -41,6 +41,9 @@ class AddTaskURLView(APIView):
             if serializer.is_valid():
 
                 for url in data['url_list']:
+                    # Bloom Filter check should be here
+                    # The task will be executed only if given url isn't
+                    # presented in a filter's bit array
                     task = crawl_url.delay(url, data['issue_id'])
                     tasks.append(task.id)
                 data['tasks'] = tasks
