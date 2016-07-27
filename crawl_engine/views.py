@@ -1,5 +1,5 @@
 import json
-
+import logging
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -10,6 +10,10 @@ from crawl_engine.models import Article
 from rest_framework import viewsets
 from crawl_engine.serializers import ArticleSerializer, TaskURLSerializer, TaskURLListSerializer
 from crawl_engine.tasks import crawl_url
+from pybloomfilter import BloomFilter
+
+
+logger = logging.getLogger(__name__)
 
 
 class ArticleListSet(viewsets.ReadOnlyModelViewSet):
@@ -25,24 +29,33 @@ class AddTaskURLView(APIView):
     def post(self, request, *args, **kwargs):
         # Instantiate UrlsProcessor
         processor = UrlsProcessor()
+        url_filter = BloomFilter(100000, 0.1, '/tmp/url.bloom')
         data = request.data
         single = data.get('single')
         tasks = []
         if single:
             serializer = TaskURLSerializer(data=data)
             if serializer.is_valid():
-                processor = UrlsProcessor()
-                task = crawl_url.delay(data['url_list'][0], data['issue_id'])
-                tasks.append(task.id)
-                data['tasks'] = tasks
+                # processor = UrlsProcessor()
+                url = data['url_list'][0]
+                if not url in url_filter:
+                    task = crawl_url.delay(url, data['issue_id'])
+                    tasks.append(task.id)
+                    data['tasks'] = tasks
+                    url_filter.add(url)
+                else:
+                    logger.info('DUPLICATE URL: %s \n REJECTED', url)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             serializer = TaskURLListSerializer(data=data)
             if serializer.is_valid():
 
                 for url in data['url_list']:
-                    task = crawl_url.delay(url, data['issue_id'])
-                    tasks.append(task.id)
+                    if not url in url_filter:
+                        task = crawl_url.delay(url, data['issue_id'])
+                        tasks.append(task.id)
+                    else:
+                        logger.info('DUPLICATE URL: %s \n REJECTED', url)
                 data['tasks'] = tasks
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
