@@ -10,7 +10,7 @@ from crawl_engine.tasks import translate_content
 
 class Article(models.Model):
     article_url = models.URLField()
-    source_language = models.CharField(max_length=5, blank=True)
+    source_language = models.CharField(max_length=5, blank=True, null=True)
     title = models.CharField(max_length=240, blank=True)
     translated_title = models.CharField(max_length=240, blank=True)
     body = models.TextField(blank=True)

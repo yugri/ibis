@@ -1,3 +1,4 @@
+import os.path
 import json
 import logging
 from django.http import HttpResponse
@@ -27,16 +28,17 @@ class AddTaskURLView(APIView):
     # renderer_classes = (JSONRenderer,)
 
     def post(self, request, *args, **kwargs):
-        # Instantiate UrlsProcessor
-        processor = UrlsProcessor()
-        url_filter = BloomFilter(100000, 0.1, '/tmp/url.bloom')
+        bloom_file_path = '/tmp/url.bloom'
+        if os.path.exists(bloom_file_path):
+            url_filter = BloomFilter.open(bloom_file_path)
+        else:
+            url_filter = BloomFilter(100000, 0.1, bloom_file_path)
         data = request.data
         single = data.get('single')
         tasks = []
         if single:
             serializer = TaskURLSerializer(data=data)
             if serializer.is_valid():
-                # processor = UrlsProcessor()
                 url = data['url_list'][0]
                 if not url in url_filter:
                     task = crawl_url.delay(url, data['issue_id'])
@@ -54,6 +56,7 @@ class AddTaskURLView(APIView):
                     if not url in url_filter:
                         task = crawl_url.delay(url, data['issue_id'])
                         tasks.append(task.id)
+                        url_filter.add(url)
                     else:
                         logger.info('DUPLICATE URL: %s \n REJECTED', url)
                 data['tasks'] = tasks
