@@ -54,4 +54,5 @@ def translate_content(article_title, article_body, article_id, source_language):
         article.save()
 
     else:
-        raise Exception("Something wrong with received data")
+        logger.info("Something wrong with received data")
+        pass
