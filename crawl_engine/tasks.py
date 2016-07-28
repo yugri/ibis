@@ -43,7 +43,12 @@ def translate_content(article_title, article_body, article_id, source_language):
         article.translated_title = result['translations'][0]['translatedText']
         article.translated_body = result['translations'][1]['translatedText']
         # Article language determines only on article's body text
-        article.source_language = result['translations'][1]['detectedSourceLanguage']
+        try:
+            article.source_language = result['translations'][1]['detectedSourceLanguage']
+        except KeyError:
+            logger.info('Language already detected by internal system')
+        finally:
+            pass
 
         article.translated = True
         article.save()
