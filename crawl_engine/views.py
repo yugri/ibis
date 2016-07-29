@@ -1,5 +1,5 @@
 import json
-
+import logging
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -10,6 +10,9 @@ from crawl_engine.models import Article
 from rest_framework import viewsets
 from crawl_engine.serializers import ArticleSerializer, TaskURLSerializer, TaskURLListSerializer
 from crawl_engine.tasks import crawl_url
+
+
+logger = logging.getLogger(__name__)
 
 
 class ArticleListSet(viewsets.ReadOnlyModelViewSet):
@@ -25,15 +28,21 @@ class AddTaskURLView(APIView):
     def post(self, request, *args, **kwargs):
         # Instantiate UrlsProcessor
         processor = UrlsProcessor()
+        # Initiate the Bloom Filter
+        bf = BloomFilter(10000000, 0.01, 'url.bloom')
         data = request.data
         single = data.get('single')
         tasks = []
         if single:
             serializer = TaskURLSerializer(data=data)
             if serializer.is_valid():
-                processor = UrlsProcessor()
-                task = crawl_url.delay(data['url_list'][0], data['issue_id'])
-                tasks.append(task.id)
+                # processor = UrlsProcessor()
+                url = data['url_list'][0]
+                if url in bf:
+                    logger.info('Given URL: <%s> \n WAS CRAWLED ALREADY.', url)
+                else:
+                    task = crawl_url.delay(url, data['issue_id'])
+                    tasks.append(task.id)
                 data['tasks'] = tasks
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
@@ -44,8 +53,14 @@ class AddTaskURLView(APIView):
                     # Bloom Filter check should be here
                     # The task will be executed only if given url isn't
                     # presented in a filter's bit array
-                    task = crawl_url.delay(url, data['issue_id'])
-                    tasks.append(task.id)
+                    if url in bf:
+                        logger.info('Given URL: <%s> \n WAS CRAWLED ALREADY.', url)
+                    else:
+                        # Pass our task to the queue
+                        task = crawl_url.delay(url, data['issue_id'])
+                        tasks.append(task.id)
+                        # Store new url in Bloom's Filter, named url.bloom
+                        bf.add(url)
                 data['tasks'] = tasks
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
