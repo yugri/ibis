@@ -23,6 +23,18 @@ class ArticleListSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ArticleSerializer
 
 
+class ArticleTranslatedListSet(viewsets.ReadOnlyModelViewSet):
+
+    queryset = Article.objects.filter(translated=True)
+    serializer_class = ArticleSerializer
+
+
+class ArticleNonTranslatedListSet(viewsets.ReadOnlyModelViewSet):
+
+    queryset = Article.objects.filter(translated=False)
+    serializer_class = ArticleSerializer
+
+
 class AddTaskURLView(APIView):
 
     # renderer_classes = (JSONRenderer,)
