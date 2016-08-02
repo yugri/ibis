@@ -3,7 +3,7 @@ import json
 import logging
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import status, filters
 from rest_framework.renderers import JSONRenderer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -21,18 +21,8 @@ class ArticleListSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Article.objects.all().order_by('-post_date_crawled')
     serializer_class = ArticleSerializer
-
-
-class ArticleTranslatedListSet(viewsets.ReadOnlyModelViewSet):
-
-    queryset = Article.objects.filter(translated=True)
-    serializer_class = ArticleSerializer
-
-
-class ArticleNonTranslatedListSet(viewsets.ReadOnlyModelViewSet):
-
-    queryset = Article.objects.filter(translated=False)
-    serializer_class = ArticleSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('translated',)
 
 
 class AddTaskURLView(APIView):
