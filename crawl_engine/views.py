@@ -12,6 +12,7 @@ from rest_framework import viewsets
 from crawl_engine.serializers import ArticleSerializer, TaskURLSerializer, TaskURLListSerializer
 from crawl_engine.tasks import crawl_url
 from pybloomfilter import BloomFilter
+from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +38,9 @@ class AddTaskURLView(APIView):
             url_filter = BloomFilter(100000, 0.1, bloom_file_path)
         data = request.data
         single = data.get('single')
+        custom = data.get('custom')
         tasks = []
+
         if single:
             serializer = TaskURLSerializer(data=data)
             if serializer.is_valid():
@@ -50,6 +53,15 @@ class AddTaskURLView(APIView):
                 else:
                     logger.info('DUPLICATE URL: %s \n REJECTED', url)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        elif custom:
+            serializer = TaskURLSerializer(data=data)
+            if serializer.is_valid():
+                query = data['query']
+                engine = data['engine']
+                p = SearchEngineParser(query, engine)
+                print(p.search())
+
         else:
             serializer = TaskURLListSerializer(data=data)
             if serializer.is_valid():

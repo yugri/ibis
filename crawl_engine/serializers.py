@@ -18,18 +18,27 @@ class TaskURLSerializer(serializers.Serializer):
     def to_internal_value(self, data):
         url_list = data.get('url_list')
         issue_id = data.get('issue_id')
+        single = data.get('single')
+        custom = data.get('custom')
+        query = data.get('query')
+        engine = data.get('engine')
+
 
         # Validate the data
-        if not url_list:
-            raise ValidationError({
-                'url': 'This field is required'
-            })
-        if not issue_id:
-            pass
+        # if not url_list or query:
+        #     raise ValidationError({
+        #         'url': 'This field is required'
+        #     })
+        # if not issue_id or single or custom or engine:
+        #     pass
 
         return {
             'url': url_list,
-            'issue_id': issue_id
+            'issue_id': issue_id,
+            'single': single,
+            'custom': custom,
+            'query': query,
+            'engine': engine
         }
 
 
