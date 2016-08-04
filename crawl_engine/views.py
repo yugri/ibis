@@ -60,7 +60,10 @@ class AddTaskURLView(APIView):
                 query = data['query']
                 engine = data['engine']
                 p = SearchEngineParser(query, engine)
-                print(p.search())
+                links_to_crawl = p.search_google()
+
+                data['next_url'] = links_to_crawl
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         else:
             serializer = TaskURLListSerializer(data=data)
