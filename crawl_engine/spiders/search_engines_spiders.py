@@ -1,5 +1,3 @@
-from urllib.parse import quote
-
 import logging
 import io
 from lxml import etree
@@ -10,6 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from urllib.parse import quote, parse_qs, urlparse
 
 
 logger = logging.getLogger(__name__)
@@ -30,7 +29,7 @@ class SearchEngineParser(object):
     tree = ''
     depth = 1  # The crawling depth
 
-    def __init__(self, search_query, engine='google', depth=3):
+    def __init__(self, search_query, engine='google', depth=2):
         # Build query dict at init
         if engine == 'google' or 'yandex':
             search_query = "+".join(search_query.split())
@@ -59,18 +58,14 @@ class SearchEngineParser(object):
         return self.get_urls(self.tree)
 
     def search_google(self):
-        '''
-        This method uses selenium with PhantomJS headless webdriver
-        only for crawl google search results
-        :return:
-        '''
 
+        # This method uses selenium with PhantomJS headless webdriver
+        # only for crawl google search results
 
-        counter = 0
-        while counter <= self.depth:
+        for count in range(0, self.depth):
             driver = webdriver.PhantomJS()
             url = self.engines_payload['google'][
-                      'url'] + '?q=' + self.search_query + '&start=%s&sa=N' % self._google_cursor(counter)
+                      'url'] + '?q=' + self.search_query + '&start=%s&sa=N' % self._google_cursor(count)
             driver.get(url)
 
             try:
@@ -86,19 +81,19 @@ class SearchEngineParser(object):
             except BaseException as e:
                 raise e
             tree = lxml.html.fromstring(driver.page_source)
+
+            # Collect all result links for further crawling task
+            links = driver.find_elements_by_xpath('//h3/a')
+            for link in links:
+
+                self.seed_links.append(link.get_attribute('href'))
+
             next_url = dynamic_element.get_attribute('href')
 
             if next_url:
                 self.search_query = next_url
-            counter += 1
-
-            # Collect all result links for further crawling task
-            for sel in tree.xpath('//h3'):
-                link = sel.xpath('a/@href/text()')
-                self.seed_links.append(link[0])
 
         return self.seed_links
-
 
     def get_urls(self, content):
         print(content)
@@ -113,3 +108,11 @@ class SearchEngineParser(object):
 
     def _google_cursor(self, counter):
         return counter * 10
+
+    def _parse_google_link(self, link):
+        # Method for normalising Google's result link. Receives the link, parse it and gets the direct
+        # url from querystring. E.g.: google's result links look's like:
+        # https://www.google.com.ua/url?q=some=query&url=http://foo.bar.url
+        # so we should get only url parameter from google's querystring
+        url = urlparse(link)
+        return parse_qs(url.query)['url']

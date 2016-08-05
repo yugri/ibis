@@ -61,8 +61,11 @@ class AddTaskURLView(APIView):
                 engine = data['engine']
                 p = SearchEngineParser(query, engine)
                 links_to_crawl = p.search_google()
-
-                data['next_url'] = links_to_crawl
+                for url in links_to_crawl:
+                    if not url in url_filter:
+                        task = crawl_url.delay(url, data['issue_id'])
+                        tasks.append(task.id)
+                        url_filter.add(url)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         else:
