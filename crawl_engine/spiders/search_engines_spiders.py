@@ -29,7 +29,7 @@ class SearchEngineParser(object):
     tree = ''
     depth = 1  # The crawling depth
 
-    def __init__(self, search_query, engine='google', depth=2):
+    def __init__(self, search_query, engine='google', depth=1):
         # Build query dict at init
         if engine == 'google' or 'yandex':
             search_query = "+".join(search_query.split())
@@ -60,12 +60,12 @@ class SearchEngineParser(object):
     def search_google(self):
 
         # This method uses selenium with PhantomJS headless webdriver
-        # only for crawl google search results
+        # only for crawl google search results.
+        # It returns seed_links list for further crawling
 
         for count in range(0, self.depth):
             driver = webdriver.PhantomJS()
-            url = self.engines_payload['google'][
-                      'url'] + '?q=' + self.search_query + '&start=%s&sa=N' % self._google_cursor(count)
+            url = self.engines_payload['google']['url'] + '?q=' + self.search_query + '&start=%s&sa=N' % self._google_cursor(count)
             driver.get(url)
 
             try:
@@ -76,7 +76,8 @@ class SearchEngineParser(object):
 
             try:
                 dynamic_element = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.LINK_TEXT, 'Уперед'))
+                    EC.visibility_of_element_located((By.LINK_TEXT, 'Уперед' or 'Next'))
+                    # EC.visibility_of_element_located((By.ID, "pnnext"))
                 )
             except BaseException as e:
                 raise e
@@ -85,11 +86,9 @@ class SearchEngineParser(object):
             # Collect all result links for further crawling task
             links = driver.find_elements_by_xpath('//h3/a')
             for link in links:
-
-                self.seed_links.append(link.get_attribute('href'))
+                self.seed_links.append(self._parse_google_link(link.get_attribute('href')))
 
             next_url = dynamic_element.get_attribute('href')
-
             if next_url:
                 self.search_query = next_url
 
@@ -115,4 +114,4 @@ class SearchEngineParser(object):
         # https://www.google.com.ua/url?q=some=query&url=http://foo.bar.url
         # so we should get only url parameter from google's querystring
         url = urlparse(link)
-        return parse_qs(url.query)['url']
+        return parse_qs(url.query)['url'][0]
