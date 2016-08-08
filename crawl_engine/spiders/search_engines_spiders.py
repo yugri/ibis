@@ -8,8 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from urllib.parse import quote, parse_qs, urlparse
-
+from urllib.parse import quote, parse_qs, urlparse, unquote
 
 logger = logging.getLogger(__name__)
 
@@ -101,9 +100,12 @@ class SearchEngineParser(object):
             tree = lxml.html.fromstring(driver.page_source)
 
             # Collect all result links for further crawling task
-            links = driver.find_elements_by_xpath('//h3/a')
-            for link in links:
-                self.seed_links.append(link.get_attribute('href'))
+            hrefs = tree.xpath('//h3/a/@href')
+            for href in hrefs:
+                if href.startswith('/url?'):
+                    clean_url = self._parse_google_href(href)
+                    if clean_url is not None:
+                        self.seed_links.append(clean_url)
 
             next_url = np_element.get_attribute('href')
             if next_url:
@@ -208,7 +210,7 @@ class SearchEngineParser(object):
     def _yandex_cursor(self, counter):
         return counter
 
-    def _parse_google_link(self, link):
+    def _parse_google_href(self, href):
         """
         Revise this method [NOT USED NOW]
         """
@@ -216,5 +218,10 @@ class SearchEngineParser(object):
         # url from querystring. E.g.: google's result links look's like:
         # https://www.google.com.ua/url?q=some=query&url=http://foo.bar.url
         # so we should get only url parameter from google's querystring
-        url = urlparse(link)
-        return parse_qs(url.query)['url'][0]
+        # url = urlparse(link)
+        try:
+            parsed = urlparse(href)
+            url = parse_qs(parsed.query)['q'][0]
+            return unquote(url)
+        except KeyError:
+            pass
