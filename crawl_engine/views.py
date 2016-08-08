@@ -13,6 +13,7 @@ from crawl_engine.serializers import ArticleSerializer, TaskURLSerializer, TaskU
 from crawl_engine.tasks import crawl_url
 from pybloomfilter import BloomFilter
 from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
+from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
@@ -31,11 +32,11 @@ class AddTaskURLView(APIView):
     # renderer_classes = (JSONRenderer,)
 
     def post(self, request, *args, **kwargs):
-        bloom_file_path = '/tmp/url.bloom'
+        bloom_file_path = settings.BASE_DIR + '/url.bloom'
         if os.path.exists(bloom_file_path):
             url_filter = BloomFilter.open(bloom_file_path)
         else:
-            url_filter = BloomFilter(100000, 0.1, bloom_file_path)
+            url_filter = BloomFilter(10000000, 0.1, bloom_file_path)
         data = request.data
         single = data.get('single')
         custom = data.get('custom')

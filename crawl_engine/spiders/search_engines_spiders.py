@@ -86,7 +86,7 @@ class SearchEngineParser(object):
             # Collect all result links for further crawling task
             links = driver.find_elements_by_xpath('//h3/a')
             for link in links:
-                self.seed_links.append(self._parse_google_link(link.get_attribute('href')))
+                self.seed_links.append(link.get_attribute('href'))
 
             next_url = dynamic_element.get_attribute('href')
             if next_url:
