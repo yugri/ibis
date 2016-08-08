@@ -61,10 +61,10 @@ class AddTaskURLView(APIView):
                 query = data['query']
                 engine = data['engine']
                 p = SearchEngineParser(query, engine)
-                links_to_crawl = p.search_google()
+                links_to_crawl = p.run()
                 for url in links_to_crawl:
                     if not url in url_filter:
-                        task = crawl_url.delay(url, data['issue_id'])
+                        task = crawl_url.apply_async((url, data['issue_id']), countdown=10)
                         tasks.append(task.id)
                         url_filter.add(url)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -75,7 +75,7 @@ class AddTaskURLView(APIView):
 
                 for url in data['url_list']:
                     if not url in url_filter:
-                        task = crawl_url.delay(url, data['issue_id'])
+                        task = crawl_url.apply_async((url, data['issue_id']), countdown=10)
                         tasks.append(task.id)
                         url_filter.add(url)
                     else:
