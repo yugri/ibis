@@ -72,3 +72,6 @@ class SearchQuery(models.Model):
     active = models.BooleanField(default=True)
     period = models.CharField(max_length=20, choices=PERIODS, default='daily')
     last_processed = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.query
