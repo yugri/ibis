@@ -119,3 +119,14 @@ class SearchQueryList(generics.ListCreateAPIView):
 # class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
 #     queryset = SearchQuery.objects.all()
 #     serializer_class = SearchQuerySerializer
+
+class SearchQueryDetailView(generics.RetrieveUpdateAPIView):
+    queryset = SearchQuery.objects.all()
+    serializer_class = SearchQuerySerializer
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        obj = get_object_or_404(queryset, search_id=self.kwargs['search_id'])
+
+        return obj
