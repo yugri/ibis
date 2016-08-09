@@ -71,4 +71,4 @@ class SearchQuery(models.Model):
     source = models.CharField(max_length=15, choices=SOURCES, default='google')
     active = models.BooleanField(default=True)
     period = models.CharField(max_length=20, choices=PERIODS, default='daily')
-    last_processed = models.DateTimeField(auto_now=True, null=True)
+    last_processed = models.DateTimeField(blank=True, null=True)
