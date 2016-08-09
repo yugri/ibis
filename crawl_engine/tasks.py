@@ -10,9 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task
-def crawl_url(url, issue_id):
+def crawl_url(url, search_id):
 
-    parser = ArticleParser(url, issue_id)
+    parser = ArticleParser(url, search_id)
     result = parser.run()
 
     return result

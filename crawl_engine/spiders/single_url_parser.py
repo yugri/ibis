@@ -12,9 +12,9 @@ logger = logging.getLogger(__name__)
 
 class ArticleParser:
 
-    def __init__(self, url, issue_id):
+    def __init__(self, url, search_id):
         self.url = url
-        self.issue_id = issue_id
+        self.search_id = search_id
 
     def run(self):
         # Instantiate newspaper's Article api
@@ -66,6 +66,7 @@ class ArticleParser:
             article.translated = True
 
         article.source_language = text_lang if text_lang == title_lang else None
+        article.search_id = self.search_id
         article.save()
 
         return article.id
