@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 from rest_framework import routers
-from crawl_engine.views import AddTaskURLView, ArticleListSet
+from crawl_engine.views import *
 
 
 router = routers.DefaultRouter()
@@ -13,5 +13,6 @@ urlpatterns = [
     url(r'articles/', ArticleListSet.as_view({
         'get': 'list',
     })),
+    url(r'^search_query/$', SearchQueryList.as_view()),
     url(r'^', include('rest_framework.urls', namespace='rest_framework')),
 ]

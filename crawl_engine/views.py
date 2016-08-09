@@ -4,12 +4,13 @@ import logging
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import status, filters
+from rest_framework import generics
 from rest_framework.renderers import JSONRenderer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from crawl_engine.models import Article
+from crawl_engine.models import Article, SearchQuery
 from rest_framework import viewsets
-from crawl_engine.serializers import ArticleSerializer, TaskURLSerializer, TaskURLListSerializer
+from crawl_engine.serializers import ArticleSerializer, TaskURLSerializer, TaskURLListSerializer, SearchQuerySerializer
 from crawl_engine.tasks import crawl_url
 from pybloomfilter import BloomFilter
 from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
@@ -110,6 +111,11 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 
 
+class SearchQueryList(generics.ListCreateAPIView):
+    queryset = SearchQuery.objects.all()
+    serializer_class = SearchQuerySerializer
 
 
-
+# class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = SearchQuery.objects.all()
+#     serializer_class = SearchQuerySerializer

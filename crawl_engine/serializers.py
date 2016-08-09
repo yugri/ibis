@@ -1,6 +1,6 @@
 from rest_framework.exceptions import ValidationError
 
-from crawl_engine.models import Article
+from crawl_engine.models import Article, SearchQuery
 from rest_framework import serializers
 
 
@@ -46,24 +46,24 @@ class TaskURLSerializer(serializers.Serializer):
         }
 
 
-class SearchQuerySerializer(serializers.Serializer):
-    urls = URLListField(allow_empty=True)
-    query = serializers.CharField(allow_blank=True)
-    engines = serializers.ListField(allow_empty=True)
-    search_id = serializers.CharField(required=True)
-
-    def to_internal_value(self, data):
-        urls = data.get('urls')
-        search_id = data.get('search_id')
-        query = data.get('query')
-        engines = data.get('engine')
-
-        return {
-            'url': urls,
-            'search_id': search_id,
-            'query': query,
-            'engine': engines
-        }
+# class SearchQuerySerializer(serializers.Serializer):
+#     urls = URLListField(allow_empty=True)
+#     query = serializers.CharField(allow_blank=True)
+#     engines = serializers.ListField(allow_empty=True)
+#     search_id = serializers.CharField(required=True)
+#
+#     def to_internal_value(self, data):
+#         urls = data.get('urls')
+#         search_id = data.get('search_id')
+#         query = data.get('query')
+#         engines = data.get('engine')
+#
+#         return {
+#             'url': urls,
+#             'search_id': search_id,
+#             'query': query,
+#             'engine': engines
+#         }
 
 
 class TaskURLListSerializer(serializers.Serializer):
@@ -86,3 +86,8 @@ class TaskURLListSerializer(serializers.Serializer):
             'url_list': url_list,
             'issue_id': issue_id
         }
+
+
+class SearchQuerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SearchQuery

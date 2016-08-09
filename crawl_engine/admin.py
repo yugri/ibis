@@ -1,6 +1,6 @@
 from crawl_engine import tasks
 from django.contrib import admin
-from crawl_engine.models import Article
+from crawl_engine.models import Article, SearchQuery
 
 
 class TasksAdmin(admin.ModelAdmin):
@@ -15,3 +15,4 @@ class ArticleAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Article, ArticleAdmin)
+admin.site.register(SearchQuery)

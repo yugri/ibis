@@ -49,3 +49,25 @@ class Article(models.Model):
 class Task(models.Model):
     task_id = models.CharField(max_length=50)
     tstamp = models.DateTimeField(auto_now=True)
+
+
+class SearchQuery(models.Model):
+    SOURCES = (
+        ('google', 'google'),
+        ('bing', 'bing'),
+        ('yandex', 'yandex')
+    )
+
+    PERIODS = (
+        ('houlry', 'Hourly'),
+        ('daily', 'Daily'),
+        ('weekly', 'Weekly'),
+        ('monthly', 'Monthly')
+
+    )
+
+    search_id = models.UUIDField(db_index=True)
+    query = models.TextField()
+    source = models.CharField(max_length=15, choices=SOURCES, default='google')
+    active = models.BooleanField(default=True)
+    period = models.CharField(max_length=20, choices=PERIODS, default='daily')
