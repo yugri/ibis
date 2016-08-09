@@ -60,7 +60,7 @@ AWS_HEADERS = {
 # stored files.
 MEDIAFILES_LOCATION = 'media'
 MEDIA_URL = 'https://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, MEDIAFILES_LOCATION)
-DEFAULT_FILE_STORAGE = 'config.s3_config.MediaStorage'
+DEFAULT_FILE_STORAGE = 'conf.s3_config.MediaStorage'
 
 
 
