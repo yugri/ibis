@@ -63,15 +63,29 @@ class SearchQuery(models.Model):
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
         ('monthly', 'Monthly')
-
     )
 
     search_id = models.UUIDField(db_index=True)
     query = models.TextField()
     source = models.CharField(max_length=15, choices=SOURCES, default='google')
+    search_depth = models.PositiveIntegerField(default=1)
     active = models.BooleanField(default=True)
     period = models.CharField(max_length=20, choices=PERIODS, default='daily')
     last_processed = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return self.query
+
+
+class SearchTask(models.Model):
+    task_id = models.CharField(primary_key=True, max_length=50, blank=False)
+    last_run = models.DateTimeField(auto_now=True)
+    search_query = models.ForeignKey(SearchQuery)
+
+    def __str__(self):
+        return self.task_id
+
+
+# class SearchTaskSet(models.Model):
+#     taskset_id = models.CharField(primary_key=True, max_length=50, blank=False)
+#     last_run = models.DateTimeField(auto_now=True)
