@@ -1,5 +1,7 @@
 import logging
-from celery import shared_task
+
+from datetime import time, timedelta, date
+from celery import shared_task, chain
 from celery.schedules import crontab
 from celery.task import periodic_task
 from django.conf import settings
@@ -62,7 +64,7 @@ def translate_content(article_title, article_body, article_id, source_language):
 
 
 @periodic_task(
-    run_every=(crontab(minute='*/30')),
+    run_every=(crontab(minute='*/5')),
     name="check_search_queries",
     ignore_result=True
 )
@@ -76,13 +78,18 @@ def check_search_queries():
     search_task = SearchTask()
     for search_query in search_queries:
         if search_query.active:
-            # [TODO]: need to be implemented a periodic search
-            task = search_by_query.apply_async((search_query.query, search_query.source, search_query.search_depth))
-            search_task.objects.create(task_id=task.id)
+            if date.today() - search_query.last_processed > search_query.period:
+                task = chain(search_by_query.s(search_query.query, search_query.source,
+                                               search_query.search_depth), crawl_url.s(search_query.search_id))
+                search_task.objects.create(task_id=task.id)
 
 
 @shared_task
 def search_by_query(query, engine, depth):
     parser = SearchEngineParser(query, engine, depth)
-    result = parser.run()
-    return result
+    return parser.run()
+
+@periodic_task
+def search_by_query(query, engine, depth):
+    parser = SearchEngineParser(query, engine, depth)
+    return parser.run()

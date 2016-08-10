@@ -76,6 +76,9 @@ class SearchQuery(models.Model):
     def __str__(self):
         return self.query
 
+    # @property
+    # def date_period(self):
+
 
 class SearchTask(models.Model):
     task_id = models.CharField(primary_key=True, max_length=50, blank=False)
@@ -84,8 +87,3 @@ class SearchTask(models.Model):
 
     def __str__(self):
         return self.task_id
-
-
-# class SearchTaskSet(models.Model):
-#     taskset_id = models.CharField(primary_key=True, max_length=50, blank=False)
-#     last_run = models.DateTimeField(auto_now=True)
