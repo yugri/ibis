@@ -1,6 +1,6 @@
 import logging
 
-from datetime import time, timedelta, date
+from datetime import time, timedelta, date, datetime
 from celery import shared_task, chain
 from celery.schedules import crontab
 from celery.task import periodic_task
@@ -78,18 +78,16 @@ def check_search_queries():
     search_task = SearchTask()
     for search_query in search_queries:
         if search_query.active:
-            if date.today() - search_query.last_processed > search_query.period:
-                task = chain(search_by_query.s(search_query.query, search_query.source,
-                                               search_query.search_depth), crawl_url.s(search_query.search_id))
+            if search_query.expired_period:
+                task = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth),
+                             crawl_url.s(search_query.search_id))()
+                search_query.last_processed = datetime.now()
+                search_query.save()
                 search_task.objects.create(task_id=task.id)
+                search_task.save()
 
 
 @shared_task
-def search_by_query(query, engine, depth):
-    parser = SearchEngineParser(query, engine, depth)
-    return parser.run()
-
-@periodic_task
 def search_by_query(query, engine, depth):
     parser = SearchEngineParser(query, engine, depth)
     return parser.run()

@@ -1,6 +1,6 @@
 import io
 from time import sleep
-
+from datetime import time, datetime
 import requests
 from PIL import Image
 from django.conf import settings
@@ -68,9 +68,23 @@ class SearchQuery(models.Model):
     period = models.CharField(max_length=20, choices=PERIODS, default='daily')
     last_processed = models.DateTimeField(blank=True, null=True)
 
-    # @property
-    # def expired_period(self):
-    #     if
+    @property
+    def time_period(self):
+        if self.period == "hourly":
+            return datetime(hour=1)
+        elif self.period == "daily":
+            return datetime(hour=24)
+        elif self.period == "weekly":
+            return datetime(hour=24*7)
+        else:
+            return datetime(hour=24*30)
+
+    @property
+    def expired_period(self):
+        now = datetime.now()
+        
+        if not self.last_processed or now - self.time_period > self.last_processed:
+            return True
 
     def __str__(self):
         return self.query
