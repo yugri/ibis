@@ -26,4 +26,4 @@ class SearchQueryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Article, ArticleAdmin)
-admin.site.register(SearchQuery)
+admin.site.register(SearchQuery, SearchQueryAdmin)
