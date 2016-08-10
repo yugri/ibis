@@ -59,7 +59,7 @@ class SearchQuery(models.Model):
     )
 
     PERIODS = (
-        ('houlry', 'Hourly'),
+        ('hourly', 'Hourly'),
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
         ('monthly', 'Monthly')
