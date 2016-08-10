@@ -3,6 +3,7 @@ from time import sleep
 
 import requests
 from PIL import Image
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 
@@ -52,12 +53,6 @@ class Task(models.Model):
 
 
 class SearchQuery(models.Model):
-    SOURCES = (
-        ('google', 'google'),
-        ('bing', 'bing'),
-        ('yandex', 'yandex')
-    )
-
     PERIODS = (
         ('hourly', 'Hourly'),
         ('daily', 'Daily'),
@@ -67,17 +62,18 @@ class SearchQuery(models.Model):
 
     search_id = models.UUIDField(db_index=True)
     query = models.TextField()
-    source = models.CharField(max_length=15, choices=SOURCES, default='google')
+    source = models.CharField(max_length=15, choices=settings.SOURCES, default='google')
     search_depth = models.PositiveIntegerField(default=1)
     active = models.BooleanField(default=True)
     period = models.CharField(max_length=20, choices=PERIODS, default='daily')
     last_processed = models.DateTimeField(blank=True, null=True)
 
+    # @property
+    # def expired_period(self):
+    #     if
+
     def __str__(self):
         return self.query
-
-    # @property
-    # def date_period(self):
 
 
 class SearchTask(models.Model):

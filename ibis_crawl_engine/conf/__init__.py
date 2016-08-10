@@ -156,3 +156,9 @@ STATICFILES_FINDERS = (
 )
 
 GOOGLE_TRANSLATE_API_KEY = env.get_value('GOOGLE_TRANSLATE_API_KEY', default=None)
+
+SOURCES = (
+    ('google', 'Google'),
+    ('bing', 'Bing'),
+    ('yandex', 'Yandex')
+)

@@ -130,3 +130,13 @@ class SearchQueryDetailView(generics.RetrieveUpdateAPIView):
         obj = get_object_or_404(queryset, search_id=self.kwargs['search_id'])
 
         return obj
+
+
+class ListSources(APIView):
+
+    def get(self, request, format=None):
+        """
+        Return a list of all sources.
+        """
+        sources = [source for source in settings.SOURCES]
+        return Response(sources)

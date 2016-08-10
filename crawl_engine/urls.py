@@ -15,5 +15,8 @@ urlpatterns = [
     })),
     url(r'^search_query/$', SearchQueryList.as_view()),
     url(r'^search_query/(?P<search_id>[\w-]+)$', SearchQueryDetailView.as_view()),
+
+    url(r'^source_list/$', ListSources.as_view()),
+
     url(r'^', include('rest_framework.urls', namespace='rest_framework')),
 ]
