@@ -1,11 +1,12 @@
 import io
 from time import sleep
-from datetime import time, datetime
+from datetime import time, datetime, timedelta
 import requests
 from PIL import Image
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
+from django.utils.timezone import utc
 
 
 class Article(models.Model):
@@ -71,19 +72,19 @@ class SearchQuery(models.Model):
     @property
     def time_period(self):
         if self.period == "hourly":
-            return datetime(hour=1)
+            return timedelta(hours=1)
         elif self.period == "daily":
-            return datetime(hour=24)
+            return timedelta(days=1)
         elif self.period == "weekly":
-            return datetime(hour=24*7)
+            return timedelta(weeks=1)
         else:
-            return datetime(hour=24*30)
+            return timedelta(days=30)
 
     @property
     def expired_period(self):
-        now = datetime.now()
-        
-        if not self.last_processed or now - self.time_period > self.last_processed:
+        now = datetime.utcnow().replace(tzinfo=utc)
+
+        if not self.last_processed or now - self.last_processed > self.time_period:
             return True
 
     def __str__(self):
@@ -94,6 +95,3 @@ class SearchTask(models.Model):
     task_id = models.CharField(primary_key=True, max_length=50, blank=False)
     last_run = models.DateTimeField(auto_now=True)
     search_query = models.ForeignKey(SearchQuery)
-
-    def __str__(self):
-        return self.task_id

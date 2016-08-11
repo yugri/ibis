@@ -165,7 +165,7 @@ class SearchEngineParser(object):
             try:
                 assert "Яндекс:" in driver.title
             except AssertionError as e:
-                logger.info("I can't find Bing in page title")
+                logger.info("I can't find Яндекс in page title")
                 raise e
 
             try:

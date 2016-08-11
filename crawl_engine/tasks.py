@@ -1,10 +1,11 @@
 import logging
 
-from datetime import time, timedelta, date, datetime
+from datetime import datetime
 from celery import shared_task, chain
 from celery.schedules import crontab
 from celery.task import periodic_task
 from django.conf import settings
+from django.utils.timezone import utc
 
 from crawl_engine.models import SearchQuery, SearchTask
 from crawl_engine.spiders.single_url_parser import ArticleParser
@@ -66,7 +67,6 @@ def translate_content(article_title, article_body, article_id, source_language):
 @periodic_task(
     run_every=(crontab(minute='*/5')),
     name="check_search_queries",
-    ignore_result=True
 )
 def check_search_queries():
     """
@@ -75,16 +75,14 @@ def check_search_queries():
     should be removed from schedule
     """
     search_queries = SearchQuery.objects.all()
-    search_task = SearchTask()
     for search_query in search_queries:
         if search_query.active:
             if search_query.expired_period:
                 task = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth),
                              crawl_url.s(search_query.search_id))()
-                search_query.last_processed = datetime.now()
+                search_query.last_processed = datetime.utcnow().replace(tzinfo=utc)
                 search_query.save()
-                search_task.objects.create(task_id=task.id)
-                search_task.save()
+                SearchTask.objects.create(task_id=task.id)
 
 
 @shared_task
