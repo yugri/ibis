@@ -1,7 +1,7 @@
 import logging
 
 from datetime import time, timedelta, date
-from celery import shared_task, chain
+from celery import shared_task, chain, task
 from celery.schedules import crontab
 from celery.task import periodic_task
 from django.conf import settings
@@ -79,9 +79,9 @@ def check_search_queries():
     for search_query in search_queries:
         if search_query.active:
             if date.today() - search_query.last_processed > search_query.period:
-                task = chain(search_by_query.s(search_query.query, search_query.source,
-                                               search_query.search_depth), crawl_url.s(search_query.search_id))
-                search_task.objects.create(task_id=task.id)
+                job = chain(search_by_query.s(search_query.query, search_query.source,
+                                               search_query.search_depth), run_job())
+                search_task.objects.create(task_id=job.id)
 
 
 @shared_task
@@ -89,7 +89,18 @@ def search_by_query(query, engine, depth):
     parser = SearchEngineParser(query, engine, depth)
     return parser.run()
 
+
 @periodic_task
 def search_by_query(query, engine, depth):
     parser = SearchEngineParser(query, engine, depth)
     return parser.run()
+
+
+@shared_task
+def run_job(url_list):
+    try:
+        for url in url_list:
+            task = crawl_url.apply_async(url, '123456')
+            return task.id
+    except IndexError:
+        pass
