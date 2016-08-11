@@ -65,7 +65,7 @@ def translate_content(article_title, article_body, article_id, source_language):
 
 
 @periodic_task(
-    run_every=(crontab(minute='*/1')),
+    run_every=(crontab(minute='*/5')),
     name="check_search_queries",
     ignore_result=True
 )
