@@ -3,13 +3,12 @@ import json
 import logging
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from rest_framework import status, filters
+from rest_framework import status
 from rest_framework import generics
 from rest_framework.renderers import JSONRenderer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from crawl_engine.models import Article, SearchQuery
-from rest_framework import viewsets
 from crawl_engine.serializers import ArticleSerializer, TaskURLSerializer, TaskURLListSerializer, SearchQuerySerializer
 from crawl_engine.tasks import crawl_url
 from pybloomfilter import BloomFilter
@@ -20,17 +19,16 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 
-class ArticleListSet(viewsets.ReadOnlyModelViewSet):
-
-    queryset = Article.objects.all().order_by('-post_date_crawled')
+class ArticlesListView(generics.ListAPIView):
     serializer_class = ArticleSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('translated',)
+
+    def get_queryset(self):
+        search_id = self.kwargs['search_id']
+
+        return Article.objects.filter(search_id=search_id)
 
 
 class AddTaskURLView(APIView):
-
-    # renderer_classes = (JSONRenderer,)
 
     def post(self, request, *args, **kwargs):
         bloom_file_path = settings.BASE_DIR + '/url.bloom'
@@ -115,10 +113,6 @@ class SearchQueryList(generics.ListCreateAPIView):
     queryset = SearchQuery.objects.all()
     serializer_class = SearchQuerySerializer
 
-
-# class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = SearchQuery.objects.all()
-#     serializer_class = SearchQuerySerializer
 
 class SearchQueryDetailView(generics.RetrieveUpdateAPIView):
     queryset = SearchQuery.objects.all()
