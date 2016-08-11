@@ -1,10 +1,11 @@
 import logging
 
-from datetime import time, timedelta, date
-from celery import shared_task, chain, task
+from datetime import time, timedelta, date, datetime
+from celery import shared_task, chain, task, group
 from celery.schedules import crontab
 from celery.task import periodic_task
 from django.conf import settings
+from django.utils.timezone import utc
 
 from crawl_engine.models import SearchQuery, SearchTask
 from crawl_engine.spiders.single_url_parser import ArticleParser
@@ -64,7 +65,7 @@ def translate_content(article_title, article_body, article_id, source_language):
 
 
 @periodic_task(
-    run_every=(crontab(minute='*/5')),
+    run_every=(crontab(minute='*/1')),
     name="check_search_queries",
     ignore_result=True
 )
@@ -75,22 +76,18 @@ def check_search_queries():
     should be removed from schedule
     """
     search_queries = SearchQuery.objects.all()
-    search_task = SearchTask()
     for search_query in search_queries:
         if search_query.active:
-            if date.today() - search_query.last_processed > search_query.period:
-                job = chain(search_by_query.s(search_query.query, search_query.source,
-                                               search_query.search_depth), run_job())
-                search_task.objects.create(task_id=job.id)
+            if search_query.expired_period:
+                job = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth),
+                            run_job.s())()
+                now = datetime.utcnow().replace(tzinfo=utc)
+                search_query.last_processed = now
+                search_query.save()
+                SearchTask.objects.create(task_id=job.id, search_query=search_query)
 
 
 @shared_task
-def search_by_query(query, engine, depth):
-    parser = SearchEngineParser(query, engine, depth)
-    return parser.run()
-
-
-@periodic_task
 def search_by_query(query, engine, depth):
     parser = SearchEngineParser(query, engine, depth)
     return parser.run()
@@ -98,9 +95,14 @@ def search_by_query(query, engine, depth):
 
 @shared_task
 def run_job(url_list):
+    tasks = []
     try:
         for url in url_list:
-            task = crawl_url.apply_async(url, '123456')
-            return task.id
+            tasks.append(crawl_url.s(url, '123456'))
+
     except IndexError:
         pass
+
+    job = group(tasks)
+    result = job.apply_async()
+    return result.id

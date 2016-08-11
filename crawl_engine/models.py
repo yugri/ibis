@@ -93,5 +93,4 @@ class SearchQuery(models.Model):
 
 class SearchTask(models.Model):
     task_id = models.CharField(primary_key=True, max_length=50, blank=False)
-    last_run = models.DateTimeField(auto_now=True)
-    search_query = models.ForeignKey(SearchQuery)
+    search_query = models.ForeignKey(SearchQuery, blank=True)
