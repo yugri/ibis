@@ -80,7 +80,7 @@ def check_search_queries():
         if search_query.active:
             if search_query.expired_period:
                 job = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth),
-                            run_job.s())()
+                            run_job.s(search_query.search_id))()
                 now = datetime.utcnow().replace(tzinfo=utc)
                 search_query.last_processed = now
                 search_query.save()
@@ -94,11 +94,11 @@ def search_by_query(query, engine, depth):
 
 
 @shared_task
-def run_job(url_list):
+def run_job(url_list, search_id):
     tasks = []
     try:
         for url in url_list:
-            tasks.append(crawl_url.s(url, '123456'))
+            tasks.append(crawl_url.s(url, search_id))
 
     except IndexError:
         pass

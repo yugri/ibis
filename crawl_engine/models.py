@@ -22,7 +22,7 @@ class Article(models.Model):
     translated = models.BooleanField(default=False)
     top_image_url = models.URLField(blank=True)
     top_image = models.ImageField(upload_to='article-images', blank=True, null=True)
-    search_id = models.PositiveIntegerField(blank=True, null=True)
+    search_id = models.UUIDField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         img_url = self.top_image_url

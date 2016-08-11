@@ -90,13 +90,6 @@ class SearchEngineParser(object):
                 logger.info("I can't find Google in page title")
                 raise e
 
-            try:
-                np_element = WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located((By.LINK_TEXT, 'Уперед' or 'Next'))
-                    # EC.visibility_of_element_located((By.ID, "pnnext"))
-                )
-            except BaseException as e:
-                raise e
             tree = lxml.html.fromstring(driver.page_source)
 
             # Collect all result links for further crawling task
@@ -106,10 +99,6 @@ class SearchEngineParser(object):
                     clean_url = self._parse_google_href(href)
                     if clean_url is not None:
                         self.seed_links.append(clean_url)
-
-            next_url = np_element.get_attribute('href')
-            if next_url:
-                self.search_query = next_url
 
         return self.seed_links
 
