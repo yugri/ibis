@@ -92,6 +92,8 @@ class SearchEngineParser(object):
 
             tree = lxml.html.fromstring(driver.page_source)
 
+            driver.quit()
+
             # Collect all result links for further crawling task
             hrefs = tree.xpath('//h3/a/@href')
             for href in hrefs:
@@ -129,6 +131,9 @@ class SearchEngineParser(object):
                 raise e
 
             links = driver.find_elements_by_xpath('//h2/a')
+
+            driver.quit()
+
             for link in links:
                 self.seed_links.append(link.get_attribute('href'))
 
@@ -165,6 +170,9 @@ class SearchEngineParser(object):
                 raise e
 
             links = driver.find_elements_by_xpath('//h2/a')
+
+            driver.quit()
+
             for link in links:
                 self.seed_links.append(link.get_attribute('href'))
 
