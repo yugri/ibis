@@ -1,9 +1,15 @@
-import json
 import logging
-from celery import shared_task
-from django.conf import settings
 
+from datetime import time, timedelta, date, datetime
+from celery import shared_task, chain, task, group
+from celery.schedules import crontab
+from celery.task import periodic_task
+from django.conf import settings
+from django.utils.timezone import utc
+
+from crawl_engine.models import SearchQuery, SearchTask
 from crawl_engine.spiders.single_url_parser import ArticleParser
+from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
@@ -11,9 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task
-def crawl_url(url, issue_id):
+def crawl_url(url, search_id):
 
-    parser = ArticleParser(url, issue_id)
+    parser = ArticleParser(url, search_id)
     result = parser.run()
 
     return result
@@ -43,10 +49,60 @@ def translate_content(article_title, article_body, article_id, source_language):
         article.translated_title = result['translations'][0]['translatedText']
         article.translated_body = result['translations'][1]['translatedText']
         # Article language determines only on article's body text
-        article.source_language = result['translations'][1]['detectedSourceLanguage']
+        try:
+            article.source_language = result['translations'][1]['detectedSourceLanguage']
+        except KeyError:
+            logger.info('Language already detected by internal system')
+        finally:
+            pass
 
         article.translated = True
         article.save()
 
     else:
-        raise Exception("Something wrong with received data")
+        logger.info("Something wrong with received data")
+        pass
+
+
+@periodic_task(
+    run_every=(crontab(minute='*/5')),
+    name="check_search_queries",
+    ignore_result=True
+)
+def check_search_queries():
+    """
+    This task should get all SearchQuery objects and check if there is an active.
+    If so the periodic task <___> should be presented at schedule. In other case the task <___>
+    should be removed from schedule
+    """
+    search_queries = SearchQuery.objects.all()
+    for search_query in search_queries:
+        if search_query.active:
+            if search_query.expired_period:
+                job = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth),
+                            run_job.s(search_query.search_id))()
+                now = datetime.utcnow().replace(tzinfo=utc)
+                search_query.last_processed = now
+                search_query.save()
+                SearchTask.objects.create(task_id=job.id, search_query=search_query)
+
+
+@shared_task
+def search_by_query(query, engine, depth):
+    parser = SearchEngineParser(query, engine, depth)
+    return parser.run()
+
+
+@shared_task
+def run_job(url_list, search_id):
+    tasks = []
+    try:
+        for url in url_list:
+            tasks.append(crawl_url.s(url, search_id))
+
+    except IndexError:
+        pass
+
+    job = group(tasks)
+    result = job.apply_async()
+    return result.id

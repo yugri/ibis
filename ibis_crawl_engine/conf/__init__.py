@@ -145,7 +145,8 @@ STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
     # 'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
 }
 
 STATICFILES_FINDERS = (
@@ -155,3 +156,9 @@ STATICFILES_FINDERS = (
 )
 
 GOOGLE_TRANSLATE_API_KEY = env.get_value('GOOGLE_TRANSLATE_API_KEY', default=None)
+
+SOURCES = (
+    ('google', 'Google'),
+    ('bing', 'Bing'),
+    ('yandex', 'Yandex')
+)
