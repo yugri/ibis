@@ -1,13 +1,10 @@
 import logging
-import io
-from lxml import etree
+import json
+import django
+
+from django.conf import settings
 import lxml.html
 import requests
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from urllib.parse import quote, parse_qs, urlparse, unquote
 
 logger = logging.getLogger(__name__)
@@ -21,6 +18,10 @@ class SearchEngineParser(object):
             'key': 'q',
             'init_url': 'https://google.com'
         },
+        'google_cse': {
+            'url': 'https://www.googleapis.com/customsearch/v1',
+            'key': 'q'
+        },
         'bing': {'url': 'https://www.bing.com/search', 'key': 'q'},
         'yandex': {'url': 'https://www.yandex.ua/search/', 'key': 'text'}
     }
@@ -32,6 +33,8 @@ class SearchEngineParser(object):
         # Build query dict at init
         if engine == 'google' or engine == 'yandex':
             search_query = "+".join(search_query.split())
+        elif search_query == 'google_cse':
+            search_query = search_query
         elif engine == 'yandex':
             search_query = quote(search_query)
 
@@ -67,6 +70,8 @@ class SearchEngineParser(object):
         """
         if self.engine == 'google':
             return self.search_google()
+        elif self.engine == 'google_cse':
+            return self.search_google_cse()
         elif self.engine == 'bing':
             return self.search_bing()
         else:
@@ -74,23 +79,22 @@ class SearchEngineParser(object):
 
     def search_google(self):
         """
-        This method uses selenium with PhantomJS headless webdriver
-        to crawl google's search results.
+        This method uses Requests for querying google's search results page.
         It returns seed_links list for further crawling
         :return: seed_links list
         """
         for count in range(0, self.depth):
-            driver = webdriver.PhantomJS()
+            # driver = webdriver.PhantomJS()
             url = self.engines_payload['google']['url'] + '?q=' + self.search_query + '&start=%s&sa=N' % self._google_cursor(count)
-            driver.get(url)
+            r = requests.get(url)
+
+            tree = lxml.html.fromstring(r.text)
 
             try:
-                assert "Google" in driver.title
+                assert "Google" in tree.findtext('.//title')
             except AssertionError as e:
                 logger.info("I can't find Google in page title")
                 raise e
-
-            tree = lxml.html.fromstring(driver.page_source)
 
             # Collect all result links for further crawling task
             hrefs = tree.xpath('//h3/a/@href')
@@ -102,75 +106,81 @@ class SearchEngineParser(object):
 
         return self.seed_links
 
+    def search_google_cse(self):
+        """
+        Another method for getting google's search results but from CSE (custom search engine):
+        https://developers.google.com/custom-search/json-api/v1/using_rest.
+        Using Requests library
+        :return: seed_links list
+        """
+
+        query = self.search_query
+
+        cse_url = self.engines_payload['google_cse']['url']
+
+        for count in range(0, self.depth):
+
+            params = {
+                'key': settings.GOOGLE_TRANSLATE_API_KEY,
+                'cx': settings.CSE_ID,
+                'q': query,
+                'safe': 'medium',
+                'start': self._google_cse_cursor(count)
+            }
+
+            r = requests.get(cse_url, params=params)
+            loaded_data = json.loads(r.text)
+
+            for item in loaded_data['items']:
+                self.seed_links.append(item['link'])
+
+        return self.seed_links
+
     def search_bing(self):
         """
-        This method uses selenium with PhantomJS headless webdriver
-        to crawl bing's search results.
+        This method uses Requests for querying bing's search results.
         It returns seed_links list for further crawling
         :return: seed_links list
         """
         for count in range(0, self.depth):
-            driver = webdriver.PhantomJS()
             url = self.engines_payload['bing']['url'] + '?q=' + self.search_query + '&first=%s' % self._bing_cursor(count)
-            WebDriverWait(driver, 10)
-            driver.get(url)
+            r = requests.get(url)
+
+            tree = lxml.html.fromstring(r.text)
 
             try:
-                assert "Bing" in driver.title
+                assert "Bing" in tree.findtext('.//title')
             except AssertionError as e:
                 logger.info("I can't find Bing in page title")
                 raise e
 
-            try:
-                np_element = WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located((By.CLASS_NAME, 'sb_pagN'))
-                )
-            except BaseException as e:
-                raise e
-
-            links = driver.find_elements_by_xpath('//h2/a')
+            links = tree.xpath('//h2/a/@href')
             for link in links:
-                self.seed_links.append(link.get_attribute('href'))
-
-            next_url = np_element.get_attribute('href')
-            if next_url:
-                self.search_query = next_url
+                self.seed_links.append(link)
 
         return self.seed_links
 
     def search_yandex(self):
         """
-        This method uses selenium with PhantomJS headless webdriver
-        to crawl yandex search results.
+        This method uses Requests for querying yandex search results.
         It returns seed_links list for further crawling
         :return: seed_links list
         """
         for count in range(0, self.depth):
-            driver = webdriver.PhantomJS()
             url = self.engines_payload['yandex']['url'] + '?text=' + self.search_query + '&p=%s' % self._yandex_cursor(count)
-            WebDriverWait(driver, 10)
-            driver.get(url)
+            r = requests.get(url)
 
-            try:
-                assert "Яндекс:" in driver.title
-            except AssertionError as e:
-                logger.info("I can't find Яндекс in page title")
-                raise e
+            tree = lxml.html.fromstring(r.text)
 
-            try:
-                np_element = WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located((By.CLASS_NAME, 'pager__item_kind_next'))
-                )
-            except BaseException as e:
-                raise e
+            # try:
+            #     assert "Яндекс:" in tree.findtext('.//title')
+            # except AssertionError as e:
+            #     logger.info("I can't find Яндекс in page title")
+            #     raise e
 
-            links = driver.find_elements_by_xpath('//h2/a')
+            links = tree.xpath('//h2/a/@href')
             for link in links:
-                self.seed_links.append(link.get_attribute('href'))
-
-            next_url = np_element.get_attribute('href')
-            if next_url:
-                self.search_query = next_url
+                self.seed_links.append(link)
 
         return self.seed_links
 
@@ -192,6 +202,9 @@ class SearchEngineParser(object):
 
     def _google_cursor(self, counter):
         return counter * 10
+
+    def _google_cse_cursor(self, counter):
+        return counter * 10 + 1
 
     def _bing_cursor(self, counter):
         return 10 * counter + 1
