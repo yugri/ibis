@@ -31,9 +31,9 @@ MONGODB_COLLECTION = "articles"
 BROKER_URL = 'redis://localhost:6379/0'
 # CELERY_RESULT_BACKEND = 'mongodb://localhost:27017/'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
 CELERY_MONGODB_BACKEND_SETTINGS = {
     'database': MONGODB_DB,
     'taskmeta_collection': 'task_meta',
