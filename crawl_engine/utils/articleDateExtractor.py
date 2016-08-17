@@ -1,8 +1,11 @@
 import requests
 import re
 import json
+import logging
 from dateutil.parser import parse
 from bs4 import BeautifulSoup
+
+logger = logging.getLogger(__name__)
 
 
 def parseStrDate(dateString):
@@ -180,7 +183,8 @@ def _extractFromHTMLTag(parsedHTML):
 
 def extractArticlePublishedDate(articleLink, html=None):
 
-    print("Extracting date from " + articleLink)
+    # print("Extracting date from " + articleLink)
+    logger.info("Extracting date from " + articleLink)
 
     articleDate = None
 

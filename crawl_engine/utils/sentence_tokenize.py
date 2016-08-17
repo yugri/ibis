@@ -1,21 +1,38 @@
-def separate(str1, threshold=1000):
-    out_list = []                 # List of output
-    list1 = str1.strip().split()          # We split string into list of words
-    temp_begin = 0                # The beginning of cut of sentences
-    temp_end = 0                  # The end of last word of sequence
-    temp_len = 0                  # Summary length of words
-    new_end = 0                   # The end of last sentence(summary length is not higher than threshold)
+def unpack(list1):
+    list2 = []
+    sum_str = ''
     for i in list1:
-        temp_end += 1
-        if temp_len + len(i) < threshold:
-            temp_len += len(i)
-            if i[-1] == '.' or i[-1] == '?' or i[-1] == '!':
-                new_end = temp_end
+        sum_str = sum_str+i
+        if i[-1] == '.':
+                list2.append(sum_str)
+    return list2
+
+
+def separate(str1, threshold=10000):
+    out_list = []                 # List of output
+    list2 = []
+    list1 = str1.strip().split()  # We split string into list of words
+    for i in list1:
+        if i[-1] == '.':
+            list2.append(i)
         else:
-            print(temp_len)
-            temp_len = 0
-            out_list.append(list1[temp_begin:new_end])
-            temp_begin = new_end
+            j = i+' '
+            list2.append(j)
+    j = ''
+    list1 = []
+    for i in list2:
+        j = j+i
+        if i[-1] == '.' or i[-1] == '?' or i[-1] == '!':
+            list1.append(j)
+            j = ''
+    for i in list1:
+        if len(j+i+' ') < threshold:
+            j = j + i + ' '
+        else:
+            # print(len(j))        # If you want, you can watch length every group of sentences
+            out_list.append(j)
+            j = i + ' '
     else:
-        out_list.append(list1[temp_begin:])
+        # print(len(j))
+        out_list.append(j)
     return out_list

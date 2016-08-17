@@ -10,6 +10,10 @@ from langdetect import detect
 logger = logging.getLogger(__name__)
 
 
+class EmptyBodyException(Exception):
+    pass
+
+
 class ArticleParser:
 
     def __init__(self, url, search_id):
@@ -27,6 +31,12 @@ class ArticleParser:
 
         text = page.text if page.text else extractArticleText(page.html)
         date = extractArticlePublishedDate(self.url, page.html)
+
+        try:
+            if len(text) == 0:
+                raise EmptyBodyException("No body text in article.")
+        except EmptyBodyException as e:
+            exit(str(e))
 
         # Set our article DB model instance
         from crawl_engine.models import Article

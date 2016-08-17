@@ -10,6 +10,7 @@ from django.utils.timezone import utc
 from crawl_engine.models import SearchQuery, SearchTask
 from crawl_engine.spiders.single_url_parser import ArticleParser
 from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
+from crawl_engine.utils.sentence_tokenize import separate
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
@@ -35,9 +36,6 @@ def translate_content(article_title, article_body, article_id, source_language):
             source=source_language if source_language else None,
             target='en',
             q=[article_title, article_body]
-            # source='en',
-            # target='de',
-            # q=['Hi', 'Big HI']
         ).execute()
     except HttpError as e:
         logger.error(e)
@@ -62,6 +60,43 @@ def translate_content(article_title, article_body, article_id, source_language):
     else:
         logger.info("Something wrong with received data")
         pass
+
+
+@shared_task
+def translate_content_partially(article_title=None, article_body=None, article_id=None, source_language=None):
+    service = build('translate', 'v2',
+                    developerKey=settings.GOOGLE_TRANSLATE_API_KEY)
+    result = None
+
+    translated_body = ''
+    limit_counter = 0
+    lang = source_language if source_language else None
+    from crawl_engine.models import Article
+    article = Article.objects.get(pk=article_id)
+    for part in separate(article_body):
+        try:
+            result = service.translations().list(
+                source=lang,
+                target='en',
+                q=[part]
+            ).execute()
+        except HttpError as e:
+            logger.error(e)
+
+        if result:
+            translated_part = result['translations'][0]['translatedText']
+            try:
+                detected_language = result['translations'][1]['detectedSourceLanguage']
+            except KeyError:
+                logger.info('Language already detected by internal system')
+            finally:
+                pass
+        if translated_part is not None:
+            translated_body += " ".join(translated_part)
+
+        translate_content_partially.apply_async(article_body=article_body.pop(0), source_language=lang, countdown=100)
+    article.translated_body = translated_body
+    article.save()
 
 
 @periodic_task(
