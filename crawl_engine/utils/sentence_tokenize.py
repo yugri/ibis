@@ -8,7 +8,7 @@ def unpack(list1):
     return list2
 
 
-def separate(str1, threshold=10000):
+def separate(str1, threshold=100):
     out_list = []                 # List of output
     list2 = []
     list1 = str1.strip().split()  # We split string into list of words
