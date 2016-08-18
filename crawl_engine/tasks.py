@@ -65,7 +65,7 @@ def translate_content(article_title, article_body, article_id, source_language):
 
 
 @shared_task
-def translate_content_partially(article_title=None, article_body=None, article_id=None, source_language=None):
+def translate_content_partially(article_title=None, article_body=None, article_id=None, source_language=None, parts_list=None):
     service = build('translate', 'v2',
                     developerKey=settings.GOOGLE_TRANSLATE_API_KEY)
     result = None
@@ -75,7 +75,8 @@ def translate_content_partially(article_title=None, article_body=None, article_i
     lang = source_language if source_language else None
     from crawl_engine.models import Article
     article = Article.objects.get(pk=article_id)
-    parts_list = separate(article_body)
+    if article_body:
+        parts_list = separate(article_body)
     for part in parts_list:
         try:
             result = service.translations().list(
@@ -97,14 +98,17 @@ def translate_content_partially(article_title=None, article_body=None, article_i
             # finally:
             #     pass
         if translated_part is not None:
-            translated_body += "".join(translated_part)
-        incompleete = True
-
-        while incompleete:
+            translated_body += translated_part
+        incomplete = True
+        s = article_id
+        while incomplete:
             if len(parts_list) != 0:
-                translate_content_partially.apply_async(article_body=parts_list.pop(0), source_language=lang, article_id=article_id, countdown=1)
+                del parts_list[0]
+                translate_content_partially(parts_list=parts_list,
+                                                        source_language=lang,
+                                                        article_id=article_id)
             else:
-                incompleete = False
+                incomplete = False
                 break
         article.translated_body = translated_body
         article.translated = True

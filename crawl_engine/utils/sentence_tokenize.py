@@ -8,7 +8,7 @@ def unpack(list1):
     return list2
 
 
-def separate(str1, threshold=100):
+def separate(str1, threshold=1000):
     out_list = []                 # List of output
     list2 = []
     list1 = str1.strip().split()  # We split string into list of words
@@ -22,9 +22,10 @@ def separate(str1, threshold=100):
     list1 = []
     for i in list2:
         j = j+i
-        if i[-1] == '.' or i[-1] == '?' or i[-1] == '!':
+        if j[-1] == '.' or j[-1] == '?' or j[-1] == '!':
             list1.append(j)
             j = ''
+    j = ''
     for i in list1:
         if len(j+i+' ') < threshold:
             j = j + i + ' '
