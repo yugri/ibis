@@ -17,7 +17,7 @@ class SearchQuery(models.Model):
         ('monthly', 'Monthly')
     )
 
-    search_id = models.UUIDField(db_index=True)
+    search_id = models.CharField(max_length=50, db_index=True)
     query = models.TextField()
     source = models.CharField(max_length=15, choices=settings.SOURCES, default='google')
     search_depth = models.PositiveIntegerField(default=1)
@@ -65,8 +65,7 @@ class Article(models.Model):
     translated = models.BooleanField(default=False)
     top_image_url = models.URLField(blank=True)
     top_image = models.ImageField(upload_to='article-images', blank=True, null=True)
-    search_id = models.CharField(max_length=124, blank=True, null=True)
-    meta_info = models.TextField(blank=True, null=True)
+    search = models.ForeignKey(SearchQuery, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         img_url = self.top_image_url
