@@ -120,13 +120,15 @@ def bound_text(parts):
     job = group(tasks)
     return job.apply_async()
 
-    # return result
-
 
 @shared_task
 def save_article(group_result, article_id):
-    result = group_result.jooin()
-    print(result)
+    logger.debug("If result ready: %s" % group_result.ready())
+    logger.debug("If all subtasks successful: %s" % group_result.successful())
+    # for res in group_result:
+    #     print(res.get())
+    result = group_result.join()
+
     text = ''.join(result)
     article = Article.objects.get(pk=article_id)
     article.title = text
@@ -157,8 +159,6 @@ def translate_part(part, lang):
         #     logger.info('Seems like the language is already set for this article')
         # finally:
         #     pass
-
-
 
 
 @periodic_task(
