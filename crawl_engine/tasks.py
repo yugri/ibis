@@ -118,14 +118,16 @@ def bound_text(parts):
         pass
 
     job = group(tasks)
-    result = job.apply_async()
+    return job.apply_async()
 
-    return result
+    # return result
 
 
 @shared_task
-def save_article(parts, article_id):
-    text = ''.join(parts)
+def save_article(group_result, article_id):
+    result = group_result.jooin()
+    print(result)
+    text = ''.join(result)
     article = Article.objects.get(pk=article_id)
     article.title = text
     article.save()

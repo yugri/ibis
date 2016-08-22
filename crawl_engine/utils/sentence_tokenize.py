@@ -22,10 +22,12 @@ def separate(str1, threshold=1000):
     list1 = []
     for i in list2:
         j = j+i
-        if j[-1] == '.' or j[-1] == '?' or j[-1] == '!':
+        if i[-1] == '.' or i[-1] == '?' or i[-1] == '!'or i[-2:] == '."' or i[-2:] == '?"' or i[-2:] == '!"':
             list1.append(j)
             j = ''
+    list1.append(j)
     j = ''
+    # print(list1)
     for i in list1:
         if len(j+i+' ') < threshold:
             j = j + i + ' '
@@ -34,6 +36,8 @@ def separate(str1, threshold=1000):
             out_list.append(j)
             j = i + ' '
     else:
-        # print(len(j))
         out_list.append(j)
+        j=''
     return out_list
+
+
