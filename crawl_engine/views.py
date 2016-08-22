@@ -24,8 +24,9 @@ class ArticlesListView(generics.ListAPIView):
 
     def get_queryset(self):
         search_id = self.kwargs['search_id']
+        search_instance = get_object_or_404(SearchQuery, search_id=search_id)
 
-        return Article.objects.filter(search_id=search_id)
+        return Article.objects.filter(search_id=search_instance.id)
 
 
 class AddTaskURLView(APIView):
