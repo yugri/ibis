@@ -123,13 +123,7 @@ def bound_text(parts):
 
 @shared_task
 def save_article(group_result, article_id):
-    logger.debug("If result ready: %s" % group_result.ready())
-    logger.debug("If all subtasks successful: %s" % group_result.successful())
-    # for res in group_result:
-    #     print(res.get())
-    result = group_result.join()
-
-    text = ''.join(result)
+    text = ''.join(group_result)
     article = Article.objects.get(pk=article_id)
     article.title = text
     article.save()

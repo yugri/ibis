@@ -20,6 +20,7 @@ class Command(BaseCommand):
             article_id = article.id
             splitted_title = separate(article.body)
             source = article.source_language if article.source_language else None
-            result = chain(bound_text.s(splitted_title), save_article.s(article_id))
+
+            result = bound_text.s(splitted_title)
             result.apply_async()
             # print(result)
