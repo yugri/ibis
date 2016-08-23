@@ -6,6 +6,7 @@ from time import sleep
 from celery import shared_task, chain, task, group
 from celery.schedules import crontab
 from celery.task import periodic_task
+from celery.contrib import rdb
 from django.conf import settings
 from django.utils.timezone import utc
 
@@ -104,26 +105,13 @@ def detect_translate(text, source=None):
 
 
 @shared_task
-def bound_text(parts):
+def bound_and_save(parts, article_id):
     """
     Called after detect_translate task and bound all translated parts together
     :param parts: list
     :return text: str
     """
-    tasks = []
-    try:
-        for part in parts:
-            tasks.append(detect_translate.s(part))
-    except IndexError:
-        pass
-
-    job = group(tasks)
-    return job.apply_async()
-
-
-@shared_task
-def save_article(group_result, article_id):
-    text = ''.join(group_result)
+    text = ''.join(parts)
     article = Article.objects.get(pk=article_id)
     article.title = text
     article.save()
