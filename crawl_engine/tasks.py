@@ -2,6 +2,7 @@ import logging
 
 from datetime import time, timedelta, date, datetime
 from time import sleep
+from random import randint
 
 from celery import shared_task, chain, task, group
 from celery.schedules import crontab
@@ -12,13 +13,11 @@ from django.utils.timezone import utc
 from crawl_engine.models import SearchQuery, SearchTask
 from crawl_engine.spiders.single_url_parser import ArticleParser
 from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
-from crawl_engine.utils.sentence_tokenize import separate
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from crawl_engine.models import Article
 
 logger = logging.getLogger(__name__)
-
 
 @shared_task
 def crawl_url(url, search_id):
@@ -68,9 +67,40 @@ def translate_content(article_title, article_body, article_id, source_language):
 
 
 @shared_task
-def detect_translate(text, source=None):
+def google_translate(text, source):
     """
-    Method implements both detection amd translation mechanisms
+    Method implements only translation mechanism
+    :param text: str
+    :param source: str
+    :return translated_text
+    """
+    service = build('translate', 'v2',
+                    developerKey=settings.GOOGLE_TRANSLATE_API_KEY)
+    result = None
+    try:
+        result = service.translations().list(
+            source=source,
+            target='en',
+            q=text
+        ).execute()
+    except HttpError as e:
+        logger.error(e)
+
+    try:
+        translated_text = result['translations'][0]['translatedText']
+    except KeyError:
+        logger.info("Google API didn't detect a language.")
+        translated_text = ''
+    finally:
+        pass
+    return translated_text
+
+
+@shared_task
+def google_detect_translate(text, source=None):
+    """
+    Method implements both detection (if source is not provided)
+    and translation mechanisms
     :param text: str
     :param source: str
     :return translated_text, detected_lang: str, str
@@ -78,87 +108,85 @@ def detect_translate(text, source=None):
     service = build('translate', 'v2',
                     developerKey=settings.GOOGLE_TRANSLATE_API_KEY)
     result = None
-    translated_text = None
-    detected_lang = None
+    translated_text = ''
+    detected_lang = ''
 
     # Sleep for a while. Google has limitations for querying,
     # see: https://cloud.google.com/translate/v2/pricing
-    sleep(2)
+    sleep(randint(1, 2))
     try:
         result = service.translations().list(
             source=source,
             target='en',
-            q=[text]
+            q=text
         ).execute()
     except HttpError as e:
         logger.error(e)
     if result:
-        translated_text = result['translations'][0]['translatedText']
+        try:
+            translated_text = result['translations'][0]['translatedText']
+        except KeyError:
+            logger.info("Google Translate API cant't translate the text.")
+        finally:
+            pass
         try:
             detected_lang = result['translations'][0]['detectedSourceLanguage']
         except KeyError:
-            logger.info('Language already detected by internal system')
+            logger.info('Language already detected by internal system.')
         finally:
             pass
     return translated_text, detected_lang
 
 
 @shared_task
-def bound_text(parts):
+def detect_lang_by_google(text):
     """
-    Called after detect_translate task and bound all translated parts together
-    :param parts: list
-    :return text: str
+    Method implements detection mechanism. Returns language from supported,
+    see: https://cloud.google.com/translate/v2/discovering-supported-languages-with-rest
+    :param text: str
+    :return detected_lang: str
     """
-    tasks = []
-    try:
-        for part in parts:
-            tasks.append(detect_translate.s(part))
-    except IndexError:
-        pass
-
-    job = group(tasks)
-    return job.apply_async()
-
-
-@shared_task
-def save_article(group_result, article_id):
-    logger.debug("If result ready: %s" % group_result.ready())
-    logger.debug("If all subtasks successful: %s" % group_result.successful())
-    # for res in group_result:
-    #     print(res.get())
-    result = group_result.join()
-
-    text = ''.join(result)
-    article = Article.objects.get(pk=article_id)
-    article.title = text
-    article.save()
-
-
-@shared_task
-def translate_part(part, lang):
     service = build('translate', 'v2',
                     developerKey=settings.GOOGLE_TRANSLATE_API_KEY)
     result = None
+    lang = ''
+
+    # Sleep for a while. Google has limitations for querying,
+    # see: https://cloud.google.com/translate/v2/pricing
+
+    sleep(randint(1, 2))
     try:
-        result = service.translations().list(
-            source=lang,
-            target='en',
-            q=[part]
+        result = service.detections().list(
+            q=text
         ).execute()
     except HttpError as e:
         logger.error(e)
+    try:
+        lang = result['detections'][0][0]['language']
+    except KeyError:
+        logger.info("Google API didn't detect a language.")
+        lang = ''
+    finally:
+        pass
+    return lang
 
-    if result:
-        translated_part = result['translations'][0]['translatedText']
-        # try:
-        #     detected_language = result['translations'][1]['detectedSourceLanguage']
-        # except KeyError:
-        #     logger.info('Language already detected by internal system')
-        # except IndexError:
-        #     logger.info('Seems like the language is already set for this article')
-        # finally:
-        #     pass
+
+@shared_task
+def bound_and_save(text_parts, article_id, source):
+    """
+    Called after detect_translate task and bound all translated parts together
+    and save an article
+    :param text_parts: list
+    :param article_id: int
+    :param source: str
+    """
+    text = ''.join(text_parts)
+    article = Article.objects.get(pk=article_id)
+    logger.info("Fetched an article instance from DB, ID: %s" % article.id)
+    article.source_language = source
+    article.translated_body = text
+    article.translated = True
+    article.save()
 
 
 @periodic_task(
