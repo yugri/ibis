@@ -1,3 +1,7 @@
+import redis
+from datetime import datetime, timedelta
+
+
 def separate(str1, threshold=1000):
     """
     This method helps to separate the text before translation in Google Translate API.

@@ -1,23 +1,23 @@
 import logging
 
-from datetime import time, timedelta, date, datetime
+from datetime import datetime
 from time import sleep
 from random import randint
 
-from celery import shared_task, chain, task, group
+from celery import shared_task, chain, group
 from celery.schedules import crontab
 from celery.task import periodic_task
 from django.conf import settings
 from django.utils.timezone import utc
 
-from crawl_engine.models import SearchQuery, SearchTask
+from crawl_engine.models import Article, SearchQuery, SearchTask
 from crawl_engine.spiders.single_url_parser import ArticleParser
 from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from crawl_engine.models import Article
 
 logger = logging.getLogger(__name__)
+
 
 @shared_task
 def crawl_url(url, search_id):
@@ -172,19 +172,23 @@ def detect_lang_by_google(text):
 
 
 @shared_task
-def bound_and_save(text_parts, article_id, source):
+def bound_and_save(text_parts, article_id, source, destination):
     """
     Called after detect_translate task and bound all translated parts together
     and save an article
     :param text_parts: list
     :param article_id: int
     :param source: str
+    :param destination: str
     """
     text = ''.join(text_parts)
     article = Article.objects.get(pk=article_id)
     logger.info("Fetched an article instance from DB, ID: %s" % article.id)
     article.source_language = source
-    article.translated_body = text
+    if destination == 'body':
+        article.translated_body = text
+    elif destination == 'title':
+        article.translated_title = text
     article.translated = True
     article.save()
 

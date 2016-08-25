@@ -1,12 +1,18 @@
 import io
-from time import sleep
-from datetime import time, datetime, timedelta
 import requests
+import logging
+from time import sleep
+from datetime import datetime, timedelta
 from PIL import Image
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 from django.utils.timezone import utc
+from celery import chord
+
+from crawl_engine.utils.translation_utils import separate
+
+logger = logging.getLogger(__name__)
 
 
 class SearchQuery(models.Model):
@@ -55,8 +61,8 @@ class SearchTask(models.Model):
 class Article(models.Model):
     article_url = models.URLField()
     source_language = models.CharField(max_length=5, blank=True, null=True)
-    title = models.CharField(max_length=240, blank=True)
-    translated_title = models.CharField(max_length=240, blank=True)
+    title = models.CharField(max_length=1000, blank=True)
+    translated_title = models.CharField(max_length=1000, blank=True)
     body = models.TextField(blank=True)
     translated_body = models.TextField(blank=True)
     authors = models.CharField(max_length=240, blank=True)
