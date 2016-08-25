@@ -14,8 +14,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         print(options['search'])
         articles = Article.objects.filter(
-            search__in=SearchQuery.objects.filter(search_id=options['search']),
-            translated=False).distinct()
+            search__search_id__in=options['search'],
+            translated=False)
         print(articles)
 
         for article in articles:

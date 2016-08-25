@@ -2,24 +2,22 @@ import logging
 
 from datetime import time, timedelta, date, datetime
 from time import sleep
+from random import randint
 
 from celery import shared_task, chain, task, group
 from celery.schedules import crontab
 from celery.task import periodic_task
-from celery.contrib import rdb
 from django.conf import settings
 from django.utils.timezone import utc
 
 from crawl_engine.models import SearchQuery, SearchTask
 from crawl_engine.spiders.single_url_parser import ArticleParser
 from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
-from crawl_engine.utils.sentence_tokenize import separate
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from crawl_engine.models import Article
 
 logger = logging.getLogger(__name__)
-
 
 @shared_task
 def crawl_url(url, search_id):
@@ -115,7 +113,7 @@ def google_detect_translate(text, source=None):
 
     # Sleep for a while. Google has limitations for querying,
     # see: https://cloud.google.com/translate/v2/pricing
-    sleep(2)
+    sleep(randint(1, 2))
     try:
         result = service.translations().list(
             source=source,
@@ -155,7 +153,8 @@ def detect_lang_by_google(text):
 
     # Sleep for a while. Google has limitations for querying,
     # see: https://cloud.google.com/translate/v2/pricing
-    sleep(2)
+
+    sleep(randint(1, 2))
     try:
         result = service.detections().list(
             q=text
