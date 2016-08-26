@@ -140,3 +140,6 @@ fabric.properties
 ibis_crawl_engine/settings.py
 items_news_keywords_13.json
 local_tests.py
+Буде вилучено crawl_engine/search_testing.py
+Буде вилучено static/
+Буде вилучено url.bloom
