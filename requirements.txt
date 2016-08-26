@@ -1,5 +1,6 @@
 amqp==1.4.9
 anyjson==0.3.3
+Babel==2.3.4
 beautifulsoup4==4.4.1
 billiard==3.3.0.23
 boto==2.42.0
@@ -16,6 +17,7 @@ django-pipeline==1.6.8
 djangorestframework==3.3.3
 feedfinder2==0.0.4
 feedparser==5.2.1
+flower==0.9.1
 google-api-python-client==1.5.1
 google-api-python-client-py3==1.2
 guess-language-spirit==0.5.2
@@ -41,10 +43,13 @@ python-dateutil==2.5.3
 pytz==2016.4
 PyYAML==3.11
 readability-lxml==0.6.2
+redis==2.10.5
 requests==2.10.0
 requests-file==1.4
 rsa==3.4.2
+selenium==2.53.6
 simplejson==3.8.2
 six==1.10.0
 tldextract==2.0.1
+tornado==4.2
 uritemplate==0.6
