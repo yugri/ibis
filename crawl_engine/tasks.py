@@ -20,9 +20,9 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task
-def crawl_url(url, search_id):
+def crawl_url(url, search):
 
-    parser = ArticleParser(url, search_id)
+    parser = ArticleParser(url, search)
     result = parser.run()
 
     return result
@@ -209,7 +209,7 @@ def check_search_queries():
         if search_query.active:
             if search_query.expired_period:
                 job = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth),
-                            run_job.s(search_query.search_id))()
+                            run_job.s(search_query.pk))()
                 now = datetime.utcnow().replace(tzinfo=utc)
                 search_query.last_processed = now
                 search_query.save()
@@ -223,11 +223,11 @@ def search_by_query(query, engine, depth):
 
 
 @shared_task
-def run_job(url_list, search_id):
+def run_job(url_list, search):
     tasks = []
     try:
         for url in url_list:
-            tasks.append(crawl_url.s(url, search_id))
+            tasks.append(crawl_url.s(url, search))
 
     except IndexError:
         pass

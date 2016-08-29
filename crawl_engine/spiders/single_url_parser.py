@@ -16,9 +16,9 @@ class EmptyBodyException(Exception):
 
 class ArticleParser:
 
-    def __init__(self, url, search_id):
+    def __init__(self, url, search):
         self.url = url
-        self.search_id = search_id
+        self.search = search
 
     def run(self):
         # Instantiate newspaper's Article api
@@ -76,7 +76,7 @@ class ArticleParser:
             article.translated = True
 
         article.source_language = text_lang if text_lang == title_lang else None
-        article.search_id = self.search_id
+        article.search = self.search
         article.save()
 
         return article.id
