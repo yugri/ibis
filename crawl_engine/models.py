@@ -74,7 +74,7 @@ class Article(models.Model):
     top_image = models.ImageField(upload_to='article-images', blank=True, null=True)
     search = models.ForeignKey(SearchQuery, blank=True, null=True)
 
-    def save(self, *args, **kwargs):
+    def save(self, start_translation=False, *args, **kwargs):
         img_url = self.top_image_url
         if img_url and not self.top_image:
             filename = str(hash(img_url))
