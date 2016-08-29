@@ -19,7 +19,7 @@ from googleapiclient.errors import HttpError
 logger = logging.getLogger(__name__)
 
 
-@shared_task
+@shared_task(name='crawl_engine.tasks.crawl_url')
 def crawl_url(url, search):
 
     parser = ArticleParser(url, search)
@@ -28,7 +28,7 @@ def crawl_url(url, search):
     return result
 
 
-@shared_task
+@shared_task(name='crawl_engine.tasks.translate_content')
 def translate_content(article_title, article_body, article_id, source_language):
     service = build('translate', 'v2',
                     developerKey=settings.GOOGLE_TRANSLATE_API_KEY)
@@ -59,14 +59,14 @@ def translate_content(article_title, article_body, article_id, source_language):
             pass
 
         article.translated = True
-        article.save()
+        article.save(start_translation=False)
 
     else:
         logger.info("Something wrong with received data")
         pass
 
 
-@shared_task
+@shared_task(name='crawl_engine.tasks.google_translate')
 def google_translate(text, source):
     """
     Method implements only translation mechanism
@@ -98,7 +98,7 @@ def google_translate(text, source):
     return translated_text
 
 
-@shared_task
+@shared_task(name='crawl_engine.tasks.google_detect_translate')
 def google_detect_translate(text, source=None):
     """
     Method implements both detection (if source is not provided)
@@ -140,7 +140,7 @@ def google_detect_translate(text, source=None):
     return translated_text, detected_lang
 
 
-@shared_task
+@shared_task(name='crawl_engine.tasks.detect_lang_by_google')
 def detect_lang_by_google(text):
     """
     Method implements detection mechanism. Returns language from supported,
@@ -173,7 +173,7 @@ def detect_lang_by_google(text):
     return lang
 
 
-@shared_task
+@shared_task(name='crawl_engine.tasks.bound_and_save')
 def bound_and_save(text_parts, article_id, source, destination):
     """
     Called after detect_translate task and bound all translated parts together
@@ -192,7 +192,7 @@ def bound_and_save(text_parts, article_id, source, destination):
     elif destination == 'title':
         article.translated_title = text
     article.translated = True
-    article.save()
+    article.save(start_translation=False)
 
 
 @periodic_task(
@@ -218,13 +218,13 @@ def check_search_queries():
                 SearchTask.objects.create(task_id=job.id, search_query=search_query)
 
 
-@shared_task
+@shared_task(name='crawl_engine.tasks.search_by_query')
 def search_by_query(query, engine, depth):
     parser = SearchEngineParser(query, engine, depth)
     return parser.run()
 
 
-@shared_task
+@shared_task(name='crawl_engine.tasks.run_job')
 def run_job(url_list, search):
     tasks = []
     try:
