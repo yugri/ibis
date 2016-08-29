@@ -91,6 +91,8 @@ def google_translate(text, source):
     except KeyError:
         logger.info("Google API didn't detect a language.")
         translated_text = ''
+    except TypeError:
+        translated_text = ''
     finally:
         pass
     return translated_text

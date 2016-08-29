@@ -26,6 +26,7 @@ def run_translation_task(sender, instance, **kwargs):
                         "Trying to detect with Google Translate API.")
             source = tasks.detect_lang_by_google(splitted_body[0])
         logger.info("Detected language is: %s" % source)
+
         result_body = chord([tasks.google_translate.s(part, source) for part in splitted_body]) \
             (tasks.bound_and_save.s(article_id, source, 'body'))
         logger.info("Translation task for BODY has been queued, ID: %s" % result_body.id)
