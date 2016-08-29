@@ -24,7 +24,7 @@ def run_translation_task(sender, instance, **kwargs):
         except ValueError:
             logger.info("The internal system can't detect article's language. "
                         "Trying to detect with Google Translate API.")
-            source = tasks.detect_lang_by_google.delay(splitted_body[0]).get()
+            source = tasks.detect_lang_by_google(splitted_body[0])
         logger.info("Detected language is: %s" % source)
         result_body = chord([tasks.google_translate.s(part, source) for part in splitted_body]) \
             (tasks.bound_and_save.s(article_id, source, 'body'))
