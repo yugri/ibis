@@ -10,6 +10,10 @@ from urllib.parse import quote, parse_qs, urlparse, unquote
 logger = logging.getLogger(__name__)
 
 
+class MaxSearchDepthError(BaseException):
+    pass
+
+
 class SearchEngineParser(object):
 
     engines_payload = {
@@ -27,9 +31,9 @@ class SearchEngineParser(object):
     }
     html = ''
     tree = ''
-    depth = 5  # The crawling depth
+    depth = None  # The crawling depth
 
-    def __init__(self, search_query, engine='google', depth=depth):
+    def __init__(self, search_query, engine='google', depth=5):
         # Build query dict at init
         if engine == 'google' or engine == 'yandex':
             search_query = "+".join(search_query.split())
@@ -71,7 +75,7 @@ class SearchEngineParser(object):
         if self.engine == 'google':
             return self.search_google()
         elif self.engine == 'google_cse':
-            return self.search_google_cse(50)
+            return self.search_google_cse()
         elif self.engine == 'bing':
             return self.search_bing()
         else:
@@ -106,7 +110,7 @@ class SearchEngineParser(object):
 
         return self.seed_links
 
-    def search_google_cse(self, depth):
+    def search_google_cse(self):
         """
         Another method for getting google's search results but from CSE (custom search engine):
         https://developers.google.com/custom-search/json-api/v1/using_rest.
@@ -114,11 +118,22 @@ class SearchEngineParser(object):
         :return: seed_links list
         """
 
+        # Check search depth value if it higher than 10
+        # redefine it to display only 100 first results
+        # see: https://developers.google.com/custom-search/json-api/v1/using_rest
+        try:
+            if self.depth > 10:
+                raise MaxSearchDepthError
+        except MaxSearchDepthError:
+            logger.warn("Only the first 100 results will be displayed, due to CSE search depth limit.")
+            self.depth = 10
+
+
         query = self.search_query
 
         cse_url = self.engines_payload['google_cse']['url']
 
-        for count in range(0, depth):
+        for count in range(0, self.depth):
 
             params = {
                 'key': settings.GOOGLE_TRANSLATE_API_KEY,
