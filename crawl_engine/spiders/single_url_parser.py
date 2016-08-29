@@ -6,7 +6,7 @@ from celery import chord
 from langdetect.lang_detect_exception import LangDetectException
 from newspaper import Article as np
 
-from crawl_engine.tasks import google_translate, bound_and_save, detect_lang_by_google
+from ibis_crawl_engine.crawl_engine.tasks import google_translate, bound_and_save, detect_lang_by_google
 from crawl_engine.models import SearchQuery
 from crawl_engine.utils.articleAuthorExtractor import extractArticleAuthor
 from crawl_engine.utils.articleDateExtractor import extractArticlePublishedDate
