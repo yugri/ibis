@@ -2,6 +2,8 @@ import re
 import logging
 from langdetect.lang_detect_exception import LangDetectException
 from newspaper import Article as np
+
+from crawl_engine.models import SearchQuery
 from crawl_engine.utils.articleAuthorExtractor import extractArticleAuthor
 from crawl_engine.utils.articleDateExtractor import extractArticlePublishedDate
 from crawl_engine.utils.articleTextExtractor import extractArticleText, extractArticleTitle
@@ -76,7 +78,7 @@ class ArticleParser:
             article.translated = True
 
         article.source_language = text_lang if text_lang == title_lang else None
-        article.search.pk = self.search
+        article.search = SearchQuery.objects.get(pk=self.search)
         article.save()
 
         return article.id
