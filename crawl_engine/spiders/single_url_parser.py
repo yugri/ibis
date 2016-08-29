@@ -6,7 +6,7 @@ from celery import chord
 from langdetect.lang_detect_exception import LangDetectException
 from newspaper import Article as np
 
-from crawl_engine import tasks
+from crawl_engine.tasks import google_translate, bound_and_save, detect_lang_by_google
 from crawl_engine.models import SearchQuery
 from crawl_engine.utils.articleAuthorExtractor import extractArticleAuthor
 from crawl_engine.utils.articleDateExtractor import extractArticlePublishedDate
@@ -112,7 +112,7 @@ class ArticleParser:
             except ValueError:
                 logger.info("The internal system can't detect article's language. "
                             "Trying to detect with Google Translate API.")
-                source = tasks.detect_lang_by_google(splitted_body[0])
+                source = detect_lang_by_google(splitted_body[0])
             logger.info("Detected language is: %s" % source)
 
             # Check if detected language is English. If YES we store the
@@ -124,11 +124,11 @@ class ArticleParser:
                 logger.info("No need to execute the translation task because article's language is EN.")
             # Else run translation tasks. Tasks will run separately for the body and the title.
             else:
-                result_body = chord([tasks.google_translate.s(part, source) for part in splitted_body]) \
-                    (tasks.bound_and_save.s(article_id, source, 'body'))
+                result_body = chord([google_translate.s(part, source) for part in splitted_body]) \
+                    (bound_and_save.s(article_id, source, 'body'))
                 logger.info("Translation task for BODY has been queued, ID: %s" % result_body.id)
-                result_title = chord([tasks.google_translate.s(part, source) for part in splitted_title]) \
-                    (tasks.bound_and_save.s(article_id, source, 'title'))
+                result_title = chord([google_translate.s(part, source) for part in splitted_title]) \
+                    (bound_and_save.s(article_id, source, 'title'))
                 logger.info("Translation task for TITLE has been queued, ID: %s" % result_title.id)
 
 
