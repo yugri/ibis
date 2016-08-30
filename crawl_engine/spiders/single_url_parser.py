@@ -3,6 +3,7 @@ import logging
 
 from langdetect.lang_detect_exception import LangDetectException
 from newspaper import Article as np
+from newspaper import ArticleException
 
 from crawl_engine.models import SearchQuery
 from crawl_engine.utils.articleAuthorExtractor import extractArticleAuthor
@@ -27,63 +28,75 @@ class ArticleParser:
     def run(self):
         # Instantiate newspaper's Article api
         page = np(self.url)
-        page.download()
-        page.parse()
-
-        author = extractArticleAuthor(page.html)
-        title = extractArticleTitle(page.html)
-
-        text = page.text if page.text else extractArticleText(page.html)
-        date = extractArticlePublishedDate(self.url, page.html)
-
+        page_loaded = False
+        page_parsed = False
         try:
-            if len(text) == 0:
-                raise EmptyBodyException("No body text in article.")
-        except EmptyBodyException as e:
-            exit(str(e))
-
-        # Set our article DB model instance
-        from crawl_engine.models import Article
-        article = Article()
-
-        article.article_url = page.url
-        article.title = title
-        article.top_image_url = page.top_image
+            page.download()
+            page_loaded = True
+        except ArticleException as e:
+            logger.info(e)
         try:
-            article.authors = author if author else article.authors[0]
-        except IndexError:
-            article.authors = ''
+            page.parse()
+            page_parsed = True
+        except ArticleException as e:
+            logger.info(e)
 
-        article.body = re.sub('\n+', '\n', re.sub(' +', ' ', text))
-        article.post_date_created = date
+        if page_loaded and page_parsed:
 
-        # Detect article source language at this point.
-        # If language is 'en' we save an <article.translated_title>
-        # and <article.translated_body> same as <title> and <body>.
-        title_lang = ''
-        text_lang = ''
-        try:
-            title_lang = detect(article.title)
-        except LangDetectException as e:
-            logger.error(e)
-            pass
+            author = extractArticleAuthor(page.html)
+            title = extractArticleTitle(page.html)
 
-        try:
-            text_lang = detect(article.body)
-        except LangDetectException as e:
-            logger.error(e)
-            pass
+            text = page.text if page.text else extractArticleText(page.html)
+            date = extractArticlePublishedDate(self.url, page.html)
 
-        if title_lang == 'en' and text_lang == 'en':
-            article.translated_title = title
-            article.translated_body = text
-            article.translated = True
+            try:
+                if len(text) == 0:
+                    raise EmptyBodyException("No body text in article.")
+            except EmptyBodyException as e:
+                exit(str(e))
 
-        article.source_language = text_lang if text_lang == title_lang else None
-        article.search = SearchQuery.objects.get(pk=self.search)
-        article.save(start_translation=not article.translated)
+            # Set our article DB model instance
+            from crawl_engine.models import Article
+            article = Article()
 
-        return article.id
+            article.article_url = page.url
+            article.title = title
+            article.top_image_url = page.top_image
+            try:
+                article.authors = author if author else article.authors[0]
+            except IndexError:
+                article.authors = ''
+
+            article.body = re.sub('\n+', '\n', re.sub(' +', ' ', text))
+            article.post_date_created = date
+
+            # Detect article source language at this point.
+            # If language is 'en' we save an <article.translated_title>
+            # and <article.translated_body> same as <title> and <body>.
+            title_lang = ''
+            text_lang = ''
+            try:
+                title_lang = detect(article.title)
+            except LangDetectException as e:
+                logger.error(e)
+                pass
+
+            try:
+                text_lang = detect(article.body)
+            except LangDetectException as e:
+                logger.error(e)
+                pass
+
+            if title_lang == 'en' and text_lang == 'en':
+                article.translated_title = title
+                article.translated_body = text
+                article.translated = True
+
+            article.source_language = text_lang if text_lang == title_lang else None
+            article.search = SearchQuery.objects.get(pk=self.search)
+            article.save(start_translation=not article.translated)
+
+            return article.id
 
     def download_image(self, article_instance):
         article_url = self.url

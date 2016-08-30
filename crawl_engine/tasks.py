@@ -35,6 +35,7 @@ def crawl_url(url, search):
     if not url in url_filter:
         parser = ArticleParser(url, search)
         result = parser.run()
+        url_filter.add(url)
     else:
         result = "Url was already crawled"
 
