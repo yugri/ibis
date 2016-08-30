@@ -21,9 +21,10 @@ class EmptyBodyException(Exception):
 
 class ArticleParser:
 
-    def __init__(self, url, search):
+    def __init__(self, url, search, url_filter):
         self.url = url
         self.search = search
+        self.filter = url_filter
 
     def run(self):
         # Instantiate newspaper's Article api
@@ -94,6 +95,8 @@ class ArticleParser:
 
             article.source_language = text_lang if text_lang == title_lang else None
             article.search = SearchQuery.objects.get(pk=self.search)
+            # Add our URL to Bloom Filter
+            self.filter.add(page.url)
             article.save(start_translation=not article.translated)
 
             # return article.id
