@@ -1,6 +1,8 @@
 import logging
+import os
 
 from datetime import datetime
+from pybloomfilter import BloomFilter
 from time import sleep
 from random import randint
 
@@ -21,9 +23,20 @@ logger = logging.getLogger(__name__)
 
 @shared_task(name='crawl_engine.tasks.crawl_url')
 def crawl_url(url, search):
+    # Initiate Bloom Filter
+    bloom_file_path = settings.BASE_DIR + '/url.bloom'
+    if os.path.exists(bloom_file_path):
+        url_filter = BloomFilter.open(bloom_file_path)
+    else:
+        url_filter = BloomFilter(10000000, 0.1, bloom_file_path)
 
-    parser = ArticleParser(url, search)
-    result = parser.run()
+    result = None
+
+    if not url in url_filter:
+        parser = ArticleParser(url, search)
+        result = parser.run()
+    else:
+        result = "Url was already crawled"
 
     return result
 
@@ -191,13 +204,13 @@ def bound_and_save(text_parts, article_id, source, destination):
         article.translated_body = text
     elif destination == 'title':
         article.translated_title = text
-    article.translated = True
+    article.translated = True if article.translated_title and article.translated_body else False
     article.save(start_translation=False)
 
 
 @periodic_task(
     run_every=(crontab(minute='*/5')),
-    name="check_search_queries",
+    name="crawl_engine.tasks.check_search_queries",
     ignore_result=True
 )
 def check_search_queries():

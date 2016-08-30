@@ -81,7 +81,7 @@ class ArticleParser:
 
         article.source_language = text_lang if text_lang == title_lang else None
         article.search = SearchQuery.objects.get(pk=self.search)
-        article.save(start_translation=True)
+        article.save(start_translation=not article.translated)
 
         return article.id
 
