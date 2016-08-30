@@ -206,7 +206,7 @@ def bound_and_save(text_parts, article_id, source, destination):
     elif destination == 'title':
         article.translated_title = text
     article.translated = True if article.translated_title and article.translated_body else False
-    article.save(start_translation=False)
+    article.save()
 
 
 @periodic_task(

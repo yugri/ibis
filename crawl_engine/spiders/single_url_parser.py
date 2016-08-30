@@ -96,7 +96,7 @@ class ArticleParser:
             article.search = SearchQuery.objects.get(pk=self.search)
             article.save(start_translation=not article.translated)
 
-            return article.id
+            # return article.id
 
     def download_image(self, article_instance):
         article_url = self.url

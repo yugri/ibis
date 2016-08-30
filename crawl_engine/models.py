@@ -81,7 +81,7 @@ class Article(models.Model):
             self.set_image(img_url, filename)
 
         super(Article, self).save(*args, **kwargs)
-        if getattr(self, 'start_translation', True):
+        if start_translation:
             self.run_translation_task(self)
 
     def set_image(self, url, filename):
