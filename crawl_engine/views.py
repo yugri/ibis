@@ -113,6 +113,7 @@ class JSONResponse(HttpResponse):
 class SearchQueryList(generics.ListCreateAPIView):
     queryset = SearchQuery.objects.all()
     serializer_class = SearchQuerySerializer
+    filter_fields = []
 
 
 class SearchQueryDetailView(generics.RetrieveUpdateAPIView):

@@ -9,6 +9,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 from django.utils.timezone import utc
+from django.contrib.postgres.fields import JSONField
 
 from crawl_engine.utils.translation_utils import separate
 
@@ -31,6 +32,7 @@ class SearchQuery(models.Model):
     active = models.BooleanField(default=True)
     period = models.CharField(max_length=20, choices=PERIODS, default='daily')
     last_processed = models.DateTimeField(blank=True, null=True)
+    options = JSONField(blank=True, null=True)
 
     @property
     def time_period(self):

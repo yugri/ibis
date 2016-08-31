@@ -1,3 +1,5 @@
+import json
+
 from rest_framework.exceptions import ValidationError
 
 from crawl_engine.models import Article, SearchQuery
@@ -89,3 +91,5 @@ class TaskURLListSerializer(serializers.Serializer):
 class SearchQuerySerializer(serializers.ModelSerializer):
     class Meta:
         model = SearchQuery
+        fields = ('search_id', 'query', 'source', 'search_depth', 'active',
+                 'period', 'last_processed', 'options')
