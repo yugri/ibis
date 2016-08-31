@@ -90,6 +90,7 @@ def google_translate(text, source):
     service = build('translate', 'v2',
                     developerKey=settings.GOOGLE_TRANSLATE_API_KEY)
     result = None
+    sleep(randint(1, 2))
     try:
         result = service.translations().list(
             source=source,
@@ -204,7 +205,8 @@ def bound_and_save(text_parts, article_id, source, destination):
         article.translated_body = text
     elif destination == 'title':
         article.translated_title = text
-    article.translated = True if article.translated_title and article.translated_body else False
+    # Only if translated_body is applicable an article sets to translated
+    article.translated = True if article.translated_body else False
     article.save()
 
 

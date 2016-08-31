@@ -70,7 +70,7 @@ class Article(models.Model):
     post_date_created = models.CharField(max_length=50, blank=True)
     post_date_crawled = models.DateTimeField(auto_now_add=True, null=True)
     translated = models.BooleanField(default=False)
-    top_image_url = models.URLField(blank=True)
+    top_image_url = models.URLField(max_length=1000, blank=True)
     top_image = models.ImageField(upload_to='article-images', blank=True, null=True)
     search = models.ForeignKey(SearchQuery, blank=True, null=True)
 
