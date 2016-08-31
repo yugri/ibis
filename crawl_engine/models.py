@@ -119,6 +119,7 @@ class Article(models.Model):
             # Check if detected language is English. If YES we store the
             # translated_title and translated_body the same title and body
             if source == "en":
+                instance.source_language = source
                 instance.translated_title = instance.title
                 instance.translated_body = instance.body
                 instance.translated = True
