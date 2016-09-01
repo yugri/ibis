@@ -27,15 +27,6 @@ class TaskURLSerializer(serializers.Serializer):
         query = data.get('query')
         engine = data.get('engine')
 
-
-        # Validate the data
-        # if not url_list or query:
-        #     raise ValidationError({
-        #         'url': 'This field is required'
-        #     })
-        # if not search_id or single or custom or engine:
-        #     pass
-
         return {
             'url': url_list,
             'search_id': search_id,
@@ -44,26 +35,6 @@ class TaskURLSerializer(serializers.Serializer):
             'query': query,
             'engine': engine
         }
-
-
-# class SearchQuerySerializer(serializers.Serializer):
-#     urls = URLListField(allow_empty=True)
-#     query = serializers.CharField(allow_blank=True)
-#     engines = serializers.ListField(allow_empty=True)
-#     search_id = serializers.CharField(required=True)
-#
-#     def to_internal_value(self, data):
-#         urls = data.get('urls')
-#         search_id = data.get('search_id')
-#         query = data.get('query')
-#         engines = data.get('engine')
-#
-#         return {
-#             'url': urls,
-#             'search_id': search_id,
-#             'query': query,
-#             'engine': engines
-#         }
 
 
 class TaskURLListSerializer(serializers.Serializer):
@@ -88,8 +59,34 @@ class TaskURLListSerializer(serializers.Serializer):
         }
 
 
+class OptionsSerializer(serializers.Serializer):
+    exactTerms = serializers.CharField(allow_blank=True)
+    excludeTerms = serializers.CharField(allow_blank=True)
+
+    def to_representation(self, obj):
+        options = json.loads(obj)
+        return {
+            'exactTerms': options['exactTerms'],
+            'excludeTerms': options['excludeTerms']
+        }
+
+
 class SearchQuerySerializer(serializers.ModelSerializer):
     class Meta:
         model = SearchQuery
-        fields = ('search_id', 'query', 'source', 'search_depth', 'active',
-                 'period', 'last_processed', 'options')
+
+    options = OptionsSerializer(required=False)
+
+    def create(self, validated_data):
+        options_dict = validated_data.pop('options')
+        search = SearchQuery.objects.create(
+            search_id=validated_data['search_id'],
+            query=validated_data['query'],
+            source=validated_data['source'],
+            search_depth=validated_data['search_depth'],
+            active=validated_data['active'],
+            period=validated_data['period'],
+            last_processed=validated_data['last_processed'],
+            options=json.dumps(options_dict)
+        )
+        return search
