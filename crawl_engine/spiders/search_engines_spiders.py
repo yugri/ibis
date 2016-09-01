@@ -33,7 +33,7 @@ class SearchEngineParser(object):
     tree = ''
     depth = None  # The crawling depth
 
-    def __init__(self, search_query, engine='google', depth=5):
+    def __init__(self, search_query, engine='google', depth=5, options=None):
         # Build query dict at init
         if engine == 'google' or engine == 'yandex':
             search_query = "+".join(search_query.split())
@@ -50,6 +50,7 @@ class SearchEngineParser(object):
         }
         self.depth = depth
         self.next_page_xpath = ''
+        self.options = options
 
         # Seed links fetched from search engines results
         self.seed_links = []
@@ -128,10 +129,12 @@ class SearchEngineParser(object):
             logger.warn("Only the first 100 results will be displayed, due to CSE search depth limit.")
             self.depth = 10
 
-
         query = self.search_query
 
         cse_url = self.engines_payload['google_cse']['url']
+
+        # We store options at JSONField. So we need to load them.
+        options = json.loads(self.options) if self.options else None
 
         for count in range(0, self.depth):
 
@@ -140,8 +143,11 @@ class SearchEngineParser(object):
                 'cx': settings.CSE_ID,
                 'q': query,
                 'safe': 'medium',
-                'start': self._google_cse_cursor(count)
+                'start': self._google_cse_cursor(count),
             }
+
+            if options:
+                params.update(options)
 
             r = requests.get(cse_url, params=params)
             loaded_data = json.loads(r.text)

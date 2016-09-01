@@ -225,7 +225,8 @@ def check_search_queries():
     for search_query in search_queries:
         if search_query.active:
             if search_query.expired_period:
-                job = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth),
+                job = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth,
+                                              search_query.options),
                             run_job.s(search_query.pk))()
                 now = datetime.utcnow().replace(tzinfo=utc)
                 search_query.last_processed = now
@@ -234,8 +235,8 @@ def check_search_queries():
 
 
 @shared_task(name='crawl_engine.tasks.search_by_query')
-def search_by_query(query, engine, depth):
-    parser = SearchEngineParser(query, engine, depth)
+def search_by_query(query, engine, depth, options):
+    parser = SearchEngineParser(query, engine, depth, options)
     return parser.run()
 
 
