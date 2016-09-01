@@ -54,7 +54,7 @@ class ArticleParser:
                 if len(text) == 0:
                     raise EmptyBodyException("No body text in article.")
             except EmptyBodyException as e:
-                exit(str(e))
+                logger.info(e)
 
             # Set our article DB model instance
             from crawl_engine.models import Article
@@ -98,8 +98,6 @@ class ArticleParser:
             # Add our URL to Bloom Filter
             self.filter.add(page.url)
             article.save(start_translation=not article.translated)
-
-            # return article.id
 
     def download_image(self, article_instance):
         article_url = self.url

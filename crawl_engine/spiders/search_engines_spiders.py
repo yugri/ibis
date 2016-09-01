@@ -10,7 +10,7 @@ from urllib.parse import quote, parse_qs, urlparse, unquote
 logger = logging.getLogger(__name__)
 
 
-class MaxSearchDepthError(BaseException):
+class MaxSearchDepthError(Exception):
     pass
 
 
