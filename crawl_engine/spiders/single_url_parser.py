@@ -50,54 +50,55 @@ class ArticleParser:
             text = page.text if page.text else extractArticleText(page.html)
             date = extractArticlePublishedDate(self.url, page.html)
 
-            try:
-                if len(text) == 0:
-                    raise EmptyBodyException("No body text in article.")
-            except EmptyBodyException as e:
-                logger.info(e)
+            if len(text) == 0:
+                result = "No body text in article."
+                return result
+            else:
 
-            # Set our article DB model instance
-            from crawl_engine.models import Article
-            article = Article()
+                # Set our article DB model instance
+                from crawl_engine.models import Article
+                article = Article()
 
-            article.article_url = page.url
-            article.title = title
-            article.top_image_url = page.top_image
-            try:
-                article.authors = author if author else article.authors[0]
-            except IndexError:
-                article.authors = ''
+                article.article_url = page.url
+                article.title = title
+                article.top_image_url = page.top_image
+                try:
+                    article.authors = author if author else article.authors[0]
+                except IndexError:
+                    article.authors = ''
 
-            article.body = re.sub('\n+', '\n', re.sub(' +', ' ', text))
-            article.post_date_created = date
+                article.body = re.sub('\n+', '\n', re.sub(' +', ' ', text))
+                article.post_date_created = date
 
-            # Detect article source language at this point.
-            # If language is 'en' we save an <article.translated_title>
-            # and <article.translated_body> same as <title> and <body>.
-            title_lang = ''
-            text_lang = ''
-            try:
-                title_lang = detect(article.title)
-            except LangDetectException as e:
-                logger.error(e)
-                pass
+                # Detect article source language at this point.
+                # If language is 'en' we save an <article.translated_title>
+                # and <article.translated_body> same as <title> and <body>.
+                title_lang = ''
+                text_lang = ''
+                try:
+                    title_lang = detect(article.title)
+                except LangDetectException as e:
+                    logger.error(e)
+                    pass
 
-            try:
-                text_lang = detect(article.body)
-            except LangDetectException as e:
-                logger.error(e)
-                pass
+                try:
+                    text_lang = detect(article.body)
+                except LangDetectException as e:
+                    logger.error(e)
+                    pass
 
-            if title_lang == 'en' and text_lang == 'en':
-                article.translated_title = title
-                article.translated_body = text
-                article.translated = True
+                if title_lang == 'en' and text_lang == 'en':
+                    article.translated_title = title
+                    article.translated_body = text
+                    article.translated = True
 
-            article.source_language = text_lang if text_lang == title_lang else None
-            article.search = SearchQuery.objects.get(pk=self.search)
-            # Add our URL to Bloom Filter
-            self.filter.add(page.url)
-            article.save(start_translation=not article.translated)
+                article.source_language = text_lang if text_lang == title_lang else None
+                article.search = SearchQuery.objects.get(pk=self.search)
+                # Add our URL to Bloom Filter
+                self.filter.add(page.url)
+                article.save(start_translation=not article.translated)
+                result = article.id
+            return result
 
     def download_image(self, article_instance):
         article_url = self.url

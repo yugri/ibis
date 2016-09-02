@@ -62,18 +62,18 @@ class SearchTask(models.Model):
 
 
 class Article(models.Model):
-    article_url = models.URLField()
+    article_url = models.URLField(max_length=1000)
     source_language = models.CharField(max_length=5, blank=True, null=True)
     title = models.CharField(max_length=1000, blank=True)
     translated_title = models.CharField(max_length=1000, blank=True)
     body = models.TextField(blank=True)
     translated_body = models.TextField(blank=True)
-    authors = models.CharField(max_length=240, blank=True)
+    authors = models.CharField(max_length=1000, blank=True)
     post_date_created = models.CharField(max_length=50, blank=True)
     post_date_crawled = models.DateTimeField(auto_now_add=True, null=True)
     translated = models.BooleanField(default=False)
     top_image_url = models.URLField(max_length=1000, blank=True)
-    top_image = models.ImageField(upload_to='article-images', blank=True, null=True)
+    top_image = models.ImageField(upload_to='article-images', blank=True, null=True, max_length=1000)
     search = models.ForeignKey(SearchQuery, blank=True, null=True)
 
     def save(self, start_translation=False, *args, **kwargs):
