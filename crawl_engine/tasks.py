@@ -221,6 +221,7 @@ def check_search_queries():
     If so the periodic task <___> should be presented at schedule. In other case the task <___>
     should be removed from schedule
     """
+    result = "All queries were checked"
     search_queries = SearchQuery.objects.all()
     for search_query in search_queries:
         if search_query.active:
@@ -232,6 +233,7 @@ def check_search_queries():
                 search_query.last_processed = now
                 search_query.save()
                 SearchTask.objects.create(task_id=job.id, search_query=search_query)
+    return result
 
 
 @shared_task(name='crawl_engine.tasks.search_by_query')
