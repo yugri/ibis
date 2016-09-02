@@ -8,9 +8,9 @@ def separate(str1, threshold=1000):
     Translate API has default limits for translation and language detection and we tune our
     functionality to send by 1000 chars/sec.
     Details: https://cloud.google.com/translate/v2/pricing
-    :param str1:
-    :param threshold:
-    :return:
+    :param str1: str
+    :param threshold: int
+    :return: out_list: list
     """
     out_list = []                 # List of output
     list2 = []

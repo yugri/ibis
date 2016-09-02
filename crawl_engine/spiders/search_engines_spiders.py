@@ -205,6 +205,8 @@ class SearchEngineParser(object):
 
         return self.seed_links
 
+
+
     def get_urls(self, content):
         """
         Revise this method [NOT USED NOW]

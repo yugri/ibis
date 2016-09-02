@@ -25,7 +25,15 @@ class SearchQuery(models.Model):
         ('monthly', 'Monthly')
     )
 
+    TYPES = (
+        ('search_engine', 'Search Engine'),
+        ('rss', 'RSS Feed'),
+        ('email', 'Email')
+    )
+
     search_id = models.CharField(max_length=50, db_index=True)
+    search_type = models.CharField(max_length=20, choices=TYPES, blank=True, default='search_engine')
+    rss_link = models.CharField(max_length=1000, blank=True, null=True)
     query = models.TextField()
     source = models.CharField(max_length=15, choices=settings.SOURCES, default='google')
     search_depth = models.PositiveIntegerField(default=1)

@@ -15,6 +15,7 @@ from django.utils.timezone import utc
 from crawl_engine.models import Article, SearchQuery, SearchTask
 from crawl_engine.spiders.single_url_parser import ArticleParser
 from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
+from crawl_engine.spiders.rss_spider import RSSFeedParser
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
@@ -223,16 +224,25 @@ def check_search_queries():
     """
     result = "All queries were checked"
     search_queries = SearchQuery.objects.all()
+    job_id = None
     for search_query in search_queries:
         if search_query.active:
             if search_query.expired_period:
-                job = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth,
-                                              search_query.options),
-                            run_job.s(search_query.pk))()
+                # We need to check search_type at this point
+                # and initiate different tasks if any
+                if search_query.search_type == 'search_engine':
+                    job = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth,
+                                                  search_query.options),
+                                run_job.s(search_query.pk))()
+                    job_id = job.id
+                elif search_query.search_type == 'rss':
+                    job = chain(read_rss.s(search_query.rss_link), run_job.s(search_query.pk))()
+                    job_id = job.id
+                # Update search last processed date, save it and create the task obj
                 now = datetime.utcnow().replace(tzinfo=utc)
                 search_query.last_processed = now
                 search_query.save()
-                SearchTask.objects.create(task_id=job.id, search_query=search_query)
+                SearchTask.objects.create(task_id=job_id, search_query=search_query)
     return result
 
 
@@ -240,6 +250,12 @@ def check_search_queries():
 def search_by_query(query, engine, depth, options):
     parser = SearchEngineParser(query, engine, depth, options)
     return parser.run()
+
+
+@shared_task(name='crawl_engine.tasks.read_rss')
+def read_rss(rss_link):
+    reader = RSSFeedParser(rss_link)
+    return reader.parse_rss()
 
 
 @shared_task(name='crawl_engine.tasks.run_job')
