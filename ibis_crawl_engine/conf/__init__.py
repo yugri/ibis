@@ -38,6 +38,7 @@ CELERY_MONGODB_BACKEND_SETTINGS = {
     'database': MONGODB_DB,
     'taskmeta_collection': 'task_meta',
 }
+CELERYD_MAX_TASKS_PER_CHILD = 100
 
 
 # Quick-start development settings - unsuitable for production

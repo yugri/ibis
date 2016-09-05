@@ -17,6 +17,10 @@ from crawl_engine.utils.translation_utils import separate
 logger = logging.getLogger(__name__)
 
 
+class LanguageDetectionError(BaseException):
+    pass
+
+
 class SearchQuery(models.Model):
     PERIODS = (
         ('hourly', 'Hourly'),
@@ -116,30 +120,44 @@ class Article(models.Model):
             article_id = instance.id
             splitted_body = separate(instance.body)
             splitted_title = separate(instance.title)
+
+            # Check article's source_language
             try:
                 source = instance.source_language
                 if not source:
                     raise ValueError("Empty source_language field.")
+            # If var is empty try to detect with Google's Translate API
             except ValueError:
                 logger.info("The internal system can't detect article's language. "
                             "Trying to detect with Google Translate API.")
                 source = detect_lang_by_google(splitted_body[0])
             logger.info("Detected language is: %s" % source)
 
-            # Check if detected language is English. If YES we store the
-            # translated_title and translated_body the same title and body
-            if source == "en":
-                instance.source_language = source
-                instance.translated_title = instance.title
-                instance.translated_body = instance.body
-                instance.translated = True
-                instance.save(start_translation=False)
-                logger.info("No need to execute the translation task because article's language is EN.")
-            # Else run translation tasks. Tasks will run separately for the body and the title.
-            else:
-                result_body = chord([google_translate.s(part, source) for part in splitted_body]) \
-                    (bound_and_save.s(article_id, source, 'body'))
-                logger.info("Translation task for BODY has been queued, ID: %s" % result_body.id)
-                result_title = chord([google_translate.s(part, source) for part in splitted_title]) \
-                    (bound_and_save.s(article_id, source, 'title'))
-                logger.info("Translation task for TITLE has been queued, ID: %s" % result_title.id)
+            # Recheck source_language again
+            try:
+                if source == 'und':  # Google Translate API returns 'und' if can't detect language
+                    raise LanguageDetectionError("Google Translate API can't detect language")
+            except LanguageDetectionError as e:
+                logger.info(e)
+                source = None
+                instance.delete(keep_parents=True)
+                logger.info("Article was deleted due to LanguageDetectionError")
+
+            if source:
+                # Check if detected language is English. If YES we store the
+                # translated_title and translated_body the same title and body
+                if source == "en":
+                    instance.source_language = source
+                    instance.translated_title = instance.title
+                    instance.translated_body = instance.body
+                    instance.translated = True
+                    instance.save(start_translation=False)
+                    logger.info("No need to execute the translation task because article's language is EN.")
+                # Else run translation tasks. Tasks will run separately for the body and the title.
+                else:
+                    result_body = chord([google_translate.s(part, source) for part in splitted_body]) \
+                        (bound_and_save.s(article_id, source, 'body'))
+                    logger.info("Translation task for BODY has been queued, ID: %s" % result_body.id)
+                    result_title = chord([google_translate.s(part, source) for part in splitted_title]) \
+                        (bound_and_save.s(article_id, source, 'title'))
+                    logger.info("Translation task for TITLE has been queued, ID: %s" % result_title.id)
