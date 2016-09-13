@@ -1,6 +1,7 @@
 from fabric.api import *
 
 env.hosts = ['139.59.138.205']
+# env.port = '2222'
 env.user = 'root'
 
 
