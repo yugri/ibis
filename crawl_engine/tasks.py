@@ -206,7 +206,7 @@ def bound_and_save(text_parts, article_id, source, destination):
         article.translated_body = text
     elif destination == 'title':
         article.translated_title = text
-    # Only if translated_body is applicable an article sets to translated
+    # Only if translated_body is present an article sets to translated
     article.translated = True if article.translated_body else False
     article.save()
 
