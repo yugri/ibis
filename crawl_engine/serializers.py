@@ -74,6 +74,7 @@ class OptionsSerializer(serializers.Serializer):
 class SearchQuerySerializer(serializers.ModelSerializer):
     class Meta:
         model = SearchQuery
+        # exclude = ('search_depth',)
 
     options = OptionsSerializer(required=False)
 
@@ -83,7 +84,8 @@ class SearchQuerySerializer(serializers.ModelSerializer):
             search_id=validated_data['search_id'],
             query=validated_data['query'],
             source=validated_data['source'],
-            search_depth=validated_data['search_depth'],
+            # search_depth=validated_data['search_depth'],
+            search_depth=3,
             active=validated_data['active'],
             period=validated_data['period'],
             last_processed=validated_data['last_processed'],
