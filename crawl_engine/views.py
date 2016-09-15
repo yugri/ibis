@@ -136,3 +136,13 @@ class ListSources(APIView):
         """
         sources = [source for source in settings.SOURCES]
         return Response(sources)
+
+
+class ListSearchTypes(APIView):
+
+    def get(self, request, format=None):
+        """
+        Return a list of all search types.
+        """
+        search_types = SearchQuery.TYPES
+        return Response(search_types)

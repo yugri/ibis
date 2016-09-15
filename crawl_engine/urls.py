@@ -7,6 +7,10 @@ router = routers.DefaultRouter()
 # router.register(r'articles', ArticleListSet)
 
 
+class SearchTypesList(object):
+    pass
+
+
 urlpatterns = [
     # url(r'^api/', include(router.urls, namespace='api')),
     url(r'add-task-url/', AddTaskURLView.as_view()),
@@ -19,6 +23,7 @@ urlpatterns = [
     url(r'^search_query/(?P<search_id>[\w-]+)$', SearchQueryDetailView.as_view()),
 
     url(r'^source_list/$', ListSources.as_view()),
+    url(r'^search_types_list/$', ListSearchTypes.as_view()),
 
     url(r'^', include('rest_framework.urls', namespace='rest_framework')),
 ]
