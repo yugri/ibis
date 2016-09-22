@@ -22,7 +22,8 @@ class SearchQueryAdmin(admin.ModelAdmin):
     inlines = [
         SearchTaskInline
     ]
-    list_display = ("query", "active", "period", "last_processed")
+    list_display = ("search_type", "query", "rss_link", "article_url", "active", "period", "last_processed")
+    list_display_links = ("search_type", "query")
 
 
 admin.site.register(Article, ArticleAdmin)

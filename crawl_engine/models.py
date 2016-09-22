@@ -37,9 +37,10 @@ class SearchQuery(models.Model):
     )
 
     search_id = models.CharField(max_length=50, db_index=True)
-    search_type = models.CharField(max_length=20, choices=TYPES, blank=True, default='search_engine')
+    search_type = models.CharField(max_length=20, choices=TYPES, default='search_engine')
+    article_url = models.CharField(max_length=1000, blank=True, null=True)
     rss_link = models.CharField(max_length=1000, blank=True, null=True)
-    query = models.TextField()
+    query = models.TextField(blank=True)
     source = models.CharField(max_length=15, choices=settings.SOURCES, default='google')
     search_depth = models.PositiveIntegerField(default=1)
     active = models.BooleanField(default=True)
@@ -66,7 +67,7 @@ class SearchQuery(models.Model):
             return True
 
     def __str__(self):
-        return self.query
+        return "{0} [{1}]".format(self.search_id, self.search_type)
 
 
 class SearchTask(models.Model):

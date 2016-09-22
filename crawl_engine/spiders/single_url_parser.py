@@ -20,13 +20,18 @@ class EmptyBodyException(Exception):
 
 
 class ArticleParser:
-
+    """
+    Single URL parser
+    """
     def __init__(self, url, search, url_filter):
         self.url = url
         self.search = search
         self.filter = url_filter
 
     def run(self):
+        """
+        :return: article.id
+        """
         # Instantiate newspaper's Article api
         page = np(self.url)
         page_loaded = False
@@ -101,6 +106,12 @@ class ArticleParser:
             return result
 
     def download_image(self, article_instance):
+        """
+        Executes a new request for the article by it's url,
+        gets a top image and saves it.
+        :param article_instance:
+        :return: nothing
+        """
         article_url = self.url
         page = np(self.url)
         page.download()

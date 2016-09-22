@@ -219,7 +219,7 @@ def bound_and_save(text_parts, article_id, source, destination):
 def check_search_queries():
     """
     This task should get all SearchQuery objects and check if there is an active.
-    If so the periodic task <___> should be presented at schedule. In other case the task <___>
+    If so the periodic task (depends on search_type) should be presented at schedule. In other case the task <___>
     should be removed from schedule
     """
     result = "All queries were checked"
@@ -237,6 +237,9 @@ def check_search_queries():
                     job_id = job.id
                 elif search_query.search_type == 'rss':
                     job = chain(read_rss.s(search_query.rss_link), run_job.s(search_query.pk))()
+                    job_id = job.id
+                elif search_query.search_type == 'article':
+                    job = run_job.delay([search_query.article_url], search_query.pk)
                     job_id = job.id
                 # Update search last processed date, save it and create the task obj
                 now = datetime.utcnow().replace(tzinfo=utc)

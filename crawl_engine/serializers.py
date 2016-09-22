@@ -70,25 +70,13 @@ class OptionsSerializer(serializers.Serializer):
             'excludeTerms': options['excludeTerms']
         }
 
+    def to_internal_value(self, data):
+        options = json.dumps(data)
+        return options
+
 
 class SearchQuerySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SearchQuery
-        extra_kwargs = {'search_depth': {'required': 'False'}}
-
     options = OptionsSerializer(required=False)
 
-    def create(self, validated_data):
-        options_dict = validated_data.pop('options')
-        search = SearchQuery.objects.create(
-            search_id=validated_data['search_id'],
-            query=validated_data['query'],
-            source=validated_data['source'],
-            search_depth=validated_data['search_depth'],
-            # search_depth=3,
-            active=validated_data['active'],
-            period=validated_data['period'],
-            last_processed=validated_data['last_processed'],
-            options=json.dumps(options_dict)
-        )
-        return search
+    class Meta:
+        model = SearchQuery
