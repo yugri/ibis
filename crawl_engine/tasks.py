@@ -206,8 +206,11 @@ def bound_and_save(text_parts, article_id, source, destination):
         article.translated_body = text
     elif destination == 'title':
         article.translated_title = text
-    # Only if translated_body is present an article sets to translated
-    article.translated = True if article.translated_body else False
+    # Only if translated_body is present an article sets to translated and processed
+    # before being pushed to IBIS
+    if article.translated_body:
+        article.translated = True
+        article.processed = True
     article.save()
 
 
@@ -274,3 +277,16 @@ def run_job(url_list, search):
     job = group(tasks)
     result = job.apply_async()
     return result.id
+
+
+@periodic_task(
+    run_every=(crontab(minute='*/10')),
+    name="crawl_engine.tasks.check_articles",
+    ignore_result=True
+)
+def check_articles():
+    """
+    This task checks filters NON processed articles from DB and pushes them to IBIS system
+    :return: nothing
+    """
+    articles = Article.objects.filter(translated=True, processed=True, pushed=False)

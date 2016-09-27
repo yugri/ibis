@@ -171,6 +171,8 @@ SOURCES = (
     ('yandex', 'Yandex')
 )
 
+IBIS_ADDRESS = None
+
 
 LOGGING = {
     'version': 1,
