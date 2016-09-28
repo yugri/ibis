@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'Reads ../..urls.txt file and schedule to crawl all links from his file.'
 
     def handle(self, *args, **options):
-        urls_list = open('/webapps/crawler/ibis_crawl_engine/urls.txt', 'r').readlines()
+        urls_list = open('/webapps/crawler/ibis_crawl_engine/urls.txt', 'r').read().split('\n')
         job = run_job.apply_async((urls_list, None))
 
         logger.info('Crawl job started %s' % job.id)
