@@ -95,6 +95,9 @@ class Article(models.Model):
     processed = models.BooleanField(default=False, db_index=True)
     pushed = models.BooleanField(default=False, db_index=True)
 
+    def __str__(self):
+        return self.article_url
+
     def save(self, start_translation=False, push=False, *args, **kwargs):
         img_url = self.top_image_url
         if img_url and not self.top_image:
@@ -170,6 +173,14 @@ class Article(models.Model):
                     result_title = chord([google_translate.s(part, source) for part in splitted_title]) \
                         (bound_and_save.s(article_id, source, 'title'))
                     logger.info("Translation task for TITLE has been queued, ID: %s" % result_title.id)
+
+    @property
+    def related_search_id(self):
+        """
+        Gets search_id from related Search
+        :return: search_id [str]
+        """
+        return self.search.search_id
 
     def push_article(self):
         """

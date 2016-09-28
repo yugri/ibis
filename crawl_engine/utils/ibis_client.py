@@ -12,9 +12,9 @@ class IbisClient(object):
             data=data
         )
 
-    def push_article(self, data):
+    def push_articles(self, data):
         response = self.post(
-            url='add_article/',
+            url='add_articles/',
             data=data
         )
         return response

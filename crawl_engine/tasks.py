@@ -11,6 +11,7 @@ from celery.schedules import crontab
 from celery.task import periodic_task
 from django.conf import settings
 from django.utils.timezone import utc
+from django.forms.models import model_to_dict
 
 from crawl_engine.models import Article, SearchQuery, SearchTask
 from crawl_engine.spiders.single_url_parser import ArticleParser
@@ -280,13 +281,26 @@ def run_job(url_list, search):
 
 
 @periodic_task(
-    run_every=(crontab(minute='*/10')),
+    run_every=(crontab(minute='*/5')),
     name="crawl_engine.tasks.check_articles",
     ignore_result=True
 )
-def check_articles():
+def check_articles(test=False):
     """
     This task checks filters NON processed articles from DB and pushes them to IBIS system
     :return: nothing
     """
-    articles = Article.objects.filter(translated=True, processed=True, pushed=False)
+    if test:
+        articles = Article.objects.filter(translated=True, processed=True, pushed=False)[:5]
+    else:
+        articles = Article.objects.filter(translated=True, processed=True, pushed=False)
+    data = dict()
+    articles_list = []
+    for article in articles:
+        item = model_to_dict(article, exclude=['search', 'pushed'])
+        item['search_id'] = article.search_id
+        articles_list.append(item)
+    data['articles'] = articles_list
+
+    return data
+
