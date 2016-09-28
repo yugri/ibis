@@ -88,11 +88,11 @@ class Article(models.Model):
     authors = models.CharField(max_length=1000, blank=True)
     post_date_created = models.CharField(max_length=50, blank=True)
     post_date_crawled = models.DateTimeField(auto_now_add=True, null=True)
-    translated = models.BooleanField(default=False)
+    translated = models.BooleanField(default=False, db_index=True)
     top_image_url = models.URLField(max_length=1000, blank=True)
     top_image = models.ImageField(upload_to='article-images', blank=True, null=True, max_length=1000)
     search = models.ForeignKey(SearchQuery, blank=True, null=True)
-    processed = models.BooleanField(default=False)
+    processed = models.BooleanField(default=False, db_index=True)
     pushed = models.BooleanField(default=False, db_index=True)
 
     def save(self, start_translation=False, push=False, *args, **kwargs):
