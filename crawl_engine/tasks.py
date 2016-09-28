@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task(name='crawl_engine.tasks.crawl_url')
-def crawl_url(url, search):
+def crawl_url(url, search=None):
     # Initiate Bloom Filter
     bloom_file_path = settings.BASE_DIR + '/url.bloom'
     if os.path.exists(bloom_file_path):
@@ -34,7 +34,7 @@ def crawl_url(url, search):
     result = None
 
     if not url in url_filter:
-        parser = ArticleParser(url, search, url_filter)
+        parser = ArticleParser(url, url_filter, search)
         result = parser.run()
     else:
         result = "Url was already crawled"
@@ -262,7 +262,7 @@ def read_rss(rss_link):
 
 
 @shared_task(name='crawl_engine.tasks.run_job')
-def run_job(url_list, search):
+def run_job(url_list, search=None):
     tasks = []
     try:
         for url in url_list:
