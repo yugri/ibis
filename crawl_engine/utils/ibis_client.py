@@ -9,7 +9,7 @@ class IbisClient(object):
     def post(self, url, data):
         return requests.post(
             self.ibis_url + url,
-            data=data
+            json=data
         )
 
     def push_articles(self, data):

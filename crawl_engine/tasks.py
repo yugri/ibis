@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 
@@ -6,6 +7,7 @@ from pybloomfilter import BloomFilter
 from time import sleep
 from random import randint
 
+import requests
 from celery import shared_task, chain, group
 from celery.schedules import crontab
 from celery.task import periodic_task
@@ -19,6 +21,8 @@ from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
 from crawl_engine.spiders.rss_spider import RSSFeedParser
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+
+from crawl_engine.utils.ibis_client import IbisClient
 
 logger = logging.getLogger(__name__)
 
@@ -294,7 +298,6 @@ def check_articles(test=False):
         articles = Article.objects.filter(translated=True, processed=True, pushed=False)[:5]
     else:
         articles = Article.objects.filter(translated=True, processed=True, pushed=False)
-    # data = dict()
     articles_list = []
     for article in articles:
         item = model_to_dict(article, exclude=['search', 'pushed', 'top_image', 'post_date_crawled'])
@@ -304,6 +307,9 @@ def check_articles(test=False):
         item['post_date_crawled'] = str(article.post_date_crawled)
         articles_list.append(item)
     data = articles_list
+    payload = json.dumps(data)
+    client = IbisClient()
+    client.push_articles(data=payload)
 
     return data
 
