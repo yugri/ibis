@@ -294,13 +294,16 @@ def check_articles(test=False):
         articles = Article.objects.filter(translated=True, processed=True, pushed=False)[:5]
     else:
         articles = Article.objects.filter(translated=True, processed=True, pushed=False)
-    data = dict()
+    # data = dict()
     articles_list = []
     for article in articles:
-        item = model_to_dict(article, exclude=['search', 'pushed'])
-        item['search_id'] = article.search_id
+        item = model_to_dict(article, exclude=['search', 'pushed', 'top_image', 'post_date_crawled'])
+        # item['search_id'] = article.related_search_id
+        item['search_id'] = '5c15f2a9-b89a-4c0c-b7b5-b0eb38607b2c'
+        item['top_image'] = article.top_image.path
+        item['post_date_crawled'] = str(article.post_date_crawled)
         articles_list.append(item)
-    data['articles'] = articles_list
+    data = articles_list
 
     return data
 
