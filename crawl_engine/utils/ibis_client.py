@@ -14,7 +14,7 @@ class IbisClient(object):
 
     def push_articles(self, data):
         response = self.post(
-            url='add_articles/',
+            url='articles/',
             data=data
         )
         return response
