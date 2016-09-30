@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 
@@ -6,11 +7,13 @@ from pybloomfilter import BloomFilter
 from time import sleep
 from random import randint
 
+import requests
 from celery import shared_task, chain, group
 from celery.schedules import crontab
 from celery.task import periodic_task
 from django.conf import settings
 from django.utils.timezone import utc
+from django.forms.models import model_to_dict
 
 from crawl_engine.models import Article, SearchQuery, SearchTask
 from crawl_engine.spiders.single_url_parser import ArticleParser
@@ -19,11 +22,13 @@ from crawl_engine.spiders.rss_spider import RSSFeedParser
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+from crawl_engine.utils.ibis_client import IbisClient
+
 logger = logging.getLogger(__name__)
 
 
 @shared_task(name='crawl_engine.tasks.crawl_url')
-def crawl_url(url, search):
+def crawl_url(url, search=None):
     # Initiate Bloom Filter
     bloom_file_path = settings.BASE_DIR + '/url.bloom'
     if os.path.exists(bloom_file_path):
@@ -34,7 +39,7 @@ def crawl_url(url, search):
     result = None
 
     if not url in url_filter:
-        parser = ArticleParser(url, search, url_filter)
+        parser = ArticleParser(url, url_filter, search)
         result = parser.run()
     else:
         result = "Url was already crawled"
@@ -206,8 +211,11 @@ def bound_and_save(text_parts, article_id, source, destination):
         article.translated_body = text
     elif destination == 'title':
         article.translated_title = text
-    # Only if translated_body is present an article sets to translated
-    article.translated = True if article.translated_body else False
+    # Only if translated_body is present an article sets to translated and processed
+    # before being pushed to IBIS
+    if article.translated_body:
+        article.translated = True
+        article.processed = True
     article.save()
 
 
@@ -262,7 +270,7 @@ def read_rss(rss_link):
 
 
 @shared_task(name='crawl_engine.tasks.run_job')
-def run_job(url_list, search):
+def run_job(url_list, search=None):
     tasks = []
     try:
         for url in url_list:
@@ -274,3 +282,34 @@ def run_job(url_list, search):
     job = group(tasks)
     result = job.apply_async()
     return result.id
+
+
+@periodic_task(
+    run_every=(crontab(minute='*/5')),
+    name="crawl_engine.tasks.check_articles",
+    ignore_result=True
+)
+def check_articles(test=False):
+    """
+    This task checks filters NON processed articles from DB and pushes them to IBIS system
+    :return: nothing
+    """
+    if test:
+        articles = Article.objects.filter(translated=True, processed=True, pushed=False)[:5]
+    else:
+        articles = Article.objects.filter(translated=True, processed=True, pushed=False)
+    articles_list = []
+    for article in articles:
+        item = model_to_dict(article, exclude=['search', 'pushed', 'top_image', 'post_date_crawled'])
+        # item['search_id'] = article.related_search_id
+        item['search_id'] = '5c15f2a9-b89a-4c0c-b7b5-b0eb38607b2c'
+        item['top_image'] = article.top_image.path
+        item['post_date_crawled'] = str(article.post_date_crawled)
+        articles_list.append(item)
+    data = articles_list
+    payload = json.dumps(data)
+    client = IbisClient()
+    client.push_articles(data=payload)
+
+    return data
+

@@ -9,6 +9,7 @@ from crawl_engine.models import SearchQuery
 from crawl_engine.utils.articleAuthorExtractor import extractArticleAuthor
 from crawl_engine.utils.articleDateExtractor import extractArticlePublishedDate
 from crawl_engine.utils.articleTextExtractor import extractArticleText, extractArticleTitle
+from crawl_engine.utils.timeout import timeout, TimeoutException
 from langdetect import detect
 
 
@@ -23,7 +24,7 @@ class ArticleParser:
     """
     Single URL parser
     """
-    def __init__(self, url, search, url_filter):
+    def __init__(self, url, url_filter, search=None):
         self.url = url
         self.search = search
         self.filter = url_filter
@@ -37,9 +38,9 @@ class ArticleParser:
         page_loaded = False
         page_parsed = False
         try:
-            page.download()
+            page = self._download_page(page)
             page_loaded = True
-        except ArticleException as e:
+        except TimeoutException as e:
             logger.info(e)
         try:
             page.parse()
@@ -98,7 +99,7 @@ class ArticleParser:
                     article.translated = True
 
                 article.source_language = text_lang if text_lang == title_lang else None
-                article.search = SearchQuery.objects.get(pk=self.search)
+                article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
                 # Add our URL to Bloom Filter
                 self.filter.add(page.url)
                 article.save(start_translation=not article.translated)
@@ -118,3 +119,11 @@ class ArticleParser:
         page.parse()
         article_instance.top_image_url = page.top_image
         article_instance.save(start_translation=False)
+
+    @timeout(5)
+    def _download_page(self, page):
+        try:
+            page.download()
+        except ArticleException as e:
+            logger.info(e)
+        return page

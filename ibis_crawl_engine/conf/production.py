@@ -86,3 +86,5 @@ PIPELINE_YUGLIFY_BINARY = '/usr/local/bin/yuglify'
 PIPELINE_ENABLED = True
 
 news.TOP_DIRECTORY = BASE_DIR
+
+IBIS_ADDRESS = 'http://endlessripples.com.au/'

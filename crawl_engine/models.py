@@ -8,9 +8,12 @@ from celery import chord
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.timezone import utc
 from django.contrib.postgres.fields import JSONField
 
+from crawl_engine.utils.ibis_client import IbisClient
 from crawl_engine.utils.translation_utils import separate
 
 
@@ -30,6 +33,7 @@ class SearchQuery(models.Model):
     )
 
     TYPES = (
+        ('simple_search', 'Simple Search'),
         ('search_engine', 'Search Engine'),
         ('rss', 'RSS Feed'),
         ('article', 'Article'),
@@ -85,12 +89,17 @@ class Article(models.Model):
     authors = models.CharField(max_length=1000, blank=True)
     post_date_created = models.CharField(max_length=50, blank=True)
     post_date_crawled = models.DateTimeField(auto_now_add=True, null=True)
-    translated = models.BooleanField(default=False)
+    translated = models.BooleanField(default=False, db_index=True)
     top_image_url = models.URLField(max_length=1000, blank=True)
     top_image = models.ImageField(upload_to='article-images', blank=True, null=True, max_length=1000)
     search = models.ForeignKey(SearchQuery, blank=True, null=True)
+    processed = models.BooleanField(default=False, db_index=True)
+    pushed = models.BooleanField(default=False, db_index=True)
 
-    def save(self, start_translation=False, *args, **kwargs):
+    def __str__(self):
+        return self.article_url
+
+    def save(self, start_translation=False, push=False, *args, **kwargs):
         img_url = self.top_image_url
         if img_url and not self.top_image:
             filename = str(hash(img_url))
@@ -99,6 +108,8 @@ class Article(models.Model):
         super(Article, self).save(*args, **kwargs)
         if start_translation:
             self.run_translation_task(self)
+        if push:
+            self.push_article()
 
     def set_image(self, url, filename):
         try:
@@ -163,3 +174,40 @@ class Article(models.Model):
                     result_title = chord([google_translate.s(part, source) for part in splitted_title]) \
                         (bound_and_save.s(article_id, source, 'title'))
                     logger.info("Translation task for TITLE has been queued, ID: %s" % result_title.id)
+
+    @property
+    def related_search_id(self):
+        """
+        Gets search_id from related Search
+        :return: search_id [str]
+        """
+        return self.search.search_id
+
+    def push_article(self):
+        """
+        Method for pushing an article to IBIS through it's API endpoint
+        :return: nothing
+        """
+        pass
+
+
+# @receiver(post_save, sender=Article)
+# def my_handler(sender, instance, created, **kwargs):
+#     data = dict(
+#         article_url=instance.article_url,
+#         source_language=instance.source_language,
+#         title=instance.title,
+#         translated_title=instance.translated_title,
+#         body=instance.body,
+#         translated_body=instance.translated_body,
+#         authors=instance.authors,
+#         post_date_created=instance.post_date_created,
+#         post_date_crawled=instance.post_date_crawled,
+#         translated=instance.translated,
+#         top_image_url=instance.top_image_url,
+#         top_image=instance.top_image,
+#         search=instance.search,
+#     )
+#
+#     if instance.processed:
+#         IbisClient().push_article(data=data)
