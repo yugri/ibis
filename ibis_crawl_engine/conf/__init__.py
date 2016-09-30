@@ -40,6 +40,19 @@ CELERY_MONGODB_BACKEND_SETTINGS = {
 }
 CELERYD_MAX_TASKS_PER_CHILD = 100
 
+CELERY_ROUTES = {
+    'crawl_engine.tasks.crawl_url': {'queue': 'crawl'},
+    'crawl_engine.tasks.translate_content': {'queue': 'translate'},
+    'crawl_engine.tasks.google_translate': {'queue': 'translate'},
+    'crawl_engine.tasks.google_detect_translate': {'queue': 'translate'},
+    'crawl_engine.tasks.detect_lang_by_google': {'queue': 'translate'},
+    'crawl_engine.tasks.bound_and_save': {'queue': 'crawl'},
+    'crawl_engine.tasks.check_search_queries': {'queue': 'crawl'},
+    'crawl_engine.tasks.search_by_query': {'queue': 'crawl'},
+    'crawl_engine.tasks.read_rss': {'queue': 'crawl'},
+    'crawl_engine.tasks.run_job': {'queue': 'crawl'},
+}
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
