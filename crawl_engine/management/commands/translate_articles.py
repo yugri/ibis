@@ -32,7 +32,8 @@ class Command(BaseCommand):
         articles = Article.objects.filter(translated=False)
 
         for article in articles:
-            article.run_translation_task()
+            article.run_translation_task(article)
+        print("Translation tasks were queued")
 
         # for article in articles:
         #     article_id = article.id
