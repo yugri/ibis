@@ -312,4 +312,3 @@ def check_articles(test=False):
     client.push_articles(data=payload)
 
     return data
-

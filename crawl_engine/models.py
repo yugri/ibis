@@ -189,25 +189,3 @@ class Article(models.Model):
         :return: nothing
         """
         pass
-
-
-# @receiver(post_save, sender=Article)
-# def my_handler(sender, instance, created, **kwargs):
-#     data = dict(
-#         article_url=instance.article_url,
-#         source_language=instance.source_language,
-#         title=instance.title,
-#         translated_title=instance.translated_title,
-#         body=instance.body,
-#         translated_body=instance.translated_body,
-#         authors=instance.authors,
-#         post_date_created=instance.post_date_created,
-#         post_date_crawled=instance.post_date_crawled,
-#         translated=instance.translated,
-#         top_image_url=instance.top_image_url,
-#         top_image=instance.top_image,
-#         search=instance.search,
-#     )
-#
-#     if instance.processed:
-#         IbisClient().push_article(data=data)

@@ -15,21 +15,21 @@ class LimitsException(Exception):
 class Command(BaseCommand):
     help = 'Translate all not translated articles'
 
-    def add_arguments(self, parser):
-        parser.add_argument(name='search', nargs='*')
-        parser.add_argument(name='article_id', nargs='*')
+    # def add_arguments(self, parser):
+    #     parser.add_argument(name='search', nargs='*', type=str)
+    #     parser.add_argument(name='article_id', nargs='*', type=str)
 
     def handle(self, *args, **options):
-        search = options['search']
-        article_id = options['article_id']
-        if search:
-            articles = Article.objects.filter(
-                search__search_id__in=options['search'],
-                translated=False)
-        elif article_id:
-            articles = Article.objects.filter(pk=article_id, translated=False)
-        else:
-            articles = Article.objects.filter(translated=False)
+        # search = options['search']
+        # article_id = options['article_id']
+        # if search:
+        #     articles = Article.objects.filter(
+        #         search__search_id__in=options['search'],
+        #         translated=False)
+        # elif article_id:
+        #     articles = Article.objects.filter(pk=article_id, translated=False)
+        # else:
+        articles = Article.objects.filter(translated=False)
 
         for article in articles:
             article_id = article.id
