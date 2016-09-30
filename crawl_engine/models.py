@@ -33,6 +33,7 @@ class SearchQuery(models.Model):
     )
 
     TYPES = (
+        ('simple_search', 'Simple Search'),
         ('search_engine', 'Search Engine'),
         ('rss', 'RSS Feed'),
         ('article', 'Article'),
