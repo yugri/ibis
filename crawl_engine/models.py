@@ -46,7 +46,7 @@ class SearchQuery(models.Model):
     rss_link = models.CharField(max_length=1000, blank=True, null=True)
     query = models.TextField(blank=True)
     source = models.CharField(max_length=15, choices=settings.SOURCES, default='google')
-    search_depth = models.PositiveIntegerField(default=1)
+    search_depth = models.PositiveIntegerField(default=5)
     active = models.BooleanField(default=True)
     period = models.CharField(max_length=20, choices=PERIODS, default='daily')
     last_processed = models.DateTimeField(blank=True, null=True)
