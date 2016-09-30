@@ -50,7 +50,7 @@ class Command(BaseCommand):
             except ValueError:
                 print("The internal system can't detect article's language. "
                       "Trying to detect with Google Translate API.")
-                source = detect_lang_by_google.apply_async((splitted_body[0]))
+                source = detect_lang_by_google.apply_async((splitted_body[0],))
             print("Detected language is: %s" % source)
             result_body = chord(google_translate.s(part, source) for part in splitted_body)\
                 (bound_and_save.s(article_id, source, 'body'))
