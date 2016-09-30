@@ -143,3 +143,4 @@ local_tests.py
 Буде вилучено crawl_engine/search_testing.py
 Буде вилучено static/
 Буде вилучено url.bloom
+Буде вилучено dump.rdb
