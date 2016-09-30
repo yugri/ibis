@@ -32,7 +32,7 @@ class Command(BaseCommand):
         articles = Article.objects.filter(translated=False)
 
         for article in articles:
-            article.run_translation_task(article)
+            article.run_translation_task()
 
         # for article in articles:
         #     article_id = article.id
