@@ -9,6 +9,7 @@ from crawl_engine.models import SearchQuery
 from crawl_engine.utils.articleAuthorExtractor import extractArticleAuthor
 from crawl_engine.utils.articleDateExtractor import extractArticlePublishedDate
 from crawl_engine.utils.articleTextExtractor import extractArticleText, extractArticleTitle
+from crawl_engine.utils.timeout import timeout, TimeoutException
 from langdetect import detect
 
 
@@ -37,9 +38,9 @@ class ArticleParser:
         page_loaded = False
         page_parsed = False
         try:
-            page.download()
+            page = self._download_page(page)
             page_loaded = True
-        except ArticleException as e:
+        except TimeoutException as e:
             logger.info(e)
         try:
             page.parse()
@@ -118,3 +119,11 @@ class ArticleParser:
         page.parse()
         article_instance.top_image_url = page.top_image
         article_instance.save(start_translation=False)
+
+    @timeout(5)
+    def _download_page(self, page):
+        try:
+            page.download()
+        except ArticleException as e:
+            logger.info(e)
+        return page
