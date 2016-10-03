@@ -303,24 +303,8 @@ def upload_articles(test=False):
             translated=True,
             processed=True,
             pushed=False,
-            post_date_crawled__gte=datetime(2016, 9, 29).replace(tzinfo=utc)
+            post_date_crawled__gte=datetime(2016, 9, 21).replace(tzinfo=utc)
         ).order_by('-post_date_crawled')
-
-
-    # articles_list = []
-    # for article in articles:
-    #     item = model_to_dict(article, exclude=['search', 'pushed', 'top_image', 'post_date_crawled'])
-    #     # item['search_id'] = article.related_search_id
-    #     item['search_id'] = '46268d29-ebff-4614-b045-f28bc673f6cf'
-    #     try:
-    #         item['top_image'] = article.top_image.url
-    #     except ValueError:
-    #         item['top_image'] = ''
-    #     item['post_date_crawled'] = str(article.post_date_crawled)
-    #     articles_list.append(item)
-    # data = articles_list
-    # payload = json.dumps(data)
-    #
 
     data = ArticleTransferSerializer(articles, many=True).data
     client = IbisClient()

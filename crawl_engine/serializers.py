@@ -12,12 +12,19 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
 class ArticleTransferSerializer(serializers.ModelSerializer):
-    search_id = serializers.CharField(required=False, default='46268d29-ebff-4614-b045-f28bc673f6cf')
-
+    search_id = serializers.SerializerMethodField()
+    # related_search_id = serializers.CharField(required=False, default='5c15f2a9-b89a-4c0c-b7b5-b0eb38607b2c')
+    # search_id = serializers.CharField(required=False, default='46268d29-ebff-4614-b045-f28bc673f6cf')
 
     class Meta:
         model = Article
-        exclude = (['search', 'pushed'])
+        fields = ('article_url', 'source_language', 'title', 'translated_title', 'body', 'translated_body',
+                  'authors', 'post_date_created', 'post_date_crawled', 'translated', 'top_image_url', 'top_image',
+                  'processed', 'search_id')
+        # exclude = ('search', 'pushed')
+
+    def get_search_id(self, obj):
+        return '5c15f2a9-b89a-4c0c-b7b5-b0eb38607b2c'
 
 
 class URLListField(serializers.ListField):
