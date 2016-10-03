@@ -27,6 +27,7 @@ from crawl_engine.utils.ibis_client import IbisClient
 logger = logging.getLogger(__name__)
 
 
+
 @shared_task(name='crawl_engine.tasks.crawl_url')
 def crawl_url(url, search=None):
     # Initiate Bloom Filter
@@ -310,7 +311,7 @@ def upload_articles(test=False):
         item['search_id'] = '46268d29-ebff-4614-b045-f28bc673f6cf'
         try:
             item['top_image'] = article.top_image.url
-        except NotImplementedError or ValueError:
+        except ValueError:
             item['top_image'] = ''
         item['post_date_crawled'] = str(article.post_date_crawled)
         articles_list.append(item)
