@@ -320,9 +320,8 @@ def upload_articles(test=False):
     #     articles_list.append(item)
     # data = articles_list
     # payload = json.dumps(data)
-    # client = IbisClient()
-    # client.push_articles(data=payload)
+    #
 
     payload = ArticleTransferSerializer(articles, many=True).data
-    print(payload)
-    return 0
+    client = IbisClient()
+    client.push_articles(data=payload)
