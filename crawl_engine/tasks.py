@@ -308,9 +308,9 @@ def upload_articles(test=False):
         item = model_to_dict(article, exclude=['search', 'pushed', 'top_image', 'post_date_crawled'])
         # item['search_id'] = article.related_search_id
         item['search_id'] = '46268d29-ebff-4614-b045-f28bc673f6cf'
-        if article.top_image.url is not None:
+        try:
             item['top_image'] = article.top_image.url
-        else:
+        except NotImplementedError:
             item['top_image'] = ''
         item['post_date_crawled'] = str(article.post_date_crawled)
         articles_list.append(item)
