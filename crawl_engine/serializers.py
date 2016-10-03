@@ -24,7 +24,7 @@ class ArticleTransferSerializer(serializers.ModelSerializer):
         # exclude = ('search', 'pushed')
 
     def get_search_id(self, obj):
-        return '46268d29-ebff-4614-b045-f28bc673f6cf'
+        return '370f81e7-199d-4901-9dbf-47edf6a59f05'
 
 
 

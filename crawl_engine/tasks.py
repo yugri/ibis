@@ -306,7 +306,7 @@ def upload_articles(test=False):
         ).order_by('-post_date_crawled')
 
     data = ArticleTransferSerializer(articles, many=True).data
-    client = IbisClient()
+    client = IbisClient(ibis_address='http://146.185.160.198/')
     payload = json.dumps(data)
     result = client.push_articles(data=payload)
     print(result.text)
