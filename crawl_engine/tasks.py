@@ -284,31 +284,36 @@ def run_job(url_list, search=None):
     return result.id
 
 
-# @periodic_task(
-#     run_every=(crontab(minute='*/5')),
-#     name="crawl_engine.tasks.check_articles",
-#     ignore_result=True
-# )
-# def check_articles(test=False):
-#     """
-#     This task checks filters NON processed articles from DB and pushes them to IBIS system
-#     :return: nothing
-#     """
-#     if test:
-#         articles = Article.objects.filter(translated=True, processed=True, pushed=False)[:5]
-#     else:
-#         articles = Article.objects.filter(translated=True, processed=True, pushed=False)
-#     articles_list = []
-#     for article in articles:
-#         item = model_to_dict(article, exclude=['search', 'pushed', 'top_image', 'post_date_crawled'])
-#         # item['search_id'] = article.related_search_id
-#         item['search_id'] = '5c15f2a9-b89a-4c0c-b7b5-b0eb38607b2c'
-#         item['top_image'] = article.top_image.path
-#         item['post_date_crawled'] = str(article.post_date_crawled)
-#         articles_list.append(item)
-#     data = articles_list
-#     payload = json.dumps(data)
-#     client = IbisClient()
-#     client.push_articles(data=payload)
-#
-#     return data
+@periodic_task(
+    run_every=(crontab(minute='*/5')),
+    name="crawl_engine.tasks.upload_articles",
+    ignore_result=True
+)
+def upload_articles(test=False):
+    """
+    This task checks filters NON processed articles from DB and pushes them to IBIS system
+    :return: nothing
+    """
+    if test:
+        articles = Article.objects.filter(translated=True, processed=True, pushed=False)[:5]
+    else:
+        articles = Article.objects.filter(
+            translated=True,
+            processed=True,
+            pushed=False,
+            post_date_crawled__gte=datetime(2016, 9, 21).replace(tzinfo=utc)
+        ).order_by('-post_date_crawled')
+    articles_list = []
+    for article in articles:
+        item = model_to_dict(article, exclude=['search', 'pushed', 'top_image', 'post_date_crawled'])
+        # item['search_id'] = article.related_search_id
+        item['search_id'] = '46268d29-ebff-4614-b045-f28bc673f6cf'
+        item['top_image'] = article.top_image.path
+        item['post_date_crawled'] = str(article.post_date_crawled)
+        articles_list.append(item)
+    data = articles_list
+    payload = json.dumps(data)
+    client = IbisClient()
+    client.push_articles(data=payload)
+
+    return data
