@@ -12,11 +12,12 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
 class ArticleTransferSerializer(serializers.ModelSerializer):
+    search_id = serializers.CharField(required=False, default='46268d29-ebff-4614-b045-f28bc673f6cf')
+
 
     class Meta:
         model = Article
-        exclude = (['search', 'pushed', 'post_date_crawled'])
-
+        exclude = (['search', 'pushed'])
 
 
 class URLListField(serializers.ListField):
