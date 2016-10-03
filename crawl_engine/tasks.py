@@ -310,7 +310,7 @@ def upload_articles(test=False):
         item['search_id'] = '46268d29-ebff-4614-b045-f28bc673f6cf'
         try:
             item['top_image'] = article.top_image.url
-        except NotImplementedError:
+        except NotImplementedError or ValueError:
             item['top_image'] = ''
         item['post_date_crawled'] = str(article.post_date_crawled)
         articles_list.append(item)
