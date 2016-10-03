@@ -301,7 +301,6 @@ def upload_articles(test=False):
     else:
         articles = Article.objects.filter(
             translated=True,
-            processed=True,
             pushed=False,
             post_date_crawled__gte=datetime(2016, 9, 29).replace(tzinfo=utc)
         ).order_by('-post_date_crawled')
