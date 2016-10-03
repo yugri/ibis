@@ -310,4 +310,4 @@ def upload_articles(test=False):
     client = IbisClient()
     payload = json.dumps(data)
     result = client.push_articles(data=payload)
-    print(result)
+    print(result.text)
