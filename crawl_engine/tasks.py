@@ -16,6 +16,7 @@ from django.utils.timezone import utc
 from django.forms.models import model_to_dict
 
 from crawl_engine.models import Article, SearchQuery, SearchTask
+from crawl_engine.serializers import ArticleTransferSerializer
 from crawl_engine.spiders.single_url_parser import ArticleParser
 from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
 from crawl_engine.spiders.rss_spider import RSSFeedParser
@@ -304,20 +305,24 @@ def upload_articles(test=False):
             pushed=False,
             post_date_crawled__gte=datetime(2016, 9, 21).replace(tzinfo=utc)
         ).order_by('-post_date_crawled')
-    articles_list = []
-    for article in articles:
-        item = model_to_dict(article, exclude=['search', 'pushed', 'top_image', 'post_date_crawled'])
-        # item['search_id'] = article.related_search_id
-        item['search_id'] = '46268d29-ebff-4614-b045-f28bc673f6cf'
-        try:
-            item['top_image'] = article.top_image.url
-        except ValueError:
-            item['top_image'] = ''
-        item['post_date_crawled'] = str(article.post_date_crawled)
-        articles_list.append(item)
-    data = articles_list
-    payload = json.dumps(data)
-    client = IbisClient()
-    client.push_articles(data=payload)
 
-    return data
+
+    # articles_list = []
+    # for article in articles:
+    #     item = model_to_dict(article, exclude=['search', 'pushed', 'top_image', 'post_date_crawled'])
+    #     # item['search_id'] = article.related_search_id
+    #     item['search_id'] = '46268d29-ebff-4614-b045-f28bc673f6cf'
+    #     try:
+    #         item['top_image'] = article.top_image.url
+    #     except ValueError:
+    #         item['top_image'] = ''
+    #     item['post_date_crawled'] = str(article.post_date_crawled)
+    #     articles_list.append(item)
+    # data = articles_list
+    # payload = json.dumps(data)
+    # client = IbisClient()
+    # client.push_articles(data=payload)
+
+    payload = ArticleTransferSerializer(articles, many=True).data
+    print(payload)
+    return 0

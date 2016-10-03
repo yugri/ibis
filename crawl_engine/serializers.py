@@ -11,6 +11,14 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
 
 
+class ArticleTransferSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Article
+        exclude = (['search', 'pushed', 'post_date_crawled'])
+
+
+
 class URLListField(serializers.ListField):
     child = serializers.URLField()
 
