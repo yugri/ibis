@@ -325,7 +325,8 @@ def upload_articles(self, test=False):
                 article.pushed = True
                 article.save()
         if result.status_code == 400:
-            print('Bad Request')
+
+            print(result.text)
             try:
                 upload_articles.retry(countdown=5, max_retries=3)
             except MaxRetriesExceededError as e:
