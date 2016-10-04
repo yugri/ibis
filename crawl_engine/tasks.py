@@ -312,7 +312,8 @@ def upload_articles(self, test=False):
                 translated=True,
                 processed=True,
                 pushed=False,
-                post_date_crawled__gte=datetime(2016, 9, 21).replace(tzinfo=utc)
+                post_date_crawled__gte=datetime(2016, 9, 21).replace(tzinfo=utc),
+                search__search_id__isnull=False
             ).order_by('-post_date_crawled')
 
         data = ArticleTransferSerializer(articles, many=True).data
