@@ -257,7 +257,7 @@ def check_search_queries():
                 now = datetime.utcnow().replace(tzinfo=utc)
                 search_query.last_processed = now
                 search_query.save()
-                SearchTask.objects.create(task_id=job_id, search_query=search_query)
+                # SearchTask.objects.create(task_id=job_id, search_query=search_query)
     return result
 
 
