@@ -24,9 +24,10 @@ class ArticleTransferSerializer(serializers.ModelSerializer):
         # exclude = ('search', 'pushed')
 
     def get_search_id(self, obj):
-        if obj is not None:
+        try:
             return obj.search.search_id
-        return
+        except AttributeError:
+            pass
 
 
 class URLListField(serializers.ListField):
