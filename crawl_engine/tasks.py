@@ -242,7 +242,7 @@ def check_search_queries():
             if search_query.expired_period:
                 # We need to check search_type at this point
                 # and initiate different tasks if any
-                if search_query.search_type == 'search_engine':
+                if search_query.search_type == 'search_engine' or 'simple_search':
                     job = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth,
                                                   search_query.options),
                                 run_job.s(search_query.pk))()
@@ -321,12 +321,11 @@ def upload_articles(self, test=False):
             payload = json.dumps(data)
             result = client.push_articles(data=payload)
             if result.status_code == 201:
-                print('Successfully Created')
                 for article in articles:
                     article.pushed = True
                     article.save()
+                return 'Successfully Created'
             if result.status_code == 400:
-
                 print(result.text)
                 try:
                     upload_articles.retry(countdown=5, max_retries=3)
