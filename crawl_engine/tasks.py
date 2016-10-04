@@ -333,7 +333,7 @@ def upload_articles(self, test=False):
             except MaxRetriesExceededError as e:
                 print(e)
         if result.status_code == 500:
-            print('Server Error')
+            print(result.text)
             try:
                 upload_articles.retry(countdown=5, max_retries=3)
             except MaxRetriesExceededError as e:
