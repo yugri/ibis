@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import redis
 
 from datetime import datetime
 from pybloomfilter import BloomFilter
@@ -10,6 +11,7 @@ from random import randint
 import requests
 from celery import shared_task, chain, group
 from celery.schedules import crontab
+from celery.exceptions import MaxRetriesExceededError
 from celery.task import periodic_task
 from django.conf import settings
 from django.utils.timezone import utc
@@ -22,11 +24,11 @@ from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
 from crawl_engine.spiders.rss_spider import RSSFeedParser
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from requests.exceptions import HTTPError
 
 from crawl_engine.utils.ibis_client import IbisClient
 
 logger = logging.getLogger(__name__)
-
 
 
 @shared_task(name='crawl_engine.tasks.crawl_url')
@@ -287,26 +289,51 @@ def run_job(url_list, search=None):
 
 
 @periodic_task(
-    run_every=(crontab(minute='*/5')),
+    run_every=(crontab(minute='*/2')),
     name="crawl_engine.tasks.upload_articles",
-    ignore_result=True
+    ignore_result=True,
+    bind=True
 )
-def upload_articles(test=False):
+def upload_articles(self, test=False):
     """
     This task checks filters NON processed articles from DB and pushes them to IBIS system
     :return: nothing
     """
-    if test:
-        articles = Article.objects.filter(translated=True, processed=True, pushed=False)[:5]
+    r = redis.StrictRedis(host='localhost', port=6379, db=0)
+    task = r.get('crawl_engine.tasks.upload_articles')
+    if task:
+        pass
     else:
-        articles = Article.objects.filter(
-            translated=True,
-            pushed=False,
-            post_date_crawled__gte=datetime(2016, 9, 29).replace(tzinfo=utc)
-        ).order_by('-post_date_crawled')
+        r.set('crawl_engine.tasks.upload_articles', 1)
+        if test:
+            articles = Article.objects.filter(translated=True, processed=True, pushed=False)[:5]
+        else:
+            articles = Article.objects.filter(
+                translated=True,
+                processed=True,
+                pushed=False,
+                post_date_crawled__gte=datetime(2016, 9, 21).replace(tzinfo=utc)
+            ).order_by('-post_date_crawled')
 
-    data = ArticleTransferSerializer(articles, many=True).data
-    client = IbisClient(ibis_address='http://146.185.160.198/')
-    payload = json.dumps(data)
-    result = client.push_articles(data=payload)
-    print(result.text)
+        data = ArticleTransferSerializer(articles, many=True).data
+        client = IbisClient()
+        payload = json.dumps(data)
+        result = client.push_articles(data=payload)
+        if result.status_code == 201:
+            print('Successfully Created')
+            for article in articles:
+                article.pushed = True
+                article.save()
+        if result.status_code == 400:
+            print('Bad Request')
+            try:
+                upload_articles.retry(countdown=5, max_retries=3)
+            except MaxRetriesExceededError as e:
+                print(e)
+        if result.status_code == 500:
+            print('Server Error')
+            try:
+                upload_articles.retry(countdown=5, max_retries=3)
+            except MaxRetriesExceededError as e:
+                print(e)
+    r.delete(self.name)

@@ -3,8 +3,8 @@ from django.conf import settings
 
 
 class IbisClient(object):
-    def __init__(self, ibis_address=None):
-        self.ibis_url = ibis_address or settings.IBIS_ADDRESS
+    def __init__(self, remote_host=None):
+        self.ibis_url = remote_host or settings.IBIS_ADDRESS
 
     def post(self, url, data):
         return requests.post(

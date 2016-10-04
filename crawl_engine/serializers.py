@@ -19,13 +19,12 @@ class ArticleTransferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = ('article_url', 'source_language', 'title', 'translated_title', 'body', 'translated_body',
-                  'authors', 'post_date_created', 'translated', 'top_image_url', 'top_image',
+                  'authors', 'post_date_created', 'post_date_crawled', 'translated', 'top_image_url', 'top_image',
                   'processed', 'search_id')
         # exclude = ('search', 'pushed')
 
     def get_search_id(self, obj):
-        return '370f81e7-199d-4901-9dbf-47edf6a59f05'
-
+        return obj.search.search_id
 
 
 class URLListField(serializers.ListField):
@@ -94,6 +93,7 @@ class OptionsSerializer(serializers.Serializer):
 
 class SearchQuerySerializer(serializers.ModelSerializer):
     options = OptionsSerializer(required=False)
+    response_address = serializers.CharField(required=False)
 
     class Meta:
         model = SearchQuery
