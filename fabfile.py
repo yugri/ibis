@@ -1,12 +1,13 @@
 from fabric.api import *
 
-env.hosts = ['139.59.138.205']
+# env.hosts = ['139.59.138.205']
+env.hosts = ['95.85.40.149']
 env.user = 'root'
 
 
-# def push_changes():
-#     with lcd('/home/yuri/dev/ibis_crawl_engine'):
-#         local('git push origin master')
+def push_changes():
+    with lcd('/home/yuri/dev/ibis_crawl_engine'):
+        local('git push origin master')
 
 
 def update_project():
