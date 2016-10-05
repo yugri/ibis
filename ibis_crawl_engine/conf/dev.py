@@ -19,7 +19,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 DATABASES = {
     # Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
-    'default': env.db('DATABASE_URL', default='postgresql://crawler:13635724@0.0.0.0:5433/crawlerdb'),
+    'default': env.db('DATABASE_URL', default='postgresql://crawler:13635724@0.0.0.0:5432/crawlerdb'),
 }
 
 # STORAGE CONFIGURATION
