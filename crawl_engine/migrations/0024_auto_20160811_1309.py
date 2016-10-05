@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='article',
             name='search_id',
-            field=models.UUIDField(blank=True, null=True),
+            field=models.PositiveIntegerField(blank=True, null=True),
         ),
     ]
