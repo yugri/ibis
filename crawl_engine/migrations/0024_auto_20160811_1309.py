@@ -12,9 +12,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='article',
-            name='search_id',
-            field=models.UUIDField(blank=True, null=True),
-        ),
+        # migrations.AlterField(
+        #     model_name='article',
+        #     name='search_id',
+        #     field=models.UUIDField(blank=True, null=True),
+        # ),
+        migrations.RunSQL(
+            "ALTER TABLE crawl_engine_article ALTER COLUMN search_id TYPE integer USING CAST(search_id AS integer)"),
     ]
