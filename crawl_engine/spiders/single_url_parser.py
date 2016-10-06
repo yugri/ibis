@@ -97,6 +97,7 @@ class ArticleParser:
                     article.translated_title = title
                     article.translated_body = text
                     article.translated = True
+                    article.processed = True
 
                 article.source_language = text_lang if text_lang == title_lang else None
                 article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None

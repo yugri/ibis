@@ -115,6 +115,12 @@ class SearchQueryList(generics.ListCreateAPIView):
     serializer_class = SearchQuerySerializer
     filter_fields = []
 
+    def perform_create(self, serializer):
+        # Add additional field to the request.data. Client host address in our case
+        # and save serializer
+        response_address = self.request.META.get('REMOTE_ADDR', None)
+        serializer.save(response_address=response_address)
+
 
 class SearchQueryDetailView(generics.RetrieveUpdateAPIView):
     queryset = SearchQuery.objects.all()
