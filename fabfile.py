@@ -3,8 +3,8 @@ from fabric.api import *
 # env.hosts = ['139.59.138.205']
 # env.hosts = ['95.85.40.149']
 env.roledefs = {
-    'dev': ['95.85.40.149'],
-    'prod': ['139.59.138.205'],
+    'prod': ['95.85.40.149'],
+    'dev': ['139.59.138.205'],
 }
 env.user = 'root'
 
@@ -14,7 +14,7 @@ def push_changes():
         local('git push origin master')
 
 
-def update_project_dev():
+def update_project_prod():
     with cd('/var/www/crawler'):
         run('git pull')
         with prefix('source /var/www/venv/bin/activate'):
@@ -22,7 +22,7 @@ def update_project_dev():
             run('python manage.py collectstatic --noinput')
 
 
-def update_project_prod():
+def update_project_dev():
     with cd('/webapps/crawler/ibis_crawl_engine'):
         run('git pull')
         with prefix('source /webapps/crawler/bin/activate'):
