@@ -46,10 +46,11 @@ class SearchQuery(models.Model):
     rss_link = models.CharField(max_length=1000, blank=True, null=True)
     query = models.TextField(blank=True)
     source = models.CharField(max_length=15, choices=settings.SOURCES, default='google')
-    search_depth = models.PositiveIntegerField(default=5)
+    search_depth = models.PositiveIntegerField(default=10)
     active = models.BooleanField(default=True)
     period = models.CharField(max_length=20, choices=PERIODS, default='daily')
     last_processed = models.DateTimeField(blank=True, null=True)
+    response_address = models.CharField(max_length=50, blank=True, null=True)
     options = JSONField(blank=True, null=True)
 
     @property
@@ -69,6 +70,10 @@ class SearchQuery(models.Model):
 
         if not self.last_processed or now - self.last_processed > self.time_period:
             return True
+
+    @property
+    def remote_addr(self):
+        return 'http://{0}/'.format(self.response_address)
 
     def __str__(self):
         return "{0} [{1}]".format(self.search_id, self.search_type)

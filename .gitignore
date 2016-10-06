@@ -138,7 +138,7 @@ crashlytics-build.properties
 fabric.properties
 
 # Ignore django's settings.py
-ibis_crawl_engine/settings.py
+settings.py
 items_news_keywords_13.json
 local_tests.py
 Буде вилучено crawl_engine/search_testing.py

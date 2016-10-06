@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import redis
 
 from datetime import datetime
 from pybloomfilter import BloomFilter
@@ -10,17 +11,20 @@ from random import randint
 import requests
 from celery import shared_task, chain, group
 from celery.schedules import crontab
+from celery.exceptions import MaxRetriesExceededError
 from celery.task import periodic_task
 from django.conf import settings
 from django.utils.timezone import utc
 from django.forms.models import model_to_dict
 
 from crawl_engine.models import Article, SearchQuery, SearchTask
+from crawl_engine.serializers import ArticleTransferSerializer
 from crawl_engine.spiders.single_url_parser import ArticleParser
 from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
 from crawl_engine.spiders.rss_spider import RSSFeedParser
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from requests.exceptions import HTTPError
 
 from crawl_engine.utils.ibis_client import IbisClient
 
@@ -238,7 +242,7 @@ def check_search_queries():
             if search_query.expired_period:
                 # We need to check search_type at this point
                 # and initiate different tasks if any
-                if search_query.search_type == 'search_engine':
+                if search_query.search_type == 'search_engine' or 'simple_search':
                     job = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth,
                                                   search_query.options),
                                 run_job.s(search_query.pk))()
@@ -253,7 +257,7 @@ def check_search_queries():
                 now = datetime.utcnow().replace(tzinfo=utc)
                 search_query.last_processed = now
                 search_query.save()
-                SearchTask.objects.create(task_id=job_id, search_query=search_query)
+                # SearchTask.objects.create(task_id=job_id, search_query=search_query)
     return result
 
 
@@ -284,31 +288,53 @@ def run_job(url_list, search=None):
     return result.id
 
 
-# @periodic_task(
-#     run_every=(crontab(minute='*/5')),
-#     name="crawl_engine.tasks.check_articles",
-#     ignore_result=True
-# )
-# def check_articles(test=False):
-#     """
-#     This task checks filters NON processed articles from DB and pushes them to IBIS system
-#     :return: nothing
-#     """
-#     if test:
-#         articles = Article.objects.filter(translated=True, processed=True, pushed=False)[:5]
-#     else:
-#         articles = Article.objects.filter(translated=True, processed=True, pushed=False)
-#     articles_list = []
-#     for article in articles:
-#         item = model_to_dict(article, exclude=['search', 'pushed', 'top_image', 'post_date_crawled'])
-#         # item['search_id'] = article.related_search_id
-#         item['search_id'] = '5c15f2a9-b89a-4c0c-b7b5-b0eb38607b2c'
-#         item['top_image'] = article.top_image.path
-#         item['post_date_crawled'] = str(article.post_date_crawled)
-#         articles_list.append(item)
-#     data = articles_list
-#     payload = json.dumps(data)
-#     client = IbisClient()
-#     client.push_articles(data=payload)
-#
-#     return data
+@periodic_task(
+    run_every=(crontab(minute='*/2')),
+    name="crawl_engine.tasks.upload_articles",
+    ignore_result=True,
+    bind=True
+)
+def upload_articles(self, test=False):
+    """
+    This task checks filters NON processed articles from DB and pushes them to IBIS system
+    :return: nothing
+    """
+    r = redis.StrictRedis(host='localhost', port=6379, db=0)
+    task = r.get('crawl_engine.tasks.upload_articles')
+    if task:
+        pass
+    else:
+        r.set('crawl_engine.tasks.upload_articles', 1)
+        if test:
+            articles = Article.objects.filter(translated=True, processed=True, pushed=False)[:5]
+        else:
+            articles = Article.objects.filter(
+                translated=True,
+                processed=True,
+                pushed=False,
+                post_date_crawled__gte=datetime(2016, 10, 4).replace(tzinfo=utc),
+                search__search_id__isnull=False
+            ).order_by('-post_date_crawled')
+        if articles.count() > 0:
+            data = ArticleTransferSerializer(articles, many=True).data
+            client = IbisClient()
+            payload = json.dumps(data)
+            result = client.push_articles(data=payload)
+            if result.status_code == 201:
+                for article in articles:
+                    article.pushed = True
+                    article.save()
+                return 'Successfully Created'
+            if result.status_code == 400:
+                print(result.text)
+                try:
+                    upload_articles.retry(countdown=5, max_retries=3)
+                except MaxRetriesExceededError as e:
+                    print(e)
+            if result.status_code == 500:
+                print(result.text)
+                try:
+                    upload_articles.retry(countdown=5, max_retries=3)
+                except MaxRetriesExceededError as e:
+                    print(e)
+    r.delete(self.name)
