@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 import environ
+from kombu import Queue
 env = environ.Env(DEBUG=(bool, False),)  # set default values and casting
 environ.Env.read_env()  # reading .env file
 
@@ -41,6 +42,32 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERYD_MAX_TASKS_PER_CHILD = 100
 
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']
+
+# CELERY_DEFAULT_QUEUE = 'default'
+
+CELERY_QUEUES = (
+    Queue('default', routing_key='task.#'),
+    Queue('translation', routing_key='translation.#'),
+)
+
+# CELERY_ROUTES = {
+#     'crawl_engine.tasks.detect_lang_by_google': {
+#         'queue': 'translation',
+#         # 'routing_key': 'translation.detect',
+#     },
+#     'crawl_engine.tasks.google_translate': {
+#         'queue': 'translation',
+#         # 'routing_key': 'translation.translate',
+#     },
+#     'crawl_engine.tasks.google_detect_translate': {
+#         'queue': 'translation',
+#         # 'routing_key': 'translation.detect_translate',
+#     },
+# }
+
+# CELERY_DEFAULT_EXCHANGE = 'tasks'
+# CELERY_DEFAULT_EXCHANGE_TYPE = 'crawler'
+# CELERY_DEFAULT_ROUTING_KEY = 'task.default'
 
 
 # Quick-start development settings - unsuitable for production
