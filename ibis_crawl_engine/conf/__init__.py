@@ -34,10 +34,10 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 # CELERY_ACCEPT_CONTENT = ['json']
 # CELERY_TASK_SERIALIZER = 'json'
 # CELERY_RESULT_SERIALIZER = 'json'
-CELERY_MONGODB_BACKEND_SETTINGS = {
-    'database': MONGODB_DB,
-    'taskmeta_collection': 'task_meta',
-}
+# CELERY_MONGODB_BACKEND_SETTINGS = {
+#     'database': MONGODB_DB,
+#     'taskmeta_collection': 'task_meta',
+# }
 CELERYD_MAX_TASKS_PER_CHILD = 100
 
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']
