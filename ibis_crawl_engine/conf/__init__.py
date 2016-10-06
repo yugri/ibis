@@ -34,24 +34,13 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 # CELERY_ACCEPT_CONTENT = ['json']
 # CELERY_TASK_SERIALIZER = 'json'
 # CELERY_RESULT_SERIALIZER = 'json'
-CELERY_MONGODB_BACKEND_SETTINGS = {
-    'database': MONGODB_DB,
-    'taskmeta_collection': 'task_meta',
-}
+# CELERY_MONGODB_BACKEND_SETTINGS = {
+#     'database': MONGODB_DB,
+#     'taskmeta_collection': 'task_meta',
+# }
 CELERYD_MAX_TASKS_PER_CHILD = 100
 
-CELERY_ROUTES = {
-    'crawl_engine.tasks.crawl_url': {'queue': 'crawl'},
-    'crawl_engine.tasks.translate_content': {'queue': 'translate'},
-    'crawl_engine.tasks.google_translate': {'queue': 'translate'},
-    'crawl_engine.tasks.google_detect_translate': {'queue': 'translate'},
-    'crawl_engine.tasks.detect_lang_by_google': {'queue': 'translate'},
-    'crawl_engine.tasks.bound_and_save': {'queue': 'crawl'},
-    'crawl_engine.tasks.check_search_queries': {'queue': 'crawl'},
-    'crawl_engine.tasks.search_by_query': {'queue': 'crawl'},
-    'crawl_engine.tasks.read_rss': {'queue': 'crawl'},
-    'crawl_engine.tasks.run_job': {'queue': 'crawl'},
-}
+CELERY_ACCEPT_CONTENT = ['pickle', 'json']
 
 
 # Quick-start development settings - unsuitable for production
