@@ -242,7 +242,7 @@ def check_search_queries():
             if search_query.expired_period:
                 # We need to check search_type at this point
                 # and initiate different tasks if any
-                if search_query.search_type == 'search_engine' or 'simple_search':
+                if search_query.search_type == 'search_engine' or search_query.search_type == 'simple_search':
                     job = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth,
                                                   search_query.options),
                                 run_job.s(search_query.pk))()

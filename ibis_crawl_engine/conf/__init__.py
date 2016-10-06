@@ -40,6 +40,8 @@ CELERY_MONGODB_BACKEND_SETTINGS = {
 }
 CELERYD_MAX_TASKS_PER_CHILD = 100
 
+CELERY_ACCEPT_CONTENT = ['pickle', 'json']
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
