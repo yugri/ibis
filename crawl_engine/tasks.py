@@ -26,27 +26,20 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from requests.exceptions import HTTPError
 
-from crawl_engine.utils.ibis_client import IbisClient
+from crawl_engine.utils.ibis_client import IbisClient, chunks
 
 logger = logging.getLogger(__name__)
 
 
 @shared_task(name='crawl_engine.tasks.crawl_url')
 def crawl_url(url, search=None):
-    # Initiate Bloom Filter
-    bloom_file_path = settings.BASE_DIR + '/url.bloom'
-    if os.path.exists(bloom_file_path):
-        url_filter = BloomFilter.open(bloom_file_path)
-    else:
-        url_filter = BloomFilter(10000000, 0.1, bloom_file_path)
-
     result = None
-
-    if not url in url_filter:
-        parser = ArticleParser(url, url_filter, search)
-        result = parser.run()
-    else:
+    try:
+        article = Article.objects.filter(article_url=url)
         result = "Url was already crawled"
+    except Article.DoesNotExist:
+        parser = ArticleParser(url, search)
+        result = parser.run()
 
     return result
 
@@ -316,25 +309,26 @@ def upload_articles(self, test=False):
                 search__search_id__isnull=False
             ).order_by('-post_date_crawled')
         if articles.count() > 0:
-            data = ArticleTransferSerializer(articles, many=True).data
-            client = IbisClient()
-            payload = json.dumps(data)
-            result = client.push_articles(data=payload)
-            if result.status_code == 201:
-                for article in articles:
-                    article.pushed = True
-                    article.save()
-                return 'Successfully Created'
-            if result.status_code == 400:
-                print(result.text)
-                try:
-                    upload_articles.retry(countdown=5, max_retries=3)
-                except MaxRetriesExceededError as e:
-                    print(e)
-            if result.status_code == 500:
-                print(result.text)
-                try:
-                    upload_articles.retry(countdown=5, max_retries=3)
-                except MaxRetriesExceededError as e:
-                    print(e)
+            for article_chunk in chunks(articles, 50):
+                data = ArticleTransferSerializer(article_chunk, many=True).data
+                client = IbisClient()
+                payload = json.dumps(data)
+                result = client.push_articles(data=payload)
+                if result.status_code == 201:
+                    for article in article_chunk:
+                        article.pushed = True
+                        article.save()
+                    return 'Successfully Created'
+                if result.status_code == 400:
+                    print(result.text)
+                    try:
+                        upload_articles.retry(countdown=5, max_retries=3)
+                    except MaxRetriesExceededError as e:
+                        print(e)
+                if result.status_code == 500:
+                    print(result.text)
+                    try:
+                        upload_articles.retry(countdown=5, max_retries=3)
+                    except MaxRetriesExceededError as e:
+                        print(e)
     r.delete(self.name)

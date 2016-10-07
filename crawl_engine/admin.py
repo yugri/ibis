@@ -3,6 +3,16 @@ from django.contrib import admin
 from crawl_engine.models import Article, SearchQuery, SearchTask
 
 
+def mark_as_non_pushed(modeladmin, request, queryset):
+    queryset.update(pushed=False)
+mark_as_non_pushed.short_description = "Mark selected articles as NOT pushed"
+
+
+def mark_as_processed(modeladmin, request, queryset):
+    queryset.update(processed=True)
+mark_as_processed.short_description = "Mark selected articles as processed"
+
+
 class TasksAdmin(admin.ModelAdmin):
     list_display = ['task_id', 'tstamp']
     ordering = ['tstamp']
@@ -10,8 +20,10 @@ class TasksAdmin(admin.ModelAdmin):
 
 
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ['article_url', 'title', 'authors', 'translated', 'post_date_crawled', 'search_id']
-    list_filter = ('translated',)
+    list_display = ['title', 'authors', 'translated', 'post_date_crawled', 'search_id', 'short_url']
+    list_filter = ('translated', 'search_id')
+    search_fields = ('search__search_id',)
+    actions = [mark_as_non_pushed, mark_as_processed]
 
 
 class SearchTaskInline(admin.TabularInline):

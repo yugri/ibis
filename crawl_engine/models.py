@@ -10,6 +10,7 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.template.defaultfilters import truncatechars
 from django.utils.timezone import utc
 from django.contrib.postgres.fields import JSONField
 
@@ -85,7 +86,7 @@ class SearchTask(models.Model):
 
 
 class Article(models.Model):
-    article_url = models.URLField(max_length=1000)
+    article_url = models.URLField(max_length=1000, db_index=True)
     source_language = models.CharField(max_length=5, blank=True, null=True)
     title = models.CharField(max_length=1000, blank=True)
     translated_title = models.CharField(max_length=1000, blank=True)
@@ -103,6 +104,10 @@ class Article(models.Model):
 
     def __str__(self):
         return self.article_url
+
+    @property
+    def short_url(self):
+        return truncatechars(self.article_url, 30)
 
     def save(self, start_translation=False, push=False, *args, **kwargs):
         img_url = self.top_image_url
