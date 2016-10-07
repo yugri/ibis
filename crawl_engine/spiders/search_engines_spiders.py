@@ -152,8 +152,9 @@ class SearchEngineParser(object):
             r = requests.get(cse_url, params=params)
             loaded_data = json.loads(r.text)
 
-            for item in loaded_data['items']:
-                self.seed_links.append(item['link'])
+            if 'items' in loaded_data:
+                for item in loaded_data['items']:
+                    self.seed_links.append(item['link'])
 
         return self.seed_links
 
