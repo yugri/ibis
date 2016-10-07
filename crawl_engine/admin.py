@@ -11,7 +11,8 @@ class TasksAdmin(admin.ModelAdmin):
 
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ['article_url', 'title', 'authors', 'translated', 'post_date_crawled', 'search_id']
-    list_filter = ('translated',)
+    list_filter = ('translated', 'search_id')
+    search_fields = ['search_id']
 
 
 class SearchTaskInline(admin.TabularInline):

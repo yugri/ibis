@@ -328,7 +328,7 @@ def upload_articles(self, test=False):
                 payload = json.dumps(data)
                 result = client.push_articles(data=payload)
                 if result.status_code == 201:
-                    for article in articles:
+                    for article in article_chunk:
                         article.pushed = True
                         article.save()
                     return 'Successfully Created'
