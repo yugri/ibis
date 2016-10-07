@@ -10,6 +10,7 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.template.defaultfilters import truncatechars
 from django.utils.timezone import utc
 from django.contrib.postgres.fields import JSONField
 
@@ -103,6 +104,10 @@ class Article(models.Model):
 
     def __str__(self):
         return self.article_url
+
+    @property
+    def short_url(self):
+        return truncatechars(self.article_url, 30)
 
     def save(self, start_translation=False, push=False, *args, **kwargs):
         img_url = self.top_image_url
