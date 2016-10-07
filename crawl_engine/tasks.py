@@ -31,6 +31,12 @@ from crawl_engine.utils.ibis_client import IbisClient
 logger = logging.getLogger(__name__)
 
 
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
+
+
 @shared_task(name='crawl_engine.tasks.crawl_url')
 def crawl_url(url, search=None):
     # Initiate Bloom Filter
@@ -316,25 +322,26 @@ def upload_articles(self, test=False):
                 search__search_id__isnull=False
             ).order_by('-post_date_crawled')
         if articles.count() > 0:
-            data = ArticleTransferSerializer(articles, many=True).data
-            client = IbisClient()
-            payload = json.dumps(data)
-            result = client.push_articles(data=payload)
-            if result.status_code == 201:
-                for article in articles:
-                    article.pushed = True
-                    article.save()
-                return 'Successfully Created'
-            if result.status_code == 400:
-                print(result.text)
-                try:
-                    upload_articles.retry(countdown=5, max_retries=3)
-                except MaxRetriesExceededError as e:
-                    print(e)
-            if result.status_code == 500:
-                print(result.text)
-                try:
-                    upload_articles.retry(countdown=5, max_retries=3)
-                except MaxRetriesExceededError as e:
-                    print(e)
+            for article_chunk in chunks(articles, 50):
+                data = ArticleTransferSerializer(article_chunk, many=True).data
+                client = IbisClient()
+                payload = json.dumps(data)
+                result = client.push_articles(data=payload)
+                if result.status_code == 201:
+                    for article in articles:
+                        article.pushed = True
+                        article.save()
+                    return 'Successfully Created'
+                if result.status_code == 400:
+                    print(result.text)
+                    try:
+                        upload_articles.retry(countdown=5, max_retries=3)
+                    except MaxRetriesExceededError as e:
+                        print(e)
+                if result.status_code == 500:
+                    print(result.text)
+                    try:
+                        upload_articles.retry(countdown=5, max_retries=3)
+                    except MaxRetriesExceededError as e:
+                        print(e)
     r.delete(self.name)
