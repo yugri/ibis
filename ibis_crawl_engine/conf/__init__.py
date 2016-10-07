@@ -1,4 +1,7 @@
 from __future__ import absolute_import
+
+from kombu import Exchange
+
 """
 Django settings for ibis_crawl_engine project.
 
@@ -43,27 +46,27 @@ CELERYD_MAX_TASKS_PER_CHILD = 100
 
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']
 
-# CELERY_DEFAULT_QUEUE = 'default'
+CELERY_DEFAULT_QUEUE = 'crawler'
 
 CELERY_QUEUES = (
-    Queue('default', routing_key='task.#'),
-    Queue('translation', routing_key='translation.#'),
+    Queue('crawler', Exchange('crawler'), routing_key='crawler_task.#'),
+    Queue('translation', Exchange('translation'), routing_key='translation_task.#'),
 )
 
-# CELERY_ROUTES = {
-#     'crawl_engine.tasks.detect_lang_by_google': {
-#         'queue': 'translation',
-#         # 'routing_key': 'translation.detect',
-#     },
-#     'crawl_engine.tasks.google_translate': {
-#         'queue': 'translation',
-#         # 'routing_key': 'translation.translate',
-#     },
-#     'crawl_engine.tasks.google_detect_translate': {
-#         'queue': 'translation',
-#         # 'routing_key': 'translation.detect_translate',
-#     },
-# }
+CELERY_ROUTES = {
+    'crawl_engine.tasks.detect_lang_by_google': {
+        'queue': 'translation',
+        # 'routing_key': 'translation.detect',
+    },
+    'crawl_engine.tasks.google_translate': {
+        'queue': 'translation',
+        # 'routing_key': 'translation.translate',
+    },
+    'crawl_engine.tasks.google_detect_translate': {
+        'queue': 'translation',
+        # 'routing_key': 'translation.detect_translate',
+    },
+}
 
 # CELERY_DEFAULT_EXCHANGE = 'tasks'
 # CELERY_DEFAULT_EXCHANGE_TYPE = 'crawler'

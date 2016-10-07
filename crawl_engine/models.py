@@ -178,11 +178,11 @@ class Article(models.Model):
                     logger.info("No need to execute the translation task because article's language is EN.")
                 # Else run translation tasks. Tasks will run separately for the body and the title.
                 else:
-                    result_body = chord([google_translate.s(part, source).apply_async(queue='translation') for part in splitted_body]) \
-                        (bound_and_save.s(article_id, source, 'body')).apply_aync()
+                    result_body = chord([google_translate.s(part, source) for part in splitted_body]) \
+                        (bound_and_save.s(article_id, source, 'body'))
                     logger.info("Translation task for BODY has been queued, ID: %s" % result_body.id)
-                    result_title = chord([google_translate.s(part, source).apply_async(queue='translation') for part in splitted_title]) \
-                        (bound_and_save.s(article_id, source, 'title')).apply_async()
+                    result_title = chord([google_translate.s(part, source) for part in splitted_title]) \
+                        (bound_and_save.s(article_id, source, 'title'))
                     logger.info("Translation task for TITLE has been queued, ID: %s" % result_title.id)
 
     @property
