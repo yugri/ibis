@@ -23,7 +23,7 @@ class ArticleAdmin(admin.ModelAdmin):
     list_display = ['article_url', 'title', 'authors', 'translated', 'post_date_crawled', 'search_id']
     list_filter = ('translated', 'search_id')
     search_fields = ['search_id']
-    actions = ['mark_as_non_pushed', 'mark_as_processed']
+    actions = [mark_as_non_pushed, mark_as_processed]
 
 
 class SearchTaskInline(admin.TabularInline):
