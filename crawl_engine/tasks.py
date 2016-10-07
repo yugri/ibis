@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 def crawl_url(url, search=None):
     result = None
     try:
-        article = Article.objects.filter(article_url=url)
+        article = Article.objects.get(article_url=url)
         result = "Url was already crawled"
     except Article.DoesNotExist:
         parser = ArticleParser(url, search)
