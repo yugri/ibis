@@ -26,15 +26,9 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from requests.exceptions import HTTPError
 
-from crawl_engine.utils.ibis_client import IbisClient
+from crawl_engine.utils.ibis_client import IbisClient, chunks
 
 logger = logging.getLogger(__name__)
-
-
-def chunks(l, n):
-    """Yield successive n-sized chunks from l."""
-    for i in range(0, len(l), n):
-        yield l[i:i + n]
 
 
 @shared_task(name='crawl_engine.tasks.crawl_url')
