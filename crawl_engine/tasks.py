@@ -33,17 +33,20 @@ logger = logging.getLogger(__name__)
 
 @shared_task(name='crawl_engine.tasks.crawl_url')
 def crawl_url(url, search=None):
-    # Initiate Bloom Filter
-    bloom_file_path = settings.BASE_DIR + '/url.bloom'
-    if os.path.exists(bloom_file_path):
-        url_filter = BloomFilter.open(bloom_file_path)
-    else:
-        url_filter = BloomFilter(10000000, 0.1, bloom_file_path)
-
+    # # Initiate Bloom Filter
+    # bloom_file_path = settings.BASE_DIR + '/url.bloom'
+    # if os.path.exists(bloom_file_path):
+    #     url_filter = BloomFilter.open(bloom_file_path)
+    # else:
+    #     url_filter = BloomFilter(10000000, 0.1, bloom_file_path)
     result = None
+    try:
+        article = Article.objects.filter(article_url=url)
+    except Article.DoesNotExist:
+        article = None
 
-    if not url in url_filter:
-        parser = ArticleParser(url, url_filter, search)
+    if not article:
+        parser = ArticleParser(url, search)
         result = parser.run()
     else:
         result = "Url was already crawled"

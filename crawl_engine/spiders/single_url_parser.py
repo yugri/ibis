@@ -24,10 +24,9 @@ class ArticleParser:
     """
     Single URL parser
     """
-    def __init__(self, url, url_filter, search=None):
+    def __init__(self, url, search=None):
         self.url = url
         self.search = search
-        self.filter = url_filter
 
     def run(self):
         """
@@ -101,8 +100,6 @@ class ArticleParser:
 
                 article.source_language = text_lang if text_lang == title_lang else None
                 article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
-                # Add our URL to Bloom Filter
-                self.filter.add(page.url)
                 article.save(start_translation=not article.translated)
                 result = article.id
             return result
