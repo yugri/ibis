@@ -24,7 +24,7 @@ def update_project_prod():
 
 def update_project_dev():
     with cd('/webapps/crawler/ibis_crawl_engine'):
-        run('git pull')
+        run('git pull --ff --ff-only')
         with prefix('source /webapps/crawler/bin/activate'):
             run('python manage.py migrate --noinput')
             run('python manage.py collectstatic --noinput')
