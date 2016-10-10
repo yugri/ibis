@@ -21,7 +21,7 @@ class TasksAdmin(admin.ModelAdmin):
 
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ['title', 'authors', 'translated', 'post_date_crawled', 'search_id', 'short_url']
-    list_filter = ('translated', 'processed', 'pushed')
+    list_filter = ('translated', 'processed')
     search_fields = ('search__search_id',)
     actions = [mark_as_non_pushed, mark_as_processed]
 
