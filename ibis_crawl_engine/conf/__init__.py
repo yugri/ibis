@@ -199,6 +199,9 @@ CSE_ID = env.get_value('CSE_ID', default=None)  # The custom search engine ID
 SOURCES = (
     ('google', 'Google'),
     ('google_cse', 'Google CSE'),
+    ('google_blogs', 'Google Blogs'),
+    ('google_news', 'Google News'),
+    ('google_scholar', 'Google Scholar'),
     # ('bing', 'Bing'),
     # ('yandex', 'Yandex')
 )

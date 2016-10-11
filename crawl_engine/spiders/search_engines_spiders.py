@@ -1,11 +1,16 @@
 import logging
 import json
+from random import randint
+from time import sleep
+
 import django
 
 from django.conf import settings
 import lxml.html
 import requests
 from urllib.parse import quote, parse_qs, urlparse, unquote
+
+from crawl_engine.spiders.rss_spider import RSSFeedParser
 
 logger = logging.getLogger(__name__)
 
@@ -22,9 +27,22 @@ class SearchEngineParser(object):
             'key': 'q',
             'init_url': 'https://google.com'
         },
+        'google_scholar': {
+            'url': 'https://scholar.google.com.ua/scholar',
+            'key': 'q',
+        },
+        'google_news': {
+            'url': 'https://news.google.com/news',
+            'key': 'q',
+        },
         'google_cse': {
             'url': 'https://www.googleapis.com/customsearch/v1',
             'key': 'q'
+        },
+        'google_blogs': {
+            'url': 'https://google.com/search',
+            'key': 'q',
+            'init_url': 'https://google.com'
         },
         'bing': {'url': 'https://www.bing.com/search', 'key': 'q'},
         'yandex': {'url': 'https://www.yandex.ua/search/', 'key': 'text'}
@@ -35,7 +53,7 @@ class SearchEngineParser(object):
 
     def __init__(self, search_query, engine='google', depth=5, options=None):
         # Build query dict at init
-        if engine == 'google' or engine == 'yandex':
+        if engine == 'google' or engine == 'yandex' or engine == 'google_news':
             search_query = "+".join(search_query.split())
         elif search_query == 'google_cse':
             search_query = search_query
@@ -77,6 +95,12 @@ class SearchEngineParser(object):
             return self.search_google()
         elif self.engine == 'google_cse':
             return self.search_google_cse()
+        elif self.engine == 'google_blogs':
+            return self.search_google_blogs()
+        elif self.engine == 'google_scholar':
+            return self.search_google_scholar()
+        elif self.engine == 'google_news':
+            return self.search_google_news()
         elif self.engine == 'bing':
             return self.search_bing()
         else:
@@ -158,6 +182,90 @@ class SearchEngineParser(object):
 
         return self.seed_links
 
+    def search_google_blogs(self):
+        """
+        Method for fetching results from google's blog search.
+        Search query example: https://google.com/search?q=robotics+netherlands&tbm=nws&tbs=nrt:b&start=20
+        tbm parameter responsible for NEWS search
+        tbs parameter responsible for restriction search only from BLOGS
+        start parameter responsible for results pagination
+        :return: seed_links
+        """
+        for count in range(0, self.depth):
+            url = self.engines_payload['google']['url'] + '?q=' + self.search_query + \
+                  '&tbm=nws&tbs=nrt:b' + '&start=%s' % self._google_cursor(count)
+            # For requesting Google patiently
+            sleep(randint(1, 2))
+            r = requests.get(url)
+
+            tree = lxml.html.fromstring(r.text)
+
+            try:
+                assert "Google" in tree.findtext('.//title')
+            except AssertionError as e:
+                logger.info("I can't find Google in page title")
+                raise e
+
+            # Collect all result links for further crawling task
+            hrefs = tree.xpath('//h3/a/@href')
+            for href in hrefs:
+                if href.startswith('/url?'):
+                    clean_url = self._parse_google_href(href)
+                    if clean_url is not None:
+                        self.seed_links.append(clean_url)
+
+        return self.seed_links
+
+    def search_google_scholar(self):
+        """
+        Method for fetching results from google's scholar.google.com.
+        Search query example: https://scholar.google.com.ua/scholar?start=30&q=robotics+ai&start=30
+        start parameter responsible for results pagination
+        :return: seed_links
+        """
+        for count in range(0, self.depth):
+            url = self.engines_payload['google_scholar']['url'] + '?q=' + self.search_query + \
+                  '&start=%s' % self._google_cursor(count)
+            # For requesting Google patiently
+            sleep(randint(1, 2))
+            r = requests.get(url)
+
+            tree = lxml.html.fromstring(r.text)
+
+            try:
+                assert "Google" in tree.findtext('.//title')
+            except AssertionError as e:
+                logger.info("I can't find Google in page title")
+                raise e
+
+            # Collect all result links for further crawling task
+            hrefs = tree.xpath('//h3/a/@href')
+            for href in hrefs:
+                if href.startswith('/url?'):
+                    clean_url = self._parse_google_href(href)
+                    if clean_url is not None:
+                        self.seed_links.append(clean_url)
+                else:
+                    self.seed_links.append(href)
+
+        return self.seed_links
+
+    def search_google_news(self):
+        """
+        Gets results from google's news.google.com and parses all them by feedparser
+        Search query example: https://news.google.com/news/feeds?output=rss&q=banking&num=30.
+        num parameter responsible for the number of returned entries (max=30, default=30)
+        output parameter responsible for response format (ATOM or RSS)
+        :return: seed_links
+        """
+        url = self.engines_payload['google_news']['url'] + '?q=' + self.search_query + '&output=rss&num=100'
+        parser = RSSFeedParser(url)
+        feed_links = parser.parse_rss()
+        for link in feed_links:
+            self.seed_links.append(self._parse_google_news_href(link))
+
+        return self.seed_links
+
     def search_bing(self):
         """
         This method uses Requests for querying bing's search results.
@@ -206,8 +314,6 @@ class SearchEngineParser(object):
 
         return self.seed_links
 
-
-
     def get_urls(self, content):
         """
         Revise this method [NOT USED NOW]
@@ -238,16 +344,30 @@ class SearchEngineParser(object):
 
     def _parse_google_href(self, href):
         """
-        Revise this method [NOT USED NOW]
+        Revise this method
         """
         # Method for normalising Google's result link. Receives the link, parse it and gets the direct
         # url from querystring. E.g.: google's result links look's like:
-        # https://www.google.com.ua/url?q=some=query&url=http://foo.bar.url
-        # so we should get only url parameter from google's querystring
-        # url = urlparse(link)
+        # https://www.google.com/url?q=some+query&url=http://foo.bar.url
+        # so we should get only q parameter from google's querystring
         try:
             parsed = urlparse(href)
             url = parse_qs(parsed.query)['q'][0]
+            return unquote(url)
+        except KeyError:
+            pass
+
+    def _parse_google_news_href(self, href):
+        """
+        Revise this method
+        """
+        # Method for normalising Google News result link. Receives the link, parse it and gets the direct
+        # url from querystring. E.g.: google's result links look's like:
+        # https://www.news.google.com/url?q=some+query&url=http://foo.bar.url
+        # so we should get only url parameter from google's querystring
+        try:
+            parsed = urlparse(href)
+            url = parse_qs(parsed.query)['url'][0]
             return unquote(url)
         except KeyError:
             pass
