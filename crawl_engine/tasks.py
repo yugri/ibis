@@ -1,3 +1,4 @@
+import io
 import json
 import logging
 import os
@@ -14,6 +15,7 @@ from celery.schedules import crontab
 from celery.exceptions import MaxRetriesExceededError
 from celery.task import periodic_task
 from django.conf import settings
+from django.core.files.base import ContentFile
 from django.utils.timezone import utc
 from django.forms.models import model_to_dict
 
@@ -42,6 +44,23 @@ def crawl_url(url, search=None):
         result = parser.run()
 
     return result
+
+
+@shared_task(name="crawl_engine.tasks.upload_file")
+def upload_file(url, article_id):
+    article = Article.objects.get(pk=article_id)
+    try:
+        sleep(1)
+        r = requests.get(url)
+    except requests.ConnectionError as e:
+        r = None
+        logger.error(e)
+
+    if r.status_code == 200:
+        file_io = io.BytesIO(r.content)
+        name = str(hash(url))
+        file_name = "{0}.{1}".format(name, '.pdf')
+        article.file.save(file_name, ContentFile(file_io.getvalue()))
 
 
 @shared_task(name='crawl_engine.tasks.translate_content')

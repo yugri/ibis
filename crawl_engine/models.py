@@ -98,6 +98,7 @@ class Article(models.Model):
     translated = models.BooleanField(default=False, db_index=True)
     top_image_url = models.URLField(max_length=1000, blank=True)
     top_image = models.ImageField(upload_to='article-images', blank=True, null=True, max_length=1000)
+    file = models.FileField(upload_to='article-files', blank=True, null=True)
     search = models.ForeignKey(SearchQuery, blank=True, null=True)
     processed = models.BooleanField(default=False, db_index=True)
     pushed = models.BooleanField(default=False, db_index=True)
@@ -109,9 +110,10 @@ class Article(models.Model):
     def short_url(self):
         return truncatechars(self.article_url, 30)
 
-    def save(self, start_translation=False, push=False, *args, **kwargs):
+    def save(self, start_translation=False, push=False, upload_file=False, *args, **kwargs):
         img_url = self.top_image_url
         if img_url and not self.top_image:
+            # TODO: Rewrite this behavior to save images and files in async mode
             filename = str(hash(img_url))
             self.set_image(img_url, filename)
 
@@ -120,8 +122,12 @@ class Article(models.Model):
             self.run_translation_task(self)
         if push:
             self.push_article()
+        if upload_file:
+            self.run_file_upload_task()
 
     def set_image(self, url, filename):
+        # This method executes new request to the resource
+        # for loading articles top_image
         try:
             sleep(1)
             r = requests.get(url, stream=True)
@@ -135,6 +141,11 @@ class Article(models.Model):
             img.save(img_io, format=img.format)
             image_name = "{0}.{1}".format(filename, str(img.format).lower())
             self.top_image.save(image_name, ContentFile(img_io.getvalue()))
+
+    def run_file_upload_task(self):
+        from crawl_engine.tasks import upload_file
+        # TODO: return some stuff after task running
+        result = upload_file.apply_async((self.article_url, self.id))
 
     def run_translation_task(self, instance):
         from crawl_engine.tasks import google_translate, detect_lang_by_google, bound_and_save
