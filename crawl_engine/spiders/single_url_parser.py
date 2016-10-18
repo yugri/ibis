@@ -46,6 +46,7 @@ class ArticleParser:
         if self._define_url_type(r) == '.pdf':
             article.article_url = self.url
             article.save(upload_file=True)
+            article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
             result = article.id
 
         # else parse url by the Newspaper's library

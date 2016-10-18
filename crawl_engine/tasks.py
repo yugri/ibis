@@ -48,6 +48,12 @@ def crawl_url(url, search=None):
 
 @shared_task(name="crawl_engine.tasks.upload_file")
 def upload_file(url, article_id):
+    """
+    Task for downloading files [pdf] at a background mode.
+    :param url:
+    :param article_id:
+    :return: nothing
+    """
     article = Article.objects.get(pk=article_id)
     try:
         sleep(1)
@@ -59,7 +65,7 @@ def upload_file(url, article_id):
     if r.status_code == 200:
         file_io = io.BytesIO(r.content)
         name = str(hash(url))
-        file_name = "{0}.{1}".format(name, '.pdf')
+        file_name = "{0}.{1}".format(name, 'pdf')
         article.file.save(file_name, ContentFile(file_io.getvalue()))
 
 
