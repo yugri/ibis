@@ -14,7 +14,7 @@ from django.template.defaultfilters import truncatechars
 from django.utils.timezone import utc
 from django.contrib.postgres.fields import JSONField
 
-from crawl_engine.utils.article_images_utils import is_url_image
+from crawl_engine.utils.article_processing_utils import is_url_image
 from crawl_engine.utils.ibis_client import IbisClient
 from crawl_engine.utils.translation_utils import separate
 

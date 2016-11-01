@@ -19,6 +19,7 @@ from django.core.files.base import ContentFile
 from django.utils.timezone import utc
 from django.forms.models import model_to_dict
 
+from crawl_engine.exceptions import BlacklistedURLException
 from crawl_engine.models import Article, SearchQuery, SearchTask
 from crawl_engine.serializers import ArticleTransferSerializer
 from crawl_engine.spiders.single_url_parser import ArticleParser
@@ -28,6 +29,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from requests.exceptions import HTTPError
 
+from crawl_engine.utils.article_processing_utils import is_url_blacklisted
 from crawl_engine.utils.ibis_client import IbisClient, chunks
 
 logger = logging.getLogger(__name__)
@@ -36,12 +38,17 @@ logger = logging.getLogger(__name__)
 @shared_task(name='crawl_engine.tasks.crawl_url')
 def crawl_url(url, search=None):
     result = None
+    # Check if URL is in blacklist
     try:
-        article = Article.objects.get(article_url=url)
-        result = "Url was already crawled"
-    except Article.DoesNotExist:
-        parser = ArticleParser(url, search)
-        result = parser.run()
+        is_url_blacklisted(url)
+        try:
+            article = Article.objects.get(article_url=url)
+            result = "Url was already crawled"
+        except Article.DoesNotExist:
+            parser = ArticleParser(url, search)
+            result = parser.run()
+    except BlacklistedURLException as e:
+        result = 'Blacklisted resource "%s" found.' % e.resource
 
     return result
 
