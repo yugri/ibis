@@ -14,6 +14,7 @@ from django.template.defaultfilters import truncatechars
 from django.utils.timezone import utc
 from django.contrib.postgres.fields import JSONField
 
+from crawl_engine.utils.article_images_utils import is_url_image
 from crawl_engine.utils.ibis_client import IbisClient
 from crawl_engine.utils.translation_utils import separate
 
@@ -112,7 +113,7 @@ class Article(models.Model):
 
     def save(self, start_translation=False, push=False, upload_file=False, *args, **kwargs):
         img_url = self.top_image_url
-        if img_url and not self.top_image:
+        if is_url_image(img_url) and not self.top_image:
             # TODO: Rewrite this behavior to save images and files in async mode
             filename = str(hash(img_url))
             self.set_image(img_url, filename)
@@ -133,7 +134,7 @@ class Article(models.Model):
             r = requests.get(url, stream=True)
         except requests.ConnectionError as e:
             r = None
-            self.logger.error(e)
+            logger.error(e)
 
         if r.status_code == 200:
             img = Image.open(io.BytesIO(r.content))
