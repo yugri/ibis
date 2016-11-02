@@ -40,85 +40,94 @@ class ArticleParser:
         article = Article()
 
         # Try to load url and check if there is any other content type rather than html
+        # If connections problems are take a place > handle request.ConnectionError and set r to None
         # We pass this response through all methods to avoid duplicate queries
-        r = requests.get(self.url)
+        try:
+            r = requests.get(self.url)
+        except requests.ConnectionError as e:
+            logger.info(e)
+            r = None
         # if PDF file
-        if self._define_url_type(r) == '.pdf':
-            article.article_url = self.url
-            article.save(upload_file=True)
-            article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
-            result = article.id
 
-        # else parse url by the Newspaper's library
+        if r is not None:
+            if self._define_url_type(r) == '.pdf':
+                article.article_url = self.url
+                article.save(upload_file=True)
+                article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
+                result = article.id
+
+            # else parse url by the Newspaper's library
+            else:
+                # Instantiate newspaper's Article api and download an article from given url
+                page = np(self.url)
+                page_loaded = False
+                page_parsed = False
+                try:
+                    # Pass our response as <r> argument
+                    page = self._download_page(page, r)
+                    page_loaded = True
+                except TimeoutException as e:
+                    logger.info(e)
+                    result = e
+                try:
+                    page.parse()
+                    page_parsed = True
+                except ArticleException as e:
+                    logger.info(e)
+                    result = e
+
+                if page_loaded and page_parsed:
+
+                    author = extractArticleAuthor(page.html)
+                    title = extractArticleTitle(page.html)
+
+                    text = page.text if page.text else extractArticleText(page.html)
+                    date = extractArticlePublishedDate(self.url, page.html)
+
+                    if len(text) == 0:
+                        result = "No body text in article."
+                        return result
+                    else:
+                        article.article_url = page.url
+                        article.title = title
+                        article.top_image_url = page.top_image
+                        try:
+                            article.authors = author if author else article.authors[0]
+                        except IndexError:
+                            article.authors = ''
+
+                        article.body = re.sub('\n+', '\n', re.sub(' +', ' ', text))
+                        article.post_date_created = date
+
+                        # Detect article source language at this point.
+                        # If language is 'en' we save an <article.translated_title>
+                        # and <article.translated_body> same as <title> and <body>.
+                        title_lang = ''
+                        text_lang = ''
+                        try:
+                            title_lang = detect(article.title)
+                        except LangDetectException as e:
+                            logger.error(e)
+                            pass
+
+                        try:
+                            text_lang = detect(article.body)
+                        except LangDetectException as e:
+                            logger.error(e)
+                            pass
+
+                        if title_lang == 'en' and text_lang == 'en':
+                            article.translated_title = title
+                            article.translated_body = text
+                            article.translated = True
+                            article.processed = True
+
+                        article.source_language = text_lang if text_lang == title_lang else None
+                        article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
+                        article.save(start_translation=not article.translated)
+                        result = article.id
         else:
-            # Instantiate newspaper's Article api and download an article from given url
-            page = np(self.url)
-            page_loaded = False
-            page_parsed = False
-            try:
-                # Pass our response as <r> argument
-                page = self._download_page(page, r)
-                page_loaded = True
-            except TimeoutException as e:
-                logger.info(e)
-                result = e
-            try:
-                page.parse()
-                page_parsed = True
-            except ArticleException as e:
-                logger.info(e)
-                result = e
-
-            if page_loaded and page_parsed:
-
-                author = extractArticleAuthor(page.html)
-                title = extractArticleTitle(page.html)
-
-                text = page.text if page.text else extractArticleText(page.html)
-                date = extractArticlePublishedDate(self.url, page.html)
-
-                if len(text) == 0:
-                    result = "No body text in article."
-                    return result
-                else:
-                    article.article_url = page.url
-                    article.title = title
-                    article.top_image_url = page.top_image
-                    try:
-                        article.authors = author if author else article.authors[0]
-                    except IndexError:
-                        article.authors = ''
-
-                    article.body = re.sub('\n+', '\n', re.sub(' +', ' ', text))
-                    article.post_date_created = date
-
-                    # Detect article source language at this point.
-                    # If language is 'en' we save an <article.translated_title>
-                    # and <article.translated_body> same as <title> and <body>.
-                    title_lang = ''
-                    text_lang = ''
-                    try:
-                        title_lang = detect(article.title)
-                    except LangDetectException as e:
-                        logger.error(e)
-                        pass
-
-                    try:
-                        text_lang = detect(article.body)
-                    except LangDetectException as e:
-                        logger.error(e)
-                        pass
-
-                    if title_lang == 'en' and text_lang == 'en':
-                        article.translated_title = title
-                        article.translated_body = text
-                        article.translated = True
-                        article.processed = True
-
-                    article.source_language = text_lang if text_lang == title_lang else None
-                    article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
-                    article.save(start_translation=not article.translated)
-                    result = article.id
+            result = "Some troubles with connection."
         return result
 
     def download_image(self, article_instance):

@@ -136,7 +136,7 @@ class Article(models.Model):
             r = None
             logger.error(e)
 
-        if r.status_code == 200:
+        if r is not None and r.status_code == 200:
             img = Image.open(io.BytesIO(r.content))
             img_io = io.BytesIO()
             img.save(img_io, format=img.format)
