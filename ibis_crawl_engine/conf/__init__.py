@@ -202,8 +202,8 @@ SOURCES = (
     ('google_blogs', 'Google Blogs'),
     ('google_news', 'Google News'),
     ('google_scholar', 'Google Scholar'),
-    # ('bing', 'Bing'),
-    # ('yandex', 'Yandex')
+    ('bing', 'Bing'),
+    ('yandex', 'Yandex')
 )
 
 IBIS_ADDRESS = None
