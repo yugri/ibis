@@ -261,23 +261,24 @@ def check_search_queries():
     """
     result = "All queries were checked"
     search_queries = SearchQuery.objects.all()
-    job_id = None
+    job_keys = []
     for search_query in search_queries:
         if search_query.active:
             if search_query.expired_period:
                 # We need to check search_type at this point
                 # and initiate different tasks if any
                 if search_query.search_type == 'search_engine' or search_query.search_type == 'simple_search':
-                    job = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth,
-                                                  search_query.options),
-                                run_job.s(search_query.pk))()
-                    job_id = job.id
+                    for source in search_query.get_sources:
+                        job = chain(search_by_query.s(search_query.query, source, search_query.search_depth,
+                                                      search_query.options),
+                                    run_job.s(search_query.pk))()
+                        job_keys.append(job.id)
                 elif search_query.search_type == 'rss':
                     job = chain(read_rss.s(search_query.rss_link), run_job.s(search_query.pk))()
-                    job_id = job.id
+                    job_keys.append(job.id)
                 elif search_query.search_type == 'article':
                     job = run_job.delay([search_query.article_url], search_query.pk)
-                    job_id = job.id
+                    job_keys.append(job.id)
                 # Update search last processed date, save it and create the task obj
                 now = datetime.utcnow().replace(tzinfo=utc)
                 search_query.last_processed = now

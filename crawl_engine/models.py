@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from PIL import Image
 from celery import chord
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models.signals import post_save
@@ -47,13 +48,18 @@ class SearchQuery(models.Model):
     article_url = models.CharField(max_length=1000, blank=True, null=True)
     rss_link = models.CharField(max_length=1000, blank=True, null=True)
     query = models.TextField(blank=True)
-    source = models.CharField(max_length=15, choices=settings.SOURCES, default='google')
+    source = models.CharField(max_length=200, default='google',
+                              help_text='Type please with 1 backspace and 1 coma btw words. Ex.: google, yahoo')
     search_depth = models.PositiveIntegerField(default=10)
     active = models.BooleanField(default=True)
     period = models.CharField(max_length=20, choices=PERIODS, default='daily')
     last_processed = models.DateTimeField(blank=True, null=True)
     response_address = models.CharField(max_length=50, blank=True, null=True)
     options = JSONField(blank=True, null=True)
+
+    @property
+    def get_sources(self):
+        return self.source.split(', ')
 
     @property
     def time_period(self):
@@ -79,6 +85,13 @@ class SearchQuery(models.Model):
 
     def __str__(self):
         return "{0} [{1}]".format(self.search_id, self.search_type)
+
+    def clean(self):
+        source_choices = [x[0] for x in settings.SOURCES]
+        for source in self.get_sources:
+            if source not in source_choices:
+                raise ValidationError("Can't resolve a source type: %s.\n"
+                                      "Choices are: %s" % (source, str(source_choices)))
 
 
 class SearchTask(models.Model):
