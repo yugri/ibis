@@ -78,8 +78,18 @@ class ArticleParser:
 
                 if page_loaded and page_parsed:
 
-                    author = extractArticleAuthor(page.html)
-                    title = extractArticleTitle(page.html)
+                    try:
+                        author = extractArticleAuthor(page.html)
+                    except (ValueError, OSError, KeyError):
+                        # We pass all errors raised by a Newspaper module
+                        # during getting all article's data
+                        pass
+                    try:
+                        title = extractArticleTitle(page.html)
+                    except (ValueError, OSError, KeyError):
+                        # We pass all errors raised by a Newspaper module
+                        # during getting all article's data
+                        pass
 
                     text = page.text if page.text else extractArticleText(page.html)
                     date = extractArticlePublishedDate(self.url, page.html)
