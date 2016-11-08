@@ -122,7 +122,7 @@ class SearchEngineParser(object):
             try:
                 assert "Google" in tree.findtext('.//title')
             except AssertionError as e:
-                logger.info("I can't find Google in page title")
+                logger.info("I can not find Google in page title")
                 raise e
 
             # Collect all result links for further crawling task
