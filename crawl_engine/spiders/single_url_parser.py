@@ -83,13 +83,13 @@ class ArticleParser:
                     except (ValueError, OSError, KeyError):
                         # We pass all errors raised by a Newspaper module
                         # during getting all article's data
-                        pass
+                        author = None
                     try:
                         title = extractArticleTitle(page.html)
                     except (ValueError, OSError, KeyError):
                         # We pass all errors raised by a Newspaper module
                         # during getting all article's data
-                        pass
+                        title = None
 
                     text = page.text if page.text else extractArticleText(page.html)
                     date = extractArticlePublishedDate(self.url, page.html)
