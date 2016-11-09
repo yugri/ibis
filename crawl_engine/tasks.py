@@ -48,7 +48,7 @@ def crawl_url(url, search=None):
             parser = ArticleParser(url, search)
             result = parser.run()
     except BlacklistedURLException as e:
-        result = 'Blacklisted resource "%s" was found.' % e.resource
+        result = 'Blacklisted resource "%s" found.' % e.resource
 
     return result
 
