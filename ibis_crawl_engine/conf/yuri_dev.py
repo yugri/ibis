@@ -20,6 +20,14 @@ DATABASES = {
         'PASSWORD': 'crawler',
         'HOST': 'localhost',
         'PORT': ''
+    },
+    'articles': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'articles',
+        'USER': 'ibis',
+        'PASSWORD': '13635724',
+        'HOST': 'localhost',
+        'PORT': '5433'
     }
 }
 
