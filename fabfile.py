@@ -1,7 +1,5 @@
 from fabric.api import *
 
-# env.hosts = ['139.59.138.205']
-# env.hosts = ['95.85.40.149']
 env.roledefs = {
     'prod': ['95.85.40.149'],
     'dev': ['139.59.138.205'],
