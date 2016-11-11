@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = 'Deletes all article objects duplicates'
+    help = 'Deletes all article objects duplicates from given database'
 
     def add_arguments(self, parser):
         parser.add_argument('db_name', type=str)
