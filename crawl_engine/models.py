@@ -106,7 +106,7 @@ class Article(models.Model):
     translated_title = models.CharField(max_length=1000, blank=True)
     body = models.TextField(blank=True)
     translated_body = models.TextField(blank=True)
-    authors = models.CharField(max_length=1000, blank=True)
+    authors = models.CharField(max_length=1000, blank=True, null=True)
     post_date_created = models.CharField(max_length=50, blank=True)
     post_date_crawled = models.DateTimeField(auto_now_add=True, null=True)
     translated = models.BooleanField(default=False, db_index=True)

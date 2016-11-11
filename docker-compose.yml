@@ -15,4 +15,4 @@ services:
       - POSGTGRES_PASSWORD=13635724
       - POSTGRES_DB=articles
     ports:
-      - "5433:5432"
+      - "5434:5432"
