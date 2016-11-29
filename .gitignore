@@ -101,6 +101,7 @@ ENV/
 .idea/dictionaries
 .idea/vcs.xml
 .idea/jsLibraryMappings.xml
+.idea
 
 # Sensitive or high-churn files:
 .idea/dataSources.ids
@@ -139,11 +140,8 @@ fabric.properties
 
 # Ignore django's settings.py
 settings.py
-ibis_crawl_engine/settings.py
 items_news_keywords_13.json
 local_tests.py
-.idea/ibis_crawl_engine.iml
-.idea/misc.xml
 Буде вилучено crawl_engine/search_testing.py
 Буде вилучено static/
 Буде вилучено url.bloom

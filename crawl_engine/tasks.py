@@ -5,7 +5,6 @@ import os
 import redis
 
 from datetime import datetime
-from pybloomfilter import BloomFilter
 from time import sleep
 from random import randint
 

@@ -13,7 +13,7 @@ class SearchTypesList(object):
 
 urlpatterns = [
     # url(r'^api/', include(router.urls, namespace='api')),
-    url(r'add-task-url/', AddTaskURLView.as_view()),
+    # url(r'add-task-url/', AddTaskURLView.as_view()),
     # url(r'articles/', ArticleListSet.as_view({
     #     'get': 'list',
     # })),
