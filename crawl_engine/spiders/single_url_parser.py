@@ -103,7 +103,7 @@ class ArticleParser:
                         article.top_image_url = page.top_image
                         try:
                             article.authors = author if author else article.authors[0]
-                        except IndexError:
+                        except (IndexError, TypeError):
                             article.authors = ''
 
                         article.body = re.sub('\n+', '\n', re.sub(' +', ' ', text))
