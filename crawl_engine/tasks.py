@@ -345,22 +345,27 @@ def upload_articles(self, test=False):
                 data = ArticleTransferSerializer(article_chunk, many=True).data
                 client = IbisClient()
                 payload = json.dumps(data)
-                result = client.push_articles(data=payload)
-                if result.status_code == 201:
-                    for article in article_chunk:
-                        article.pushed = True
-                        article.save()
-                    return 'Successfully Created'
-                if result.status_code == 400:
-                    print(result.text)
-                    try:
-                        upload_articles.retry(countdown=5, max_retries=3)
-                    except MaxRetriesExceededError as e:
-                        print(e)
-                if result.status_code == 500:
-                    print(result.text)
-                    try:
-                        upload_articles.retry(countdown=5, max_retries=3)
-                    except MaxRetriesExceededError as e:
-                        print(e)
+                try:
+                    result = client.push_articles(data=payload)
+
+                    if result.status_code == 201:
+                        for article in article_chunk:
+                            article.pushed = True
+                            article.save()
+                        return 'Successfully Created'
+                    if result.status_code == 400:
+                        print(result.text)
+                        try:
+                            upload_articles.retry(countdown=5, max_retries=3)
+                        except MaxRetriesExceededError as e:
+                            print(e)
+                    if result.status_code == 500:
+                        print(result.text)
+                        try:
+                            upload_articles.retry(countdown=5, max_retries=3)
+                        except MaxRetriesExceededError as e:
+                            print(e)
+                except AttributeError:
+                    upload_articles.retry(countdown=5, max_retries=3)
+
     r.delete(self.name)
