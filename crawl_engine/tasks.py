@@ -366,6 +366,6 @@ def upload_articles(self, test=False):
                         except MaxRetriesExceededError as e:
                             print(e)
                 except AttributeError:
-                    upload_articles.retry(countdown=5, max_retries=3)
+                    pass
 
     r.delete(self.name)
