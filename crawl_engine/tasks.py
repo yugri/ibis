@@ -44,8 +44,13 @@ def crawl_url(url, search=None):
             article = Article.objects.get(article_url=url)
             result = "Url was already crawled"
         except Article.DoesNotExist:
-            parser = ArticleParser(url, search)
-            result = parser.run()
+            try:
+                parser = ArticleParser(url, search)
+                result = parser.run()
+
+            except Exception:
+                result = 'An exception cached. Check Celery logs file please.'
+
     except BlacklistedURLException as e:
         result = 'Blacklisted resource "%s" found.' % e.resource
 

@@ -52,6 +52,7 @@ CELERY_DEFAULT_QUEUE = 'crawler'
 CELERY_QUEUES = (
     Queue('crawler', Exchange('crawler'), routing_key='crawler_task.#'),
     Queue('translation', Exchange('translation'), routing_key='translation_task.#'),
+    Queue('uploader', Exchange('uploader'), routing_key='uploader_task.#'),
 )
 
 CELERY_ROUTES = {
@@ -65,6 +66,10 @@ CELERY_ROUTES = {
     },
     'crawl_engine.tasks.google_detect_translate': {
         'queue': 'translation',
+        # 'routing_key': 'translation.detect_translate',
+    },
+    'crawl_engine.tasks.upload_articles': {
+        'queue': 'uploader',
         # 'routing_key': 'translation.detect_translate',
     },
 }
