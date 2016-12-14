@@ -42,14 +42,14 @@ def crawl_url(url, search=None):
         is_url_blacklisted(url)
         try:
             article = Article.objects.get(article_url=url)
-            result = "Url was already crawled"
+            result = "Url was already crawled [%s]" % url
         except Article.DoesNotExist:
             try:
                 parser = ArticleParser(url, search)
                 result = parser.run()
 
-            except Exception:
-                result = 'An exception cached. Check Celery logs file please.'
+            except Exception as e:
+                result = 'An exception cached. TRACEBACK: %s' % e
 
     except BlacklistedURLException as e:
         result = 'Blacklisted resource "%s" found.' % e.resource
@@ -287,7 +287,6 @@ def check_search_queries():
                 now = datetime.utcnow().replace(tzinfo=utc)
                 search_query.last_processed = now
                 search_query.save()
-                # SearchTask.objects.create(task_id=job_id, search_query=search_query)
     return result
 
 
