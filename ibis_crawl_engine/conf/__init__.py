@@ -43,6 +43,7 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 #     'database': MONGODB_DB,
 #     'taskmeta_collection': 'task_meta',
 # }
+CELERYD_PREFETCH_MULTIPLIER = 0
 CELERYD_MAX_TASKS_PER_CHILD = 100
 
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']
