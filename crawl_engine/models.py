@@ -126,10 +126,10 @@ class Article(models.Model):
 
     def save(self, start_translation=False, push=False, upload_file=False, *args, **kwargs):
         img_url = self.top_image_url
-        if is_url_image(img_url) and not self.top_image:
-            # TODO: Rewrite this behavior to save images and files in async mode
-            filename = str(hash(img_url))
-            self.set_image(img_url, filename)
+        # if is_url_image(img_url) and not self.top_image:
+        #     # TODO: Rewrite this behavior to save images and files in async mode
+            # filename = str(hash(img_url))
+            # self.set_image(img_url, filename)
 
         super(Article, self).save(*args, **kwargs)
         if start_translation:
