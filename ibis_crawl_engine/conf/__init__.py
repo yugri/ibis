@@ -31,11 +31,11 @@ MONGODB_COLLECTION = "articles"
 ###################
 # Celery settings #
 ###################
-# CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
-BROKER_URL = 'redis://localhost:6379/0'
-BROKER_HEARTBEAT = 0
+BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+# BROKER_URL = 'redis://localhost:6379/0'
+# BROKER_HEARTBEAT = 0
 # CELERY_RESULT_BACKEND = 'mongodb://localhost:27017/'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'amqp://guest:guest@localhost:5672//'
 # CELERY_ACCEPT_CONTENT = ['json']
 # CELERY_TASK_SERIALIZER = 'json'
 # CELERY_RESULT_SERIALIZER = 'json'

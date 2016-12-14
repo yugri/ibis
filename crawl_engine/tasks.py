@@ -10,6 +10,7 @@ from random import randint
 
 import requests
 from celery import shared_task, chain, group
+from celery.result import AsyncResult
 from celery.schedules import crontab
 from celery.exceptions import MaxRetriesExceededError
 from celery.task import periodic_task
@@ -324,6 +325,7 @@ def upload_articles(self, test=False):
     This task checks filters NON processed articles from DB and pushes them to IBIS system
     :return: nothing
     """
+
     r = redis.StrictRedis(host='localhost', port=6379, db=0)
     task = r.get('crawl_engine.tasks.upload_articles')
     if task:
