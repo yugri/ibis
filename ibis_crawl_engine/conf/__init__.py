@@ -60,15 +60,15 @@ CELERY_QUEUES = (
 CELERY_ROUTES = {
     'crawl_engine.tasks.detect_lang_by_google': {
         'queue': 'translation',
-        # 'routing_key': 'translation.detect',
     },
     'crawl_engine.tasks.google_translate': {
         'queue': 'translation',
-        # 'routing_key': 'translation.translate',
     },
     'crawl_engine.tasks.google_detect_translate': {
         'queue': 'translation',
-        # 'routing_key': 'translation.detect_translate',
+    },
+    'crawl_engine.tasks.upload_articles': {
+        'queue': 'uploader',
     },
 }
 
