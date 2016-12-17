@@ -44,12 +44,12 @@ class ArticleParser:
         # We pass this response through all methods to avoid duplicate queries
         try:
             r = requests.get(self.url)
-        except requests.ConnectionError as e:
+        except Exception as e:
             logger.info(e)
-            r = None
-        # if PDF file
+            raise
 
         if r is not None:
+            # if PDF file
             if self._define_url_type(r) == '.pdf':
                 article.article_url = self.url
                 article.save(upload_file=True)
@@ -137,7 +137,7 @@ class ArticleParser:
                         article.save(start_translation=not article.translated)
                         result = article.id
         else:
-            result = "Some troubles with connection."
+            result = "Some troubles with connection. Check a traceback in Celery logs"
         return result
 
     def download_image(self, article_instance):

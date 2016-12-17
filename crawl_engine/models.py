@@ -148,6 +148,7 @@ class Article(models.Model):
         except requests.ConnectionError as e:
             r = None
             logger.error(e)
+            pass
 
         if r is not None and r.status_code == 200:
             img = Image.open(io.BytesIO(r.content))
