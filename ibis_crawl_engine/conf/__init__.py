@@ -36,13 +36,9 @@ BROKER_URL = 'redis://localhost:6379/0'
 BROKER_HEARTBEAT = 0
 # CELERY_RESULT_BACKEND = 'mongodb://localhost:27017/'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-# CELERY_ACCEPT_CONTENT = ['json']
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_MONGODB_BACKEND_SETTINGS = {
-#     'database': MONGODB_DB,
-#     'taskmeta_collection': 'task_meta',
-# }
+CELERY_IGNORE_RESULT = False
+CELERY_RESULT_PERSISTENT = True
+CELERY_ENABLE_UTC=True
 CELERYD_PREFETCH_MULTIPLIER = 0
 CELERYD_MAX_TASKS_PER_CHILD = 100
 
@@ -74,10 +70,6 @@ CELERY_ROUTES = {
         # 'routing_key': 'translation.detect_translate',
     },
 }
-
-# CELERY_DEFAULT_EXCHANGE = 'tasks'
-# CELERY_DEFAULT_EXCHANGE_TYPE = 'crawler'
-# CELERY_DEFAULT_ROUTING_KEY = 'task.default'
 
 
 # Quick-start development settings - unsuitable for production
