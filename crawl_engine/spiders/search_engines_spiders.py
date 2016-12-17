@@ -123,15 +123,16 @@ class SearchEngineParser(object):
                 assert "Google" in tree.findtext('.//title')
             except AssertionError as e:
                 logger.info("I can not find Google in page title")
-                raise e
+                pass
 
             # Collect all result links for further crawling task
             hrefs = tree.xpath('//h3/a/@href')
-            for href in hrefs:
-                if href.startswith('/url?'):
-                    clean_url = self._parse_google_href(href)
-                    if clean_url is not None:
-                        self.seed_links.append(clean_url)
+            if len(hrefs) > 0:
+                for href in hrefs:
+                    if href.startswith('/url?'):
+                        clean_url = self._parse_google_href(href)
+                        if clean_url is not None:
+                            self.seed_links.append(clean_url)
 
         return self.seed_links
 
@@ -204,15 +205,16 @@ class SearchEngineParser(object):
                 assert "Google" in tree.findtext('.//title')
             except AssertionError as e:
                 logger.info("I can't find Google in page title")
-                raise e
+                pass
 
             # Collect all result links for further crawling task
             hrefs = tree.xpath('//h3/a/@href')
-            for href in hrefs:
-                if href.startswith('/url?'):
-                    clean_url = self._parse_google_href(href)
-                    if clean_url is not None:
-                        self.seed_links.append(clean_url)
+            if len(hrefs) > 0:
+                for href in hrefs:
+                    if href.startswith('/url?'):
+                        clean_url = self._parse_google_href(href)
+                        if clean_url is not None:
+                            self.seed_links.append(clean_url)
 
         return self.seed_links
 
@@ -236,17 +238,18 @@ class SearchEngineParser(object):
                 assert "Google" in tree.findtext('.//title')
             except AssertionError as e:
                 logger.info("I can't find Google in page title")
-                raise e
+                pass
 
             # Collect all result links for further crawling task
             hrefs = tree.xpath('//h3/a/@href')
-            for href in hrefs:
-                if href.startswith('/url?'):
-                    clean_url = self._parse_google_href(href)
-                    if clean_url is not None:
-                        self.seed_links.append(clean_url)
-                else:
-                    self.seed_links.append(href)
+            if len(hrefs) > 0:
+                for href in hrefs:
+                    if href.startswith('/url?'):
+                        clean_url = self._parse_google_href(href)
+                        if clean_url is not None:
+                            self.seed_links.append(clean_url)
+                    else:
+                        self.seed_links.append(href)
 
         return self.seed_links
 
@@ -282,7 +285,7 @@ class SearchEngineParser(object):
                 assert "Bing" in tree.findtext('.//title')
             except AssertionError as e:
                 logger.info("I can't find Bing in page title")
-                raise e
+                pass
 
             links = tree.xpath('//h2/a/@href')
             for link in links:
