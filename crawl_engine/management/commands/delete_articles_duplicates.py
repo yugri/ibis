@@ -15,7 +15,8 @@ class Command(BaseCommand):
             url_count=Count('article_url')
         ).filter(url_count__gt=1)
         for article in duplicate_articles:
-            a = Article.objects.filter(article_url=article['article_url'])[0]
-            a_id = a.id
-            a.delete()
-            self.stdout.write(self.style.SUCCESS('Article duplicate %s DELETED' % a_id))
+            arts = Article.objects.filter(article_url=article['article_url'])[1:]
+            for a in arts:
+                a_id = a.id
+                a.delete()
+                self.stdout.write(self.style.SUCCESS('Article duplicate %s DELETED' % a_id))
