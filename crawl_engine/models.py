@@ -9,14 +9,11 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.template.defaultfilters import truncatechars
 from django.utils.timezone import utc
 from django.contrib.postgres.fields import JSONField
 
 from crawl_engine.utils.article_processing_utils import is_url_image
-from crawl_engine.utils.ibis_client import IbisClient
 from crawl_engine.utils.translation_utils import separate
 
 
@@ -100,12 +97,28 @@ class SearchTask(models.Model):
 
 
 class Article(models.Model):
-    article_url = models.URLField(max_length=1000, db_index=True)
-    source_language = models.CharField(max_length=5, blank=True, null=True)
-    title = models.CharField(max_length=1000, blank=True)
+    CHANNELS = (
+        ('industry', 'Industry'),
+        ('research', 'Research'),
+        ('government', 'Government'),
+        ('other', 'Other biointel'),
+        ('search_engines', 'Search Engines'),
+        ('social', 'Social'),
+        ('general', 'General')
+    )
+    STATUSES = (
+        ('keep', 'Keep'),
+        ('alert', 'Alert'),
+        ('promoted', 'Promoted'),
+        ('trash', 'Trash'),
+        ('raw', 'Raw')
+    )
+    article_url = models.URLField(max_length=2048, db_index=True)
+    source_language = models.CharField(max_length=50, blank=True, null=True)
+    title = models.CharField(max_length=1000, blank=True, db_index=True)
     translated_title = models.CharField(max_length=1000, blank=True)
-    body = models.TextField(blank=True)
-    translated_body = models.TextField(blank=True)
+    body = models.TextField(blank=True, null=True)
+    translated_body = models.TextField(blank=True, null=True)
     authors = models.CharField(max_length=1000, blank=True, null=True)
     post_date_created = models.CharField(max_length=50, blank=True)
     post_date_crawled = models.DateTimeField(auto_now_add=True, null=True)
@@ -113,9 +126,22 @@ class Article(models.Model):
     top_image_url = models.URLField(max_length=1000, blank=True)
     top_image = models.ImageField(upload_to='article-images', blank=True, null=True, max_length=1000)
     file = models.FileField(upload_to='article-files', blank=True, null=True)
-    search = models.ForeignKey(SearchQuery, blank=True, null=True)
+    search = models.ForeignKey(SearchQuery, blank=True, null=True, related_name='articles')
     processed = models.BooleanField(default=False, db_index=True)
     pushed = models.BooleanField(default=False, db_index=True)
+
+    status = models.CharField(choices=STATUSES, max_length=50, blank=True, null=True)
+    channel = models.CharField(choices=CHANNELS, max_length=50, blank=True, null=True)
+
+    # Stores articles locations (lat, lng, place)
+    locations = JSONField(blank=True, null=True)
+
+    # Article tags
+    tags = models.ManyToManyField('tagging.Tag', blank=True)
+
+    # Fields from OLD IBIS
+    domains = JSONField(blank=True, null=True)
+    summary = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.article_url
@@ -131,7 +157,11 @@ class Article(models.Model):
             filename = str(hash(img_url))
             self.set_image(img_url, filename)
 
+        if not self.status:
+            self.set_article_status(self.search.source.split(', '))
+
         super(Article, self).save(*args, **kwargs)
+
         if start_translation:
             self.run_translation_task(self)
         if push:
@@ -224,4 +254,30 @@ class Article(models.Model):
         Method for pushing an article to IBIS through it's API endpoint
         :return: nothing
         """
-        pass
+        raise NotImplementedError
+
+    def set_article_status(self, sources_list):
+
+        search_engine_sources_list = ['google', 'google_cse', 'google_blogs', 'google_news',
+                                      'google_scholar', 'bing', 'yandex']
+
+        social_sources_list = ['facebook', 'linkedin']
+
+        if len(set(search_engine_sources_list).intersection(sources_list)) != 0:
+            self.status = 'raw'
+            self.channel = 'search_engines'
+        elif len(set(social_sources_list).intersection(sources_list)) != 0:
+            self.status = 'raw'
+            self.channel = 'social'
+        elif self.search_query.type == 'article':
+            self.status = 'keep'
+            self.channel = 'research'
+        elif self.search_query.type == 'rss':
+            self.status = 'keep'
+            self.channel = 'research'
+        elif self.search_query.type == 'email':
+            self.status = 'keep'
+        else:
+            self.status = None
+            self.channel = 'general'
+        return self

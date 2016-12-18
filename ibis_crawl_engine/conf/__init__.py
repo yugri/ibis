@@ -102,6 +102,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'crawl_engine',
     'dashboard',
+    'tagging.apps.TaggingConfig',
 ]
 
 MIDDLEWARE_CLASSES = [
