@@ -31,10 +31,13 @@ MONGODB_COLLECTION = "articles"
 ###################
 # Celery settings #
 ###################
-# CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
-BROKER_URL = 'redis://localhost:6379/0'
+BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+# BROKER_URL = 'redis://localhost:6379/0'
+# BROKER_HEARTBEAT = 0
 # CELERY_RESULT_BACKEND = 'mongodb://localhost:27017/'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'amqp://'
+CELERY_IGNORE_RESULT = False
+CELERY_CACHE_BACKEND = 'redis://localhosto:6379/0'
 # CELERY_ACCEPT_CONTENT = ['json']
 # CELERY_TASK_SERIALIZER = 'json'
 # CELERY_RESULT_SERIALIZER = 'json'
@@ -51,20 +54,21 @@ CELERY_DEFAULT_QUEUE = 'crawler'
 CELERY_QUEUES = (
     Queue('crawler', Exchange('crawler'), routing_key='crawler_task.#'),
     Queue('translation', Exchange('translation'), routing_key='translation_task.#'),
+    Queue('uploader', Exchange('uploader'), routing_key='uploader_task.#'),
 )
 
 CELERY_ROUTES = {
     'crawl_engine.tasks.detect_lang_by_google': {
         'queue': 'translation',
-        # 'routing_key': 'translation.detect',
     },
     'crawl_engine.tasks.google_translate': {
         'queue': 'translation',
-        # 'routing_key': 'translation.translate',
     },
     'crawl_engine.tasks.google_detect_translate': {
         'queue': 'translation',
-        # 'routing_key': 'translation.detect_translate',
+    },
+    'crawl_engine.tasks.upload_articles': {
+        'queue': 'uploader',
     },
 }
 
@@ -202,8 +206,8 @@ SOURCES = (
     ('google_blogs', 'Google Blogs'),
     ('google_news', 'Google News'),
     ('google_scholar', 'Google Scholar'),
-    # ('bing', 'Bing'),
-    # ('yandex', 'Yandex')
+    ('bing', 'Bing'),
+    ('yandex', 'Yandex')
 )
 
 IBIS_ADDRESS = None

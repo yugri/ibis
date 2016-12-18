@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings
 from rest_framework.exceptions import ValidationError
 
 from crawl_engine.models import Article, SearchQuery
@@ -97,6 +98,17 @@ class OptionsSerializer(serializers.Serializer):
 class SearchQuerySerializer(serializers.ModelSerializer):
     options = OptionsSerializer(required=False)
     response_address = serializers.CharField(required=False)
+
+    def validate_source(self, value):
+        """
+        Check that the blog post is about Django.
+        """
+        source_choices = [x[0] for x in settings.SOURCES]
+        for source in value.split(', '):
+            if source not in source_choices:
+                raise serializers.ValidationError("Can't resolve a source type: %s. "
+                                                  "Choices are: %s" % (source, str(source_choices)))
+        return value
 
     class Meta:
         model = SearchQuery

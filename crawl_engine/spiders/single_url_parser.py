@@ -44,12 +44,12 @@ class ArticleParser:
         # We pass this response through all methods to avoid duplicate queries
         try:
             r = requests.get(self.url)
-        except requests.ConnectionError as e:
+        except Exception as e:
             logger.info(e)
-            r = None
-        # if PDF file
+            raise
 
         if r is not None:
+            # if PDF file
             if self._define_url_type(r) == '.pdf':
                 article.article_url = self.url
                 article.save(upload_file=True)
@@ -78,8 +78,18 @@ class ArticleParser:
 
                 if page_loaded and page_parsed:
 
-                    author = extractArticleAuthor(page.html)
-                    title = extractArticleTitle(page.html)
+                    try:
+                        author = extractArticleAuthor(page.html)
+                    except (ValueError, OSError, KeyError):
+                        # We pass all errors raised by a Newspaper module
+                        # during getting all article's data
+                        author = None
+                    try:
+                        title = extractArticleTitle(page.html)
+                    except (ValueError, OSError, KeyError):
+                        # We pass all errors raised by a Newspaper module
+                        # during getting all article's data
+                        title = None
 
                     text = page.text if page.text else extractArticleText(page.html)
                     date = extractArticlePublishedDate(self.url, page.html)
@@ -93,7 +103,7 @@ class ArticleParser:
                         article.top_image_url = page.top_image
                         try:
                             article.authors = author if author else article.authors[0]
-                        except IndexError:
+                        except (IndexError, TypeError):
                             article.authors = ''
 
                         article.body = re.sub('\n+', '\n', re.sub(' +', ' ', text))
@@ -127,7 +137,7 @@ class ArticleParser:
                         article.save(start_translation=not article.translated)
                         result = article.id
         else:
-            result = "Some troubles with connection."
+            result = "Some troubles with connection. Check a traceback in Celery logs"
         return result
 
     def download_image(self, article_instance):

@@ -5,7 +5,6 @@ import os
 import redis
 
 from datetime import datetime
-from pybloomfilter import BloomFilter
 from time import sleep
 from random import randint
 
@@ -43,10 +42,15 @@ def crawl_url(url, search=None):
         is_url_blacklisted(url)
         try:
             article = Article.objects.get(article_url=url)
-            result = "Url was already crawled"
+            result = "Url was already crawled [%s]" % url
         except Article.DoesNotExist:
-            parser = ArticleParser(url, search)
-            result = parser.run()
+            try:
+                parser = ArticleParser(url, search)
+                result = parser.run()
+
+            except Exception as e:
+                result = 'An exception cached. TRACEBACK: %s' % e
+
     except BlacklistedURLException as e:
         result = 'Blacklisted resource "%s" found.' % e.resource
 
@@ -261,28 +265,28 @@ def check_search_queries():
     """
     result = "All queries were checked"
     search_queries = SearchQuery.objects.all()
-    job_id = None
+    job_keys = []
     for search_query in search_queries:
         if search_query.active:
             if search_query.expired_period:
                 # We need to check search_type at this point
                 # and initiate different tasks if any
                 if search_query.search_type == 'search_engine' or search_query.search_type == 'simple_search':
-                    job = chain(search_by_query.s(search_query.query, search_query.source, search_query.search_depth,
-                                                  search_query.options),
-                                run_job.s(search_query.pk))()
-                    job_id = job.id
+                    for source in search_query.get_sources:
+                        job = chain(search_by_query.s(search_query.query, source, search_query.search_depth,
+                                                      search_query.options),
+                                    run_job.s(search_query.pk))()
+                        job_keys.append(job.id)
                 elif search_query.search_type == 'rss':
                     job = chain(read_rss.s(search_query.rss_link), run_job.s(search_query.pk))()
-                    job_id = job.id
+                    job_keys.append(job.id)
                 elif search_query.search_type == 'article':
                     job = run_job.delay([search_query.article_url], search_query.pk)
-                    job_id = job.id
+                    job_keys.append(job.id)
                 # Update search last processed date, save it and create the task obj
                 now = datetime.utcnow().replace(tzinfo=utc)
                 search_query.last_processed = now
                 search_query.save()
-                # SearchTask.objects.create(task_id=job_id, search_query=search_query)
     return result
 
 
@@ -345,22 +349,27 @@ def upload_articles(self, test=False):
                 data = ArticleTransferSerializer(article_chunk, many=True).data
                 client = IbisClient()
                 payload = json.dumps(data)
-                result = client.push_articles(data=payload)
-                if result.status_code == 201:
-                    for article in article_chunk:
-                        article.pushed = True
-                        article.save()
-                    return 'Successfully Created'
-                if result.status_code == 400:
-                    print(result.text)
-                    try:
-                        upload_articles.retry(countdown=5, max_retries=3)
-                    except MaxRetriesExceededError as e:
-                        print(e)
-                if result.status_code == 500:
-                    print(result.text)
-                    try:
-                        upload_articles.retry(countdown=5, max_retries=3)
-                    except MaxRetriesExceededError as e:
-                        print(e)
+                try:
+                    result = client.push_articles(data=payload)
+
+                    if result.status_code == 201:
+                        for article in article_chunk:
+                            article.pushed = True
+                            article.save()
+                        return 'Successfully Created'
+                    if result.status_code == 400:
+                        print(result.text)
+                        try:
+                            upload_articles.retry(countdown=5, max_retries=3)
+                        except MaxRetriesExceededError as e:
+                            print(e)
+                    if result.status_code == 500:
+                        print(result.text)
+                        try:
+                            upload_articles.retry(countdown=5, max_retries=3)
+                        except MaxRetriesExceededError as e:
+                            print(e)
+                except AttributeError:
+                    pass
+
     r.delete(self.name)

@@ -13,10 +13,13 @@ class IbisClient(object):
         )
 
     def push_articles(self, data):
-        response = self.post(
-            url='articles/',
-            data=data
-        )
+        try:
+            response = self.post(
+                url='articles/',
+                data=data
+            )
+        except AttributeError:
+            raise
         return response
 
 
