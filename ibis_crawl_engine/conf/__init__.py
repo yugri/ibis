@@ -210,6 +210,8 @@ SOURCES = (
     ('yandex', 'Yandex')
 )
 
+ALCHEMY_API_KEY = env('ALCHEMY_API_KEY')
+
 IBIS_ADDRESS = None
 
 
