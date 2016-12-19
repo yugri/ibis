@@ -4,7 +4,7 @@ import redis
 from django.core.management.base import BaseCommand
 from crawl_engine.models import Article, SearchQuery
 from crawl_engine.tasks import google_translate, bound_and_save, detect_lang_by_google
-from crawl_engine.utils.translation_utils import separate
+from crawl_engine.utils.text_processing_utils import separate
 from celery import chord
 
 

@@ -21,14 +21,14 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': ''
     },
-    'articles': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'articles',
-        'USER': 'ibis',
-        'PASSWORD': '13635724',
-        'HOST': 'localhost',
-        'PORT': '5434'
-    }
+    # 'articles': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'articles',
+    #     'USER': 'ibis',
+    #     'PASSWORD': '13635724',
+    #     'HOST': 'localhost',
+    #     'PORT': '5434'
+    # }
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'

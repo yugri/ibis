@@ -13,8 +13,9 @@ from django.template.defaultfilters import truncatechars
 from django.utils.timezone import utc
 from django.contrib.postgres.fields import JSONField
 
+from crawl_engine.common.constants import TYPES, CHANNELS, PERIODS
 from crawl_engine.utils.article_processing_utils import is_url_image
-from crawl_engine.utils.translation_utils import separate
+from crawl_engine.utils.text_processing_utils import separate
 
 
 logger = logging.getLogger(__name__)
@@ -25,21 +26,6 @@ class LanguageDetectionError(BaseException):
 
 
 class SearchQuery(models.Model):
-    PERIODS = (
-        ('hourly', 'Hourly'),
-        ('daily', 'Daily'),
-        ('weekly', 'Weekly'),
-        ('monthly', 'Monthly')
-    )
-
-    TYPES = (
-        ('simple_search', 'Simple Search'),
-        ('search_engine', 'Advanced Search'),
-        ('rss', 'RSS Feed'),
-        ('article', 'Article'),
-        ('email', 'Email')
-    )
-
     search_id = models.CharField(max_length=50, db_index=True)
     search_type = models.CharField(max_length=20, choices=TYPES, default='search_engine')
     article_url = models.CharField(max_length=1000, blank=True, null=True)
@@ -47,6 +33,7 @@ class SearchQuery(models.Model):
     query = models.TextField(blank=True)
     source = models.CharField(max_length=200, default='google',
                               help_text='Type please with 1 backspace and 1 coma btw words. Ex.: google, yahoo')
+    # search_cnl = models.CharField(max_length=64, choices=CHANNELS, default='general')
     search_depth = models.PositiveIntegerField(default=10)
     active = models.BooleanField(default=True)
     period = models.CharField(max_length=20, choices=PERIODS, default='daily')
@@ -278,6 +265,6 @@ class Article(models.Model):
         elif self.search_query.type == 'email':
             self.status = 'keep'
         else:
-            self.status = None
+            self.status = 'raw'
             self.channel = 'general'
         return self

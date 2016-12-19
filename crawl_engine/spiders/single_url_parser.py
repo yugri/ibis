@@ -42,11 +42,7 @@ class ArticleParser:
         # Try to load url and check if there is any other content type rather than html
         # If connections problems are take a place > handle request.ConnectionError and set r to None
         # We pass this response through all methods to avoid duplicate queries
-        try:
-            r = requests.get(self.url)
-        except Exception as e:
-            logger.info(e)
-            raise
+        r = self._download_resource(self.url)
 
         if r is not None:
             # if PDF file
@@ -63,7 +59,7 @@ class ArticleParser:
                 page_loaded = False
                 page_parsed = False
                 try:
-                    # Pass our response as <r> argument
+                    # Pass our response as 'r' argument
                     page = self._download_page(page, r)
                     page_loaded = True
                 except TimeoutException as e:
@@ -133,11 +129,15 @@ class ArticleParser:
                             article.processed = True
 
                         article.source_language = text_lang if text_lang == title_lang else None
-                        article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
+                        search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
+                        if search:
+                            article.search = search
+                            article.channel, article.status = article.article_status_from_search(search)
                         article.save(start_translation=not article.translated)
                         result = article.id
         else:
-            result = "Some troubles with connection. Check a traceback in Celery logs"
+            result = "Some troubles with connection. Check Celery logs."
+            # TODO: For now we don't RETRY. Should be implemented later
         return result
 
     def download_image(self, article_instance):
@@ -169,6 +169,21 @@ class ArticleParser:
         except ArticleException as e:
             logger.info(e)
         return page
+
+    @timeout(7)
+    def _download_resource(self, url):
+        """
+        Method for requesting resource with Requests
+        @timeout decorator provides a TimeoutException when it occurs after defined time passed
+        :param url:
+        :return: response
+        """
+        try:
+            response = requests.get(url)
+        except TimeoutException:
+            logger.info("Page loading [%s] takes to long. Retry later." % url)
+            response = None
+        return response
 
     def _define_url_type(self, response):
         content_type = response.headers.get('content-type')
