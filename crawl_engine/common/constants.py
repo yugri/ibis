@@ -22,3 +22,11 @@ CHANNELS = (
     ('social', 'Social'),
     ('general', 'General')
 )
+
+STATUSES = (
+        ('keep', 'Keep'),
+        ('alert', 'Alert'),
+        ('promoted', 'Promoted'),
+        ('trash', 'Trash'),
+        ('raw', 'Raw')
+    )

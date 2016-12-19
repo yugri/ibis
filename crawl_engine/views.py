@@ -8,6 +8,8 @@ from rest_framework import generics
 from rest_framework.renderers import JSONRenderer
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from crawl_engine.common.constants import TYPES
 from crawl_engine.models import Article, SearchQuery
 from crawl_engine.serializers import ArticleSerializer, TaskURLSerializer, TaskURLListSerializer, SearchQuerySerializer
 from crawl_engine.tasks import crawl_url
@@ -149,5 +151,5 @@ class ListSearchTypes(APIView):
         """
         Return a list of all search types.
         """
-        search_types = SearchQuery.TYPES
+        search_types = TYPES
         return Response(search_types)

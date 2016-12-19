@@ -132,7 +132,7 @@ class ArticleParser:
                         search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
                         if search:
                             article.search = search
-                            article.channel, article.status = article.article_status_from_search(search)
+                            article.status, article.channel = article.article_status_from_search()
                         article.save(start_translation=not article.translated)
                         result = article.id
         else:

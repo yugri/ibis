@@ -13,7 +13,7 @@ from django.template.defaultfilters import truncatechars
 from django.utils.timezone import utc
 from django.contrib.postgres.fields import JSONField
 
-from crawl_engine.common.constants import TYPES, CHANNELS, PERIODS
+from crawl_engine.common.constants import TYPES, CHANNELS, PERIODS, STATUSES
 from crawl_engine.utils.article_processing_utils import is_url_image
 from crawl_engine.utils.text_processing_utils import separate
 
@@ -33,7 +33,7 @@ class SearchQuery(models.Model):
     query = models.TextField(blank=True)
     source = models.CharField(max_length=200, default='google',
                               help_text='Type please with 1 backspace and 1 coma btw words. Ex.: google, yahoo')
-    # search_cnl = models.CharField(max_length=64, choices=CHANNELS, default='general')
+    channel = models.CharField(max_length=64, choices=CHANNELS, default='general', db_column='search_channel')
     search_depth = models.PositiveIntegerField(default=10)
     active = models.BooleanField(default=True)
     period = models.CharField(max_length=20, choices=PERIODS, default='daily')
@@ -84,22 +84,6 @@ class SearchTask(models.Model):
 
 
 class Article(models.Model):
-    CHANNELS = (
-        ('industry', 'Industry'),
-        ('research', 'Research'),
-        ('government', 'Government'),
-        ('other', 'Other biointel'),
-        ('search_engines', 'Search Engines'),
-        ('social', 'Social'),
-        ('general', 'General')
-    )
-    STATUSES = (
-        ('keep', 'Keep'),
-        ('alert', 'Alert'),
-        ('promoted', 'Promoted'),
-        ('trash', 'Trash'),
-        ('raw', 'Raw')
-    )
     article_url = models.URLField(max_length=2048, db_index=True)
     source_language = models.CharField(max_length=50, blank=True, null=True)
     title = models.CharField(max_length=1000, blank=True, db_index=True)
@@ -243,28 +227,17 @@ class Article(models.Model):
         """
         raise NotImplementedError
 
-    def set_article_status(self, sources_list):
+    def article_status_from_search(self):
 
         search_engine_sources_list = ['google', 'google_cse', 'google_blogs', 'google_news',
                                       'google_scholar', 'bing', 'yandex']
 
         social_sources_list = ['facebook', 'linkedin']
+        search_channel = self.search.channel
 
-        if len(set(search_engine_sources_list).intersection(sources_list)) != 0:
-            self.status = 'raw'
-            self.channel = 'search_engines'
-        elif len(set(social_sources_list).intersection(sources_list)) != 0:
-            self.status = 'raw'
-            self.channel = 'social'
-        elif self.search_query.type == 'article':
-            self.status = 'keep'
-            self.channel = 'research'
-        elif self.search_query.type == 'rss':
-            self.status = 'keep'
-            self.channel = 'research'
-        elif self.search_query.type == 'email':
-            self.status = 'keep'
+        if search_channel in ['industry', 'research', 'government', 'other']:
+            status = 'keep'
         else:
-            self.status = 'raw'
-            self.channel = 'general'
-        return self
+            status = 'raw'
+        return status, search_channel
+
