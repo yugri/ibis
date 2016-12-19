@@ -9,12 +9,15 @@ from time import sleep
 from random import randint
 
 import requests
+from autoslug.utils import slugify
 from celery import shared_task, chain, group
 from celery.schedules import crontab
 from celery.exceptions import MaxRetriesExceededError
 from celery.task import periodic_task
 from django.conf import settings
 from django.core.files.base import ContentFile
+from django.db import IntegrityError
+from django.db import transaction
 from django.utils.timezone import utc
 from django.forms.models import model_to_dict
 
@@ -29,7 +32,11 @@ from googleapiclient.errors import HttpError
 from requests.exceptions import HTTPError
 
 from crawl_engine.utils.article_processing_utils import is_url_blacklisted
+from crawl_engine.utils.geo_entities_extractor import convert_to_json
+from crawl_engine.utils.geo_entities_extractor import parse_coordinates
 from crawl_engine.utils.ibis_client import IbisClient, chunks
+from crawl_engine.utils.text_processing_utils import tag_p, split_by_sentences, untag
+from tagging.models import Tag
 
 logger = logging.getLogger(__name__)
 
@@ -248,8 +255,7 @@ def bound_and_save(text_parts, article_id, source, destination):
     # before being pushed to IBIS
     if article.translated_body:
         article.translated = True
-        article.processed = True
-    article.save()
+    article.save(call_alchemy=True)
 
 
 @periodic_task(
@@ -315,6 +321,78 @@ def run_job(url_list, search=None):
     job = group(tasks)
     result = job.apply_async()
     return result.id
+
+
+@shared_task(
+    name='crawl_engine.tasks.get_geo_entity_for_article',
+    bind=True
+)
+def get_geo_entity_for_article(self, article_id):
+    # Get article from DB
+    try:
+        article = Article.objects.get(id=article_id)
+    except Article.DoesNotExist:
+        self.retry(countdown=10, max_retries=5)
+        article = None
+    result = dict()
+    if article:
+        with transaction.atomic():
+            try:
+                try:
+                    new_body = tag_p(split_by_sentences(untag(article.body)))
+                except Exception:
+                    new_body = None
+                try:
+                    new_translated_body = tag_p(split_by_sentences(untag(article.translated_body)))
+                except IndexError:
+                    new_translated_body = None
+
+                if new_body and new_translated_body:
+                    article.body = new_body
+                    article.translated_body = new_translated_body
+                # Call AlchemyAPI to provide an entities
+                # They returned in JSON. So loads to the dict
+                if new_translated_body:
+                    entities = json.loads(convert_to_json(new_translated_body))
+                    # Prepare locations data
+                    article.locations = parse_coordinates(entities['location'], entities['geo_entities'])
+                    # Get keyword tags and get_or_create Tag object by slug field.
+                    tags = list()
+                    # Check for tag in database or create one
+                    if entities['keywords'] and len(entities['keywords']) > 0:
+                        logger.info("Keywords: %s" % entities['keywords'])
+                        for tag_name in entities['keywords']:
+                            obj, created = Tag.objects.get_or_create(
+                                slug=slugify(tag_name),
+                                defaults={'name': tag_name},
+                            )
+                            # Push created Tag object to the tags list
+                            tags.append(obj)
+                    # Add keyword
+                    try:
+                        article.tags.add(*tags)
+                    except IntegrityError as e:
+                        result['exception_msg'] = e
+                    if not article.status:
+                        article.article_status_from_search()
+                    article.processed = True
+                    article.save()
+                    sid = transaction.savepoint()
+                    transaction.savepoint_commit(sid)
+                    logger.info("Successfully SAVED %s article to DB" % article.id)
+                    result['article_id'] = article.id
+                    # result['tags_set'] = tags.__dict__
+                    result['locations'] = article.locations
+                else:
+                    result['info'] = "Article's body din't translated." \
+                                     "Can't detect entities by AlchemyAPI while article is not translated."
+                    logger.info(result['info'])
+
+            except Exception as e:
+                result['exception_msg'] = e
+    else:
+        result['error'] = 'Can\'t find article with id %s' % article_id
+    return result
 
 
 @periodic_task(
