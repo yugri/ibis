@@ -21,7 +21,7 @@ class ArticleTransferSerializer(serializers.ModelSerializer):
         model = Article
         fields = ('article_url', 'source_language', 'title', 'translated_title', 'body', 'translated_body',
                   'authors', 'post_date_created', 'translated', 'top_image_url', 'top_image',
-                  'processed', 'search_id')
+                  'processed', 'search_id', 'channel', 'status', 'locations')
         # exclude = ('search', 'pushed')
 
     def get_search_id(self, obj):
