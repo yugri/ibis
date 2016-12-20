@@ -201,7 +201,7 @@ class Article(models.Model):
                     instance.translated_title = instance.title
                     instance.translated_body = instance.body
                     instance.translated = True
-                    instance.save(start_translation=False, call_alchemy=True)
+                    instance.save(start_translation=False)
                     logger.info("No need to execute the translation task because article's language is EN.")
                 # Else run translation tasks. Tasks will run separately for the body and the title.
                 else:

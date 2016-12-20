@@ -17,7 +17,8 @@ class ArticleSerializer(serializers.ModelSerializer):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        exclude = ('id',)
+        # exclude = ('id',)
+        fields = ('name',)
 
 
 class ArticleTransferSerializer(serializers.ModelSerializer):
@@ -30,7 +31,8 @@ class ArticleTransferSerializer(serializers.ModelSerializer):
         model = Article
         fields = ('article_url', 'source_language', 'title', 'translated_title', 'body', 'translated_body',
                   'authors', 'post_date_created', 'translated', 'top_image_url', 'top_image',
-                  'processed', 'search_id', 'channel', 'status', 'locations', 'tags')
+                  'processed', 'search_id', 'channel', 'status', 'locations', 'tags',)
+        read_only_fields = ('tags',)
         # exclude = ('search', 'pushed')
 
     def get_search_id(self, obj):

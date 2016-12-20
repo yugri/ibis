@@ -255,7 +255,7 @@ def bound_and_save(text_parts, article_id, source, destination):
     # before being pushed to IBIS
     if article.translated_body:
         article.translated = True
-    article.save(call_alchemy=True)
+    article.save()
 
 
 @periodic_task(
@@ -329,12 +329,16 @@ def run_job(url_list, search=None):
 )
 def get_geo_entity_for_article(self, article_id):
     # Get article from DB
+    result = dict()
     try:
         article = Article.objects.get(id=article_id)
     except Article.DoesNotExist:
         self.retry(countdown=10, max_retries=5)
         article = None
-    result = dict()
+    except ConnectionError:
+        result['error'] = 'Can\'t connect to remote. Try later.'
+        article = None
+
     if article:
         with transaction.atomic():
             try:
