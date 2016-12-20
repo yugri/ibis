@@ -12,5 +12,5 @@ logger = logging.getLogger(__name__)
 
 @receiver(post_save, sender=Article)
 def run_alchemy_task(sender, instance, **kwargs):
-    if instance.translated:
+    if instance.translated and not instance.processed:
         instance.run_entities_collecting_task()
