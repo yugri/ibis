@@ -129,7 +129,7 @@ class Article(models.Model):
             self.set_image(img_url, filename)
 
         if not self.status:
-            self.set_article_status(self.search.source.split(', '))
+            self.article_status_from_search()
 
         super(Article, self).save(*args, **kwargs)
 
@@ -203,7 +203,7 @@ class Article(models.Model):
                     instance.translated_title = instance.title
                     instance.translated_body = instance.body
                     instance.translated = True
-                    instance.save(start_translation=False)
+                    instance.save(start_translation=False, call_alchemy=True)
                     logger.info("No need to execute the translation task because article's language is EN.")
                 # Else run translation tasks. Tasks will run separately for the body and the title.
                 else:
@@ -234,11 +234,6 @@ class Article(models.Model):
         raise NotImplementedError
 
     def article_status_from_search(self):
-
-        search_engine_sources_list = ['google', 'google_cse', 'google_blogs', 'google_news',
-                                      'google_scholar', 'bing', 'yandex']
-
-        social_sources_list = ['facebook', 'linkedin']
         search_channel = self.search.channel
 
         if search_channel in ['industry', 'research', 'government', 'other']:
