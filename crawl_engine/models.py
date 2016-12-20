@@ -121,7 +121,7 @@ class Article(models.Model):
     def short_url(self):
         return truncatechars(self.article_url, 30)
 
-    def save(self, start_translation=False, push=False, upload_file=False, call_alchemy=False, *args, **kwargs):
+    def save(self, start_translation=False, push=False, upload_file=False, *args, **kwargs):
         img_url = self.top_image_url
         if is_url_image(img_url) and not self.top_image:
             # TODO: Rewrite this behavior to save images and files in async mode
@@ -135,8 +135,6 @@ class Article(models.Model):
 
         if start_translation:
             self.run_translation_task(self)
-        if call_alchemy:
-            self.run_entities_collecting_task()
         if push:
             self.push_article()
         if upload_file:
@@ -216,7 +214,7 @@ class Article(models.Model):
 
     def run_entities_collecting_task(self):
         from crawl_engine.tasks import get_geo_entity_for_article
-        result = get_geo_entity_for_article(self.id)
+        result = get_geo_entity_for_article.apply_async((self.id,))
 
     @property
     def related_search_id(self):
