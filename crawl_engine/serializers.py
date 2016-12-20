@@ -17,6 +17,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
+        exclude = ('id',)
 
 
 class ArticleTransferSerializer(serializers.ModelSerializer):
