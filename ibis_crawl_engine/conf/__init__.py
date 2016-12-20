@@ -54,7 +54,7 @@ CELERY_DEFAULT_QUEUE = 'crawler'
 CELERY_QUEUES = (
     Queue('crawler', Exchange('crawler'), routing_key='crawler_task.#'),
     Queue('translation', Exchange('translation'), routing_key='translation_task.#'),
-    Queue('alchemy', Exchange('alchemy'), routing_key='alchemy_task.#'),
+    # Queue('alchemy', Exchange('alchemy'), routing_key='alchemy_task.#'),
     Queue('uploader', Exchange('uploader'), routing_key='uploader_task.#'),
 )
 
@@ -71,9 +71,9 @@ CELERY_ROUTES = {
     'crawl_engine.tasks.upload_articles': {
         'queue': 'uploader',
     },
-    'crawl_engine.tasks.get_geo_entity_for_article': {
-        'queue': 'alchemy',
-    },
+    # 'crawl_engine.tasks.get_geo_entity_for_article': {
+    #     'queue': 'alchemy',
+    # },
 }
 
 # CELERY_DEFAULT_EXCHANGE = 'tasks'

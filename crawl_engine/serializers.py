@@ -6,22 +6,30 @@ from rest_framework.exceptions import ValidationError
 from crawl_engine.models import Article, SearchQuery
 from rest_framework import serializers
 
+from tagging.models import Tag
+
 
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
 
 
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+
+
 class ArticleTransferSerializer(serializers.ModelSerializer):
     search_id = serializers.SerializerMethodField()
     # related_search_id = serializers.CharField(required=False, default='5c15f2a9-b89a-4c0c-b7b5-b0eb38607b2c')
     # search_id = serializers.CharField(required=False, default='46268d29-ebff-4614-b045-f28bc673f6cf')
+    tags = TagSerializer(read_only=True, many=True)
 
     class Meta:
         model = Article
         fields = ('article_url', 'source_language', 'title', 'translated_title', 'body', 'translated_body',
                   'authors', 'post_date_created', 'translated', 'top_image_url', 'top_image',
-                  'processed', 'search_id', 'channel', 'status', 'locations')
+                  'processed', 'search_id', 'channel', 'status', 'locations', 'tags')
         # exclude = ('search', 'pushed')
 
     def get_search_id(self, obj):
