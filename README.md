@@ -49,4 +49,4 @@ celery -A ibis_crawl_engine beat -l info
 
 
 
-  [git-repo-url]: <https://<username>@bitbucket.org/juswork/ibis_crawl_engine_jus.git>
+  [git-repo-url]: <git@bitbucket.org:juswork/ibis_crawl_engine_jus.git>
