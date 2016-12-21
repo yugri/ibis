@@ -42,11 +42,8 @@ celery -A ibis_crawl_engine beat -l info
 
 ### Requirements:
 
+in file <requirements.txt> & <requirements_prod.txt>
 
 
 
-
-
-
-
-  [git-repo-url]: <git@bitbucket.org:juswork/ibis_crawl_engine_jus.git>
+[git-repo-url]: <git@bitbucket.org:juswork/ibis_crawl_engine_jus.git>
