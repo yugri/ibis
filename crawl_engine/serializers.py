@@ -30,7 +30,7 @@ class ArticleTransferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = ('article_url', 'source_language', 'title', 'translated_title', 'body', 'translated_body',
-                  'authors', 'post_date_created', 'translated', 'top_image_url', 'top_image',
+                  'authors', 'post_date_created', 'post_date_crawled', 'translated', 'top_image_url', 'top_image',
                   'processed', 'search_id', 'channel', 'status', 'locations', 'tags',)
         read_only_fields = ('tags',)
         # exclude = ('search', 'pushed')
