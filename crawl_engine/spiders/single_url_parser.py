@@ -102,6 +102,8 @@ class ArticleParser:
                         title = None
 
                     text = page.text if page.text else extractArticleText(page.html)
+                    # We should keep an articles html too for displaying it later
+                    article_html = page.article_html if page.text else None
                     date = extractArticlePublishedDate(self.url, page.html)
 
                     if len(text) == 0:
@@ -116,7 +118,7 @@ class ArticleParser:
                         except (IndexError, TypeError):
                             article.authors = ''
 
-                        article.body = re.sub('\n+', '\n', re.sub(' +', ' ', text))
+                        article.body = article_html if article_html else text
                         article.post_date_created = date
 
                         # Detect article source language at this point.
@@ -137,10 +139,12 @@ class ArticleParser:
                             pass
 
                         if title_lang == 'en' and text_lang == 'en':
+                            # Redefine articles body and translated_body to hold an
+                            # article_html ONLY IF we deal with English language
+                            article.body = article_html if article_html else text
+                            article.translated_body = article_html if article_html else text
                             article.translated_title = title
-                            article.translated_body = text
                             article.translated = True
-                            # article.processed = True
 
                         article.source_language = text_lang if text_lang == title_lang else None
                         search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
