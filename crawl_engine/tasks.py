@@ -47,10 +47,9 @@ def crawl_url(url, search=None):
     # Check if URL is in blacklist
     try:
         is_url_blacklisted(url)
-        try:
-            article = Article.objects.get(article_url=url)
+        if Article.objects.filter(article_url=url).exists():
             result = "Url was already crawled [%s]" % url
-        except Article.DoesNotExist:
+        else:
             try:
                 parser = ArticleParser(url, search)
                 result = parser.run()
