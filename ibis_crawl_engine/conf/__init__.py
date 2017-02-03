@@ -31,7 +31,7 @@ MONGODB_COLLECTION = "articles"
 ###################
 # Celery settings #
 ###################
-BROKER_URL = 'amqp://guest:guest@localhost:2672//'
+BROKER_URL = 'amqp://guest:guest@localhost:25672//'
 # BROKER_URL = 'redis://localhost:6379/0'
 # BROKER_HEARTBEAT = 0
 # CELERY_RESULT_BACKEND = 'mongodb://localhost:27017/'
