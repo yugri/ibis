@@ -97,7 +97,7 @@ def parse_coordinates(array_coords, array_geo_entities, return_json=True):
         point['lat'] = lat
         point['lng'] = lng
         locations['coordinates'].append(point)
-        locations['geo_entity'] = array_geo_entities[index]
+        # locations['geo_entity'] = array_geo_entities[index]
         index += 1
     if return_json:
         return json.dumps(locations)
