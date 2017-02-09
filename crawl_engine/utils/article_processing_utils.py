@@ -10,7 +10,7 @@ def is_url_blacklisted(url):
     :param url:
     :return: boolean
     """
-    blacklist = ['wikipedia', 'stackoverflow']
+    blacklist = ['wikipedia', 'stackoverflow', 'biointel']
     for resource in blacklist:
         if re.search(resource, url) is not None:
             exc = BlacklistedURLException(resource)
