@@ -3,7 +3,7 @@ import json
 from django.conf import settings
 from rest_framework.exceptions import ValidationError
 
-from crawl_engine.models import Article, SearchQuery
+from crawl_engine.models import Article, SearchQuery, BlockedResource
 from rest_framework import serializers
 
 from tagging.models import Tag
@@ -120,3 +120,9 @@ class SearchQuerySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SearchQuery
+
+
+class BlockedListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BlockedResource
