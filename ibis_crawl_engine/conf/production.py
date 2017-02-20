@@ -87,4 +87,4 @@ PIPELINE_ENABLED = True
 
 news.TOP_DIRECTORY = BASE_DIR
 
-IBIS_ADDRESS = env('IBIS_ADDRESS', default=None),
+IBIS_ADDRESS = env('IBIS_ADDRESS', default=None)
