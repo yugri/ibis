@@ -87,4 +87,4 @@ PIPELINE_ENABLED = True
 
 news.TOP_DIRECTORY = BASE_DIR
 
-IBIS_ADDRESS = 'http://endlessripples.com.au/'
+IBIS_ADDRESS = env('IBIS_ADDRESS', default=None),
