@@ -290,8 +290,7 @@ def check_search_queries():
                     job_keys.append(job.id)
 
                 elif search_query.search_type == 'email':
-                    email_links = json.loads(search_query.email_links)
-                    for value in email_links.values():
+                    for value in search_query.email_links.values():
                         links = value.get('links', [])
                         job = run_job.delay(links, search_query.pk)
                         job_keys.append(job.id)
@@ -418,6 +417,7 @@ def upload_articles(self, test=False):
     :return: nothing
     """
     r = redis.StrictRedis(host='localhost', port=6379, db=0)
+    # r = redis.StrictRedis(host='127.0.0.1', port=6380, db=0)
     task = r.get('crawl_engine.tasks.upload_articles')
     if task:
         pass
