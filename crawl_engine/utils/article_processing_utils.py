@@ -1,6 +1,7 @@
 import re
 import mimetypes
 
+from crawl_engine.utils.ibis_client import IbisClient
 from crawl_engine.exceptions import BlacklistedURLException
 
 
@@ -10,7 +11,13 @@ def is_url_blacklisted(url):
     :param url:
     :return: boolean
     """
-    blacklist = ['wikipedia', 'stackoverflow', 'biointel']
+    cli = IbisClient()
+    try:
+        r = cli.get('api/v1/blocked-sites')
+    except ConnectionError:
+        r = []
+    blacklist = [x['site'] for x in r.json()]
+
     for resource in blacklist:
         if re.search(resource, url) is not None:
             exc = BlacklistedURLException(resource)

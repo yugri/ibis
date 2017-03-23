@@ -25,12 +25,6 @@ class LanguageDetectionError(BaseException):
     pass
 
 
-class BlockedResource(models.Model):
-    resource_id = models.CharField(max_length=50, db_index=True)
-    name = models.CharField(max_length=124, blank=True,
-                            help_text='Type resource name only. E.g.: "wikipedia", "google"')
-
-
 class SearchQuery(models.Model):
     search_id = models.CharField(max_length=50, db_index=True)
     search_type = models.CharField(max_length=20, choices=TYPES, default='search_engine')

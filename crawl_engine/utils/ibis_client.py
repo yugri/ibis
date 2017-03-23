@@ -6,6 +6,12 @@ class IbisClient(object):
     def __init__(self, remote_host=None):
         self.ibis_url = remote_host or settings.IBIS_ADDRESS
 
+    def get(self, url, data=None):
+        return requests.get(
+            self.ibis_url + url,
+            data=data
+        )
+
     def post(self, url, data):
         return requests.post(
             self.ibis_url + url,
