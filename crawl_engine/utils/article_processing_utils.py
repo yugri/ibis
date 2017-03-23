@@ -16,7 +16,11 @@ def is_url_blacklisted(url):
         r = cli.get('api/v1/blocked-sites')
     except ConnectionError:
         r = []
-    blacklist = [x['site'] for x in r.json()]
+
+    if r.status_code == '200':
+        blacklist = [x['site'] for x in r.json()]
+    else:
+        blacklist = []
 
     for resource in blacklist:
         if re.search(resource, url) is not None:
