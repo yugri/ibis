@@ -17,7 +17,7 @@ def is_url_blacklisted(url):
     except ConnectionError:
         r = []
 
-    if r.status_code == '200':
+    if r.status_code == 200:
         blacklist = [x['site'] for x in r.json()]
     else:
         blacklist = []
