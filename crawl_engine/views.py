@@ -154,20 +154,3 @@ class ListSearchTypes(APIView):
         """
         search_types = TYPES
         return Response(search_types)
-
-
-class BlockedSitesList(generics.ListCreateAPIView):
-    queryset = BlockedSite.objects.all()
-    serializer_class = BlockedSiteSerializer
-
-
-class BlockedSiteDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = BlockedSite.objects.all()
-    serializer_class = BlockedSiteSerializer
-
-    def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        obj = get_object_or_404(queryset, ibis_site_id=self.kwargs['ibis_site_id'])
-
-        return obj

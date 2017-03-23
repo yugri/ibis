@@ -239,15 +239,3 @@ class Article(models.Model):
         else:
             status = 'raw'
         return status, search_channel
-
-
-class BlockedSite(models.Model):
-    """
-    Sites, that need to be omitted by crawler
-    """
-    ibis_site_id = models.CharField(max_length=20)
-    site = models.CharField(max_length=20)
-
-    def __str__(self):
-        return self.site
-
