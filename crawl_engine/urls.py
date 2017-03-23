@@ -25,5 +25,8 @@ urlpatterns = [
     url(r'^source_list/$', ListSources.as_view()),
     url(r'^search_types_list/$', ListSearchTypes.as_view()),
 
+    url(r'^blocked_sites/$', BlockedSitesList.as_view()),
+    url(r'^blocked_sites/(?P<ibis_site_id>[\w-]+)$', BlockedSiteDetailView.as_view()),
+
     url(r'^', include('rest_framework.urls', namespace='rest_framework')),
 ]

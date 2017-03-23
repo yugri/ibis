@@ -1,8 +1,8 @@
 import re
 import mimetypes
 
-from crawl_engine.utils.ibis_client import IbisClient
 from crawl_engine.exceptions import BlacklistedURLException
+from crawl_engine.utils.ibis_client import IbisClient
 
 
 def is_url_blacklisted(url):
