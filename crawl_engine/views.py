@@ -10,9 +10,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from crawl_engine.common.constants import TYPES
-from crawl_engine.models import Article, SearchQuery, BlockedSite
+from crawl_engine.models import Article, SearchQuery
 from crawl_engine.serializers import (ArticleSerializer, TaskURLSerializer, TaskURLListSerializer,
-                                      SearchQuerySerializer, BlockedSiteSerializer)
+                                      SearchQuerySerializer)
 from crawl_engine.tasks import crawl_url
 from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
 from django.conf import settings

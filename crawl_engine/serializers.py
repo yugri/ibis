@@ -12,6 +12,7 @@ from tagging.models import Tag
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
+        fields = '__all__'
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -120,3 +121,4 @@ class SearchQuerySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SearchQuery
+        fields = '__all__'
