@@ -121,9 +121,11 @@ class SearchQuerySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SearchQuery
+        fields = '__all__'
 
 
 class BlockedListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BlockedResource
+        fields = '__all__'
