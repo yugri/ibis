@@ -46,6 +46,7 @@ class SearchQuery(models.Model):
     last_processed = models.DateTimeField(blank=True, null=True)
     response_address = models.CharField(max_length=50, blank=True, null=True)
     options = JSONField(blank=True, null=True)
+    email_links = JSONField(blank=True, null=True)
 
     @property
     def get_sources(self):
