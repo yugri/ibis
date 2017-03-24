@@ -10,9 +10,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from crawl_engine.common.constants import TYPES
-from crawl_engine.models import Article, SearchQuery, BlockedResource
-from crawl_engine.serializers import ArticleSerializer, TaskURLSerializer, TaskURLListSerializer, SearchQuerySerializer, \
-    BlockedListSerializer
+from crawl_engine.models import Article, SearchQuery, BlockedSite
+from crawl_engine.serializers import (ArticleSerializer, TaskURLSerializer, TaskURLListSerializer,
+                                      SearchQuerySerializer, BlockedSiteSerializer)
 from crawl_engine.tasks import crawl_url
 from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
 from django.conf import settings
@@ -124,18 +124,6 @@ class SearchQueryList(generics.ListCreateAPIView):
         serializer.save(response_address=response_address)
 
 
-class BlockedResourcesList(generics.ListCreateAPIView):
-    queryset = BlockedResource.objects.all()
-    serializer_class = BlockedListSerializer
-
-    def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        obj = get_object_or_404(queryset, search_id=self.kwargs['resource_id'])
-
-        return obj
-
-
 class SearchQueryDetailView(generics.RetrieveUpdateAPIView):
     queryset = SearchQuery.objects.all()
     serializer_class = SearchQuerySerializer
@@ -166,3 +154,20 @@ class ListSearchTypes(APIView):
         """
         search_types = TYPES
         return Response(search_types)
+
+
+class BlockedSitesList(generics.ListCreateAPIView):
+    queryset = BlockedSite.objects.all()
+    serializer_class = BlockedSiteSerializer
+
+
+class BlockedSiteDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BlockedSite.objects.all()
+    serializer_class = BlockedSiteSerializer
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        obj = get_object_or_404(queryset, ibis_site_id=self.kwargs['ibis_site_id'])
+
+        return obj

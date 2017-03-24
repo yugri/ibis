@@ -417,7 +417,6 @@ def upload_articles(self, test=False):
     :return: nothing
     """
     r = redis.StrictRedis(host='localhost', port=6379, db=0)
-    # r = redis.StrictRedis(host='127.0.0.1', port=6380, db=0)
     task = r.get('crawl_engine.tasks.upload_articles')
     if task:
         pass
