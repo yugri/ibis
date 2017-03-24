@@ -1,10 +1,7 @@
 amqp==2.1.4
 anyjson==0.3.3
-appdirs==1.4.0
 asgiref==1.0.0
-attrs==16.3.0
 autobahn==0.17.1
-Automat==0.5.0
 Babel==2.3.4
 beautifulsoup4==4.5.3
 billiard==3.5.0.2
