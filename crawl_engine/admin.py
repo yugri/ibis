@@ -1,6 +1,6 @@
 from crawl_engine import tasks
 from django.contrib import admin
-from crawl_engine.models import Article, SearchQuery, SearchTask, BlockedResource, BlockedSite
+from crawl_engine.models import Article, SearchQuery, SearchTask, BlockedSite
 
 
 def mark_as_non_pushed(modeladmin, request, queryset):
