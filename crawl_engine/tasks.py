@@ -288,13 +288,6 @@ def check_search_queries():
                 elif search_query.search_type == 'article':
                     job = run_job.delay([search_query.article_url], search_query.pk)
                     job_keys.append(job.id)
-
-                elif search_query.search_type == 'email':
-                    for value in search_query.email_links.values():
-                        links = value.get('links', [])
-                        job = run_job.delay(links, search_query.pk)
-                        job_keys.append(job.id)
-
                 # Update search last processed date, save it and create the task obj
                 now = datetime.utcnow().replace(tzinfo=utc)
                 search_query.last_processed = now
@@ -417,7 +410,6 @@ def upload_articles(self, test=False):
     :return: nothing
     """
     r = redis.StrictRedis(host='localhost', port=6379, db=0)
-    # r = redis.StrictRedis(host='127.0.0.1', port=6380, db=0)
     task = r.get('crawl_engine.tasks.upload_articles')
     if task:
         pass

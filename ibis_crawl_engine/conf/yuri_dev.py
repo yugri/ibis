@@ -36,7 +36,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'yugritsfai@gmail.com'
+EMAIL_HOST_USER = 'yugritsai@gmail.com'
 EMAIL_HOST_PASSWORD = 'uuvzryrcqosnhefv'
 
 
@@ -44,9 +44,8 @@ ACCOUNT_EMAIL_UNIQUE = True
 ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = True
 ACCOUNT_EMAIL_CONFIRMATION_EMAIL = True
 
-PIPELINE = {
-    'PIPELINE_ENABLED': False,
-}
+PIPELINE_ENABLED = False
+
 # CELERY_ALWAYS_EAGER = True
 
 IBIS_ADDRESS = 'http://127.0.0.1:8300/'

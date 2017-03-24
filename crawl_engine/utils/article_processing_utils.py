@@ -2,7 +2,6 @@ import re
 import mimetypes
 
 from crawl_engine.exceptions import BlacklistedURLException
-from crawl_engine.utils.ibis_client import IbisClient
 
 
 def is_url_blacklisted(url):
@@ -11,17 +10,10 @@ def is_url_blacklisted(url):
     :param url:
     :return: boolean
     """
-    cli = IbisClient()
-    try:
-        r = cli.get('api/v1/blocked-sites')
-    except ConnectionError:
-        r = []
+    # import is here in case of circular import problems
+    from crawl_engine.models import BlockedSite
 
-    if r.status_code == '200':
-        blacklist = [x['site'] for x in r.json()]
-    else:
-        blacklist = []
-
+    blacklist = BlockedSite.objects.values_list('site', flat=True)
     for resource in blacklist:
         if re.search(resource, url) is not None:
             exc = BlacklistedURLException(resource)
