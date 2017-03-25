@@ -28,7 +28,7 @@ Fabric==1.13.1
 Fabric3==1.12.post1
 feedfinder2==0.0.4
 feedparser==5.2.1
-flower==0.9.1
+flower==1.0.0
 futures==3.0.5
 geopy==1.11.0
 google-api-python-client==1.6.2
