@@ -15,7 +15,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL.strip("/"))
 MEDIA_URL = '/media/'
 MEDIA_ROOT = STATIC_ROOT + MEDIA_URL
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '95.85.40.149']
 
 DATABASES = {
     # Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
