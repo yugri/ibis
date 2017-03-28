@@ -45,5 +45,21 @@ celery -A ibis_crawl_engine beat -l info
 in file <requirements.txt> & <requirements_prod.txt>
 
 
+## Local development with Docker
+
+Open a terminal at the project root and run the following for local development:
+
+```sh
+$ docker-compose -f dev.yml up
+```
+
+### Running management commands
+
+To migrate your app and to create a superuser, run:
+
+```sh
+$ docker-compose -f dev.yml run django python manage.py migrate
+$ docker-compose -f dev.yml run django python manage.py createsuperuser
+```
 
 [git-repo-url]: <git@bitbucket.org:juswork/ibis_crawl_engine_jus.git>

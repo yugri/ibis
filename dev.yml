@@ -1,0 +1,31 @@
+version: '2'
+
+volumes:
+  postgres_data_dev: {}
+  postgres_backup_dev: {}
+
+services:
+  postgres:
+    build: ./ibis_crawl_engine/conf/docker/postgres
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+      - postgres_backup_dev:/backups
+    environment:
+      - POSTGRES_USER=ibis
+
+  django:
+    build:
+      context: .
+      dockerfile: ./ibis_crawl_engine/conf/docker/django/Dockerfile-dev
+    command: /start-dev.sh
+    depends_on:
+      - postgres
+    environment:
+      - POSTGRES_USER=ibis
+      - USE_DOCKER=yes
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    links:
+      - postgres
