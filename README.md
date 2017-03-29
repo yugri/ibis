@@ -78,4 +78,14 @@ To run tests run:
 $ docker-compose -f dev.yml run django pytest
 ```
 
+### Code lint
+
+We need to choose the codeguide. But for now, check newly created files against flake8
+
+```sh
+$ docker-compose -f dev.yml run django flake8
+```
+
+The config for flake8 is located in .flake8.
+
 [git-repo-url]: <git@bitbucket.org:juswork/ibis_crawl_engine_jus.git>
