@@ -3,8 +3,9 @@ ENV PYTHONUNBUFFERED 1
 
 # Requirements have to be pulled and installed here, otherwise caching won't work
 COPY ./requirements.txt /requirements.txt
+COPY ./requirements_dev.txt /requirements_dev.txt
 RUN pip install --upgrade pip setuptools
-RUN pip install -r /requirements.txt
+RUN pip install -r /requirements_dev.txt
 
 COPY ./ibis_crawl_engine/conf/docker/django/entrypoint.sh /entrypoint.sh
 RUN sed -i 's/\r//' /entrypoint.sh

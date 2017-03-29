@@ -1,4 +1,4 @@
-# Distributed crawler manager with API
++# Distributed crawler manager with API
 
 ```sh
 $ git clone [git-repo-url]
@@ -68,6 +68,14 @@ To migrate your app and to create a superuser, run:
 ```sh
 $ docker-compose -f dev.yml run django python manage.py migrate
 $ docker-compose -f dev.yml run django python manage.py createsuperuser
+```
+
+### Run tests
+
+To run tests run:
+
+```sh
+$ docker-compose -f dev.yml run django pytest
 ```
 
 [git-repo-url]: <git@bitbucket.org:juswork/ibis_crawl_engine_jus.git>
