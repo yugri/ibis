@@ -40,6 +40,7 @@ class SearchQuery(models.Model):
     last_processed = models.DateTimeField(blank=True, null=True)
     response_address = models.CharField(max_length=50, blank=True, null=True)
     options = JSONField(blank=True, null=True)
+    email_links = JSONField(blank=True, null=True)
 
     @property
     def get_sources(self):
@@ -239,4 +240,15 @@ class Article(models.Model):
         else:
             status = 'raw'
         return status, search_channel
+
+
+class BlockedSite(models.Model):
+    """
+    Sites, that need to be omitted by crawler
+    """
+    ibis_site_id = models.CharField(max_length=20)
+    site = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.site
 

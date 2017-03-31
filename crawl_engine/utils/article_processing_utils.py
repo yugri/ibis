@@ -10,7 +10,10 @@ def is_url_blacklisted(url):
     :param url:
     :return: boolean
     """
-    blacklist = ['wikipedia', 'stackoverflow', 'biointel']
+    # import is here in case of circular import problems
+    from crawl_engine.models import BlockedSite
+
+    blacklist = BlockedSite.objects.values_list('site', flat=True)
     for resource in blacklist:
         if re.search(resource, url) is not None:
             exc = BlacklistedURLException(resource)
