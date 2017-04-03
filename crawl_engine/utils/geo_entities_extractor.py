@@ -98,7 +98,8 @@ def parse_coordinates(coordinates, return_json=True):
             'type': coord['type'],
             'address': cord['name'],
             'lat': coord['latitude'],
-            'lng': coor['longitude']
+            'lng': coor['longitude'],
+            'primary': False
         })
 
     if return_json:
