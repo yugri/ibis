@@ -99,7 +99,7 @@ def parse_coordinates(coordinates, return_json=True):
             'address': cord['name'],
             'lat': coord['latitude'],
             'lng': coor['longitude'],
-            'primary': False
+            'primary': True if len(coordinates) == 1 else False
         })
 
     if return_json:
