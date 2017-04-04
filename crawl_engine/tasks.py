@@ -32,7 +32,7 @@ from googleapiclient.errors import HttpError
 from requests.exceptions import HTTPError
 
 from crawl_engine.utils.article_processing_utils import is_url_blacklisted
-from crawl_engine.utils.geo_entities_extractor import convert_to_json, parse_coordinates
+from crawl_engine.utils.geo_entities_extractor import convert_to_json
 from crawl_engine.utils.ibis_client import IbisClient, chunks
 from crawl_engine.utils.text_processing_utils import tag_p, split_by_sentences, untag
 from tagging.models import Tag
@@ -366,7 +366,9 @@ def get_geo_entity_for_article(self, article_id):
                     entities = convert_to_json(new_translated_body)
 
                     # Prepare locations data
-                    article.locations = parse_coordinates(entities['locations'])
+                    if entities['locations']:
+                        locations = { 'coordinates': entities['locations'] }
+                        article.locations = json.dumps(locations)
 
                     # Get keyword tags and get_or_create Tag object by slug field.
                     tags = list()
