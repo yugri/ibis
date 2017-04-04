@@ -3,8 +3,6 @@ import json
 from random import randint
 from time import sleep
 
-import django
-
 from django.conf import settings
 import lxml.html
 import requests
@@ -17,6 +15,58 @@ logger = logging.getLogger(__name__)
 
 class MaxSearchDepthError(Exception):
     pass
+
+
+class SearchParser:
+    """ Base class for search engine parsers """
+    def __init__(self, search_query, depth, options):
+        self.search_query = search_query
+        self.depth = depth
+        self.options = options
+
+
+class GoogleParser(SearchParser):
+    pass
+
+
+class GoogleScholarParser(SearchParser):
+    pass
+
+
+class GoogleNewsParser(SearchParser):
+    pass
+
+
+class GoogleCseParser(SearchParser):
+    pass
+
+
+class GoogleBlogsParser(SearchParser):
+    pass
+
+
+class BingParser(SearchParser):
+    pass
+
+
+class YandexParser(SearchParser):
+    pass
+
+
+SEARCH_PARSERS = {
+    'google': GoogleParser,
+    'google_scholar': GoogleScholarParser,
+    'google_news': GoogleNewsParser,
+    'google_cse': GoogleCseParser,
+    'google_blogs': GoogleBlogsParser,
+    'bing': BingParser,
+    'yandex': YandexParser
+}
+
+
+def get_search_parser(search_query, engine, depth=5, options=None):
+    """ Init serach parser by name """
+    return SEARCH_PARSERS[engine](search_query, depth, options)
 
 
 class SearchEngineParser(object):
