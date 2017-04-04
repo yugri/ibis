@@ -152,3 +152,6 @@ local_tests.py
 
 #custom config
 ibis_crawl_engine/conf/vladimir.py
+
+celerybeat-schedule.db
+/static/
