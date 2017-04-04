@@ -23,25 +23,35 @@ def extract_geo_entities(text):
     time.sleep(1) #well... should get rid of it
     all_entities = api.entities('text', text)
 
-    result = []
+    result, entity_types = [], set()
     try:
         for entity in all_entities['entities']:
-            if entity['type'] not in { 'Country', 'City', 'Region' }:
+            entity_type = entity['type'].lower()
+            if entity_type not in { 'country', 'city', 'region' }:
                 pass
             result.append({
                 'name': del_non_characters(entity['text'].title()),
-                'type': entity['type']
+                'type': entity_type
             })
+            entity_types.add()
     except KeyError:
         pass
+
+    #if city exists, remove country and region
+    if 'city' in entity_types:
+        for geo_entity in result:
+            if geo_entity['type'] != 'city':
+                result.remove(geo_entity)
+
+
     return result
 
 
 def extract_locations(text):
     coords = []
     for entity in extract_geo_entities(text):
-        time.sleep(1)
         try:
+            time.sleep(1) #not good, not good
             location = geolocator.geocode(entity['name'], timeout=10)
             coords.append({
                 'name': location.address,
@@ -75,16 +85,13 @@ def convert_to_json(text):
 
 
 
-def parse_coordinates(coordinates, return_json=True):
+def parse_coordinates(coordinates, return_str=True):
     """
     This function helps us to get locations info from data received from the AlchemyAPI
 
     Example received data from AlchemyAPI:
-    {
-     "keywords": ["intermingled careers", "Dnipropetrovsk Oblast"],
-     "location": [[45.04, 35.67, 0.0]],
-     "geo_entities": ["Dnipropetrovsk", "Lutsk"]
-    }
+    [ { 'type': 'Country', 'name': 'Ukraine', 'latitude': 62.0, 'longitude': 56.3 }, ... ]
+
     We operates here with location and geo_entities only as arrays
 
     :param coordinates: list()
@@ -102,7 +109,7 @@ def parse_coordinates(coordinates, return_json=True):
             'primary': True if len(coordinates) == 1 else False
         })
 
-    if return_json:
+    if return_str:
         return json.dumps(locations)
     else:
         return locations
