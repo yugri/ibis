@@ -88,3 +88,7 @@ PIPELINE_ENABLED = True
 news.TOP_DIRECTORY = BASE_DIR
 
 IBIS_ADDRESS = env('IBIS_ADDRESS', default=None)
+
+# Error reports sending
+ADMINS = [('Justin', 'juswork@gmail.com'), ('Vladimir', 'vladimir.ganiushev@gmail.com'),
+          ('Yuri', 'yugritsai@gmail.com')]

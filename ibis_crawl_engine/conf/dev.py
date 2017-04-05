@@ -82,3 +82,7 @@ PIPELINE_ENABLED = True
 news.TOP_DIRECTORY = BASE_DIR
 
 IBIS_ADDRESS = 'http://146.185.160.198/'
+
+# Error reports sending
+ADMINS = [('Justin', 'juswork@gmail.com'), ('Vladimir', 'vladimir.ganiushev@gmail.com'),
+          ('Yuri', 'yugritsai@gmail.com')]
