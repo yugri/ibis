@@ -20,7 +20,7 @@ def extract_locations(text):
     time.sleep(1) #well... should get rid of it
     all_entities = api.entities('text', text)
 
-    result, entity_types = [], set()
+    result = []
     try:
         for entity in all_entities['entities']:
             entity_type = entity['type'].lower()
@@ -30,16 +30,8 @@ def extract_locations(text):
                 'name': del_non_characters(entity['text'].title()),
                 'type': entity_type
             })
-            entity_types.add(entity_type)
     except KeyError:
         pass
-
-    #if city exists, remove country and region
-    if 'city' in entity_types:
-        for geo_entity in result:
-            if geo_entity['type'] != 'city':
-                result.remove(geo_entity)
-
 
     return result
 
