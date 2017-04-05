@@ -3,8 +3,6 @@ import json
 from random import randint
 from time import sleep
 
-import django
-
 from django.conf import settings
 import lxml.html
 import requests
@@ -17,6 +15,75 @@ logger = logging.getLogger(__name__)
 
 class MaxSearchDepthError(Exception):
     pass
+
+
+class SearchParser:
+    """ Base class for search engine parsers """
+    def __init__(self, search_query, depth, options):
+        self.search_query = search_query
+        self.depth = depth
+        self.options = options
+
+    def new_article(url, title, text):
+        """ Probably replace this with Article models """
+        return {'url': url, 'title': title, 'text': text}
+
+
+class GoogleParser(SearchParser):
+    pass
+
+
+class GoogleScholarParser(SearchParser):
+    pass
+
+
+class GoogleNewsParser(SearchParser):
+    pass
+
+
+class GoogleCseParser(SearchParser):
+    pass
+
+
+class GoogleBlogsParser(SearchParser):
+    pass
+
+
+class BingParser(SearchParser):
+    pass
+
+
+class YandexParser(SearchParser):
+    def run(self):
+        result = []
+        for count in range(0, self.depth):
+            url = 'https://www.yandex.com/search/'
+            r = requests.get(url, params={'text': self.search_query, 'p': count})
+            tree = lxml.html.fromstring(r.text)
+
+            for div in tree.xpath("//div[contains(@class, 'organic ')]"):
+                result.append({
+                    'url': div.xpath('.//h2/a/@href')[0],
+                    'title': div.xpath('.//h2/a')[0].text_content()
+                })
+
+        return result
+
+
+SEARCH_PARSERS = {
+    'google': GoogleParser,
+    'google_scholar': GoogleScholarParser,
+    'google_news': GoogleNewsParser,
+    'google_cse': GoogleCseParser,
+    'google_blogs': GoogleBlogsParser,
+    'bing': BingParser,
+    'yandex': YandexParser
+}
+
+
+def get_search_parser(search_query, engine, depth=5, options=None):
+    """ Init serach parser by name """
+    return SEARCH_PARSERS[engine](search_query, depth, options)
 
 
 class SearchEngineParser(object):
