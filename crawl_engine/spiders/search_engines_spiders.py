@@ -24,6 +24,10 @@ class SearchParser:
         self.depth = depth
         self.options = options
 
+    def new_article(url, title, text):
+        """ Probably replace this with Article models """
+        return {'url': url, 'title': title, 'text': text}
+
 
 class GoogleParser(SearchParser):
     pass
@@ -50,7 +54,20 @@ class BingParser(SearchParser):
 
 
 class YandexParser(SearchParser):
-    pass
+    def run(self):
+        result = []
+        for count in range(0, self.depth):
+            url = 'https://www.yandex.com/search/'
+            r = requests.get(url, params={'text': self.search_query, 'p': count})
+            tree = lxml.html.fromstring(r.text)
+
+            for div in tree.xpath("//div[contains(@class, 'organic ')]"):
+                result.append({
+                    'url': div.xpath('.//h2/a/@href')[0],
+                    'title': div.xpath('.//h2/a')[0].text_content()
+                })
+
+        return result
 
 
 SEARCH_PARSERS = {
