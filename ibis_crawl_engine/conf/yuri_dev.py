@@ -5,7 +5,6 @@ DEBUG = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL.strip("/"))
-# STATIC_ROOT = '/home/yuri/dev/emailer/static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = STATIC_ROOT + MEDIA_URL
@@ -47,6 +46,5 @@ ACCOUNT_EMAIL_CONFIRMATION_EMAIL = True
 PIPELINE = {
     'PIPELINE_ENABLED': False,
 }
-# CELERY_ALWAYS_EAGER = True
 
 IBIS_ADDRESS = 'http://127.0.0.1:8300/'
