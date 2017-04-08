@@ -23,28 +23,18 @@ environ.Env.read_env()  # reading .env file
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-MONGODB_SERVER = "localhost"
-MONGODB_PORT = 27017
-MONGODB_DB = "ibis_news_db"
-MONGODB_COLLECTION = "articles"
-
 ###################
 # Celery settings #
 ###################
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 # BROKER_URL = 'redis://localhost:6379/0'
 # BROKER_HEARTBEAT = 0
-# CELERY_RESULT_BACKEND = 'mongodb://localhost:27017/'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_IGNORE_RESULT = False
 CELERY_CACHE_BACKEND = 'redis://localhost:6379/0'
 # CELERY_ACCEPT_CONTENT = ['json']
 # CELERY_TASK_SERIALIZER = 'json'
 # CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_MONGODB_BACKEND_SETTINGS = {
-#     'database': MONGODB_DB,
-#     'taskmeta_collection': 'task_meta',
-# }
 CELERYD_MAX_TASKS_PER_CHILD = 100
 
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']
@@ -139,18 +129,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'ibis_crawl_engine.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators

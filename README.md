@@ -1,4 +1,4 @@
-# Distributed crawler manager with API
++# Distributed crawler manager with API
 
 ```sh
 $ git clone [git-repo-url]
@@ -45,5 +45,47 @@ celery -A ibis_crawl_engine beat -l info
 in file <requirements.txt> & <requirements_prod.txt>
 
 
+## Local development with Docker
+
+Create the ./ibis_crawl_engine/conf/.env file with api credentials
+
+```
+GOOGLE_TRANSLATE_API_KEY=????
+CSE_ID=????
+ALCHEMY_API_KEY=????
+```
+
+Open a terminal at the project root and run the following for local development:
+
+```sh
+$ docker-compose -f dev.yml up
+```
+
+### Running management commands
+
+To migrate your app and to create a superuser, run:
+
+```sh
+$ docker-compose -f dev.yml run django python manage.py migrate
+$ docker-compose -f dev.yml run django python manage.py createsuperuser
+```
+
+### Run tests
+
+To run tests run:
+
+```sh
+$ docker-compose -f dev.yml run django pytest
+```
+
+### Code lint
+
+We need to choose the codeguide. But for now, check newly created files against flake8
+
+```sh
+$ docker-compose -f dev.yml run django flake8
+```
+
+The config for flake8 is located in .flake8.
 
 [git-repo-url]: <git@bitbucket.org:juswork/ibis_crawl_engine_jus.git>
