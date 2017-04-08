@@ -39,6 +39,6 @@ def crawl_email_search_links(sender, instance, created, **kwargs):
     """
 
     if instance.search_type == 'email':
-        for value in json.loads(instance.email_links).values():
+        for value in instance.email_links.values():
             links = value.get('links', [])
             job = run_job.delay(links, instance.pk)

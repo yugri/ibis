@@ -289,7 +289,7 @@ def check_search_queries():
                     job_keys.append(job.id)
 
                 elif search_query.search_type == 'email':
-                    for value in json.loads(search_query.email_links).values():
+                    for value in search_query.email_links.values():
                         links = value.get('links', [])
                         job = run_job.delay(links, search_query.pk)
                         job_keys.append(job.id)
