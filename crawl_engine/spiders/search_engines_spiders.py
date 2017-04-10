@@ -101,6 +101,8 @@ SEARCH_PARSERS = {
 
 def get_search_parser(search_query, engine, depth=5, options=None):
     """ Init serach parser by name """
+    if engine not in SEARCH_PARSERS:
+        raise NameError('Search engine %s not found' % engine)
     return SEARCH_PARSERS[engine](search_query, depth, options)
 
 

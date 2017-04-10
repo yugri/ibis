@@ -17,5 +17,7 @@ urlpatterns = [
     url(r'^blocked_sites/$', views.BlockedSitesList.as_view()),
     url(r'^blocked_sites/(?P<ibis_site_id>[\w-]+)$', views.BlockedSiteDetailView.as_view()),
 
+    url(r'^preview$', views.search_preview),
+
     url(r'^', include('rest_framework.urls', namespace='rest_framework')),
 ]
