@@ -107,7 +107,7 @@ class YaSearch:
         params = {'user': self._api_user, 'key': self._api_key}
         search_url = self._url + parse.urlencode(params)
         post_data = self.REQUEST_TEMPLATE % (query, str(page))
-        req = request.Request(search_url, post_data)
+        req = request.Request(search_url, post_data.encode("utf-8"))
         response = request.urlopen(req)
         xml = response.read()
         dom = minidom.parseString(xml)
