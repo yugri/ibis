@@ -1,11 +1,14 @@
 import json
 import logging
 from django.shortcuts import get_object_or_404
+
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 from crawl_engine.common.constants import TYPES
+from crawl_engine.spiders.search_engines_spiders import get_search_parser
 from crawl_engine.models import Article, SearchQuery, BlockedSite
 from crawl_engine.serializers import (ArticleSerializer,
                                       SearchQuerySerializer, BlockedSiteSerializer)
@@ -99,3 +102,14 @@ class BlockedSiteDetailView(generics.RetrieveUpdateDestroyAPIView):
         obj = get_object_or_404(queryset, ibis_site_id=self.kwargs['ibis_site_id'])
 
         return obj
+
+
+@api_view(['GET'])
+def search_preview(request):
+    query = request.query_params.get('q', None)
+    engine = request.query_params.get('engine', None)
+    try:
+        parser = get_search_parser(query, engine, 1)
+        return Response(parser.run())
+    except Exception as e:
+        return Response({'message': str(e)}, status=400)

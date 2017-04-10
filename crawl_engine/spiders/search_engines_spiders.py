@@ -1,3 +1,4 @@
+
 import logging
 import json
 from random import randint
@@ -7,13 +8,17 @@ from django.conf import settings
 import lxml.html
 import requests
 from urllib.parse import quote, parse_qs, urlparse, unquote
-
+from crawl_engine.spiders.ya_search import YaSearch
 from crawl_engine.spiders.rss_spider import RSSFeedParser
 
 logger = logging.getLogger(__name__)
 
 
 class MaxSearchDepthError(Exception):
+    pass
+
+
+class ParserError(Exception):
     pass
 
 
@@ -24,9 +29,9 @@ class SearchParser:
         self.depth = depth
         self.options = options
 
-    def new_article(url, title, text):
+    def _new_article(self, url, title, text):
         """ Probably replace this with Article models """
-        return {'url': url, 'title': title, 'text': text}
+        return {'url': url.strip(), 'title': title.strip(), 'text': text.strip()}
 
 
 class GoogleParser(SearchParser):
@@ -50,24 +55,37 @@ class GoogleBlogsParser(SearchParser):
 
 
 class BingParser(SearchParser):
-    pass
+
+    def run(self):
+        base_url = 'https://www.bing.com/search'
+        result = []
+        for count in range(0, self.depth):
+            r = requests.get(base_url, {'q': self.search_query, 'first': count * 10 + 1})
+
+            tree = lxml.html.fromstring(r.text)
+
+            if "Bing" not in tree.findtext('.//title'):
+                logger.info("I can't find Bing in page title")
+
+            for item in tree.xpath("//li[contains(@class, 'b_algo')]"):
+                result.append(self._new_article(
+                    item.xpath(".//a/@href")[0],
+                    item.xpath(".//a")[0].text_content(),
+                    item.xpath(".//p")[0].text_content()
+                ))
+
+        return result
 
 
 class YandexParser(SearchParser):
+
     def run(self):
-        result = []
-        for count in range(0, self.depth):
-            url = 'https://www.yandex.com/search/'
-            r = requests.get(url, params={'text': self.search_query, 'p': count})
-            tree = lxml.html.fromstring(r.text)
+        search = YaSearch(settings.YANDEX_API_USER, settings.YANDEX_API_KEY)
+        results = search.search(self.search_query)
+        if results.error is not None:
+            raise ParserError(results.error.description)
 
-            for div in tree.xpath("//div[contains(@class, 'organic ')]"):
-                result.append({
-                    'url': div.xpath('.//h2/a/@href')[0],
-                    'title': div.xpath('.//h2/a')[0].text_content()
-                })
-
-        return result
+        return [self._new_article(i.url, i.title, i.snippet) for i in results.items]
 
 
 SEARCH_PARSERS = {
@@ -83,6 +101,8 @@ SEARCH_PARSERS = {
 
 def get_search_parser(search_query, engine, depth=5, options=None):
     """ Init serach parser by name """
+    if engine not in SEARCH_PARSERS:
+        raise NameError('Search engine %s not found' % engine)
     return SEARCH_PARSERS[engine](search_query, depth, options)
 
 

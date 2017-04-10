@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="utf-8"?>
+<yandexsearch version="1.0">
+  <request>
+    <query>
+      yandex
+    </query>
+    <page>
+      0
+    </page>
+    <sortby order="descending" priority="no">
+      rlv
+    </sortby>
+    <maxpassages>
+    </maxpassages>
+    <groupings>
+      <groupby attr="" mode="flat" groups-on-page="10" docs-in-group="1" curcateg="-1" />
+    </groupings>
+  </request>
+  <response date="20170410T120031">
+    <reqid>
+      1491825631630871-1070554871218535807100473-sfront6-019-XML
+    </reqid>
+    <found priority="phrase">
+      127585012
+    </found>
+    <found priority="strict">
+      127585012
+    </found>
+    <found priority="all">
+      127585012
+    </found>
+    <found-human>
+      Нашлось 128 млн ответов
+      </found-human>
+    <results>
+      <grouping attr="" mode="flat" groups-on-page="10" docs-in-group="1" curcateg="-1">
+        <found priority="phrase">
+          183198
+        </found>
+        <found priority="strict">
+          183198
+        </found>
+        <found priority="all">
+          183198
+        </found>
+        <found-docs priority="phrase">
+          252234
+          </found-docs>
+        <found-docs priority="strict">
+          252234
+          </found-docs>
+        <found-docs priority="all">
+          252234
+          </found-docs>
+        <found-docs-human>
+          нашёл 252 тыс. ответов
+          </found-docs-human>
+        <page first="1" last="10">
+          0
+        </page>
+        <group>
+          <doccount>
+            1
+          </doccount>
+          <relevance />
+          <doc id="Z2D2F1681C7BF39FD">
+            <relevance />
+            <url>
+              https://yandex.ru/
+            </url>
+            <domain>
+              yandex.ru
+            </domain>
+            <title>
+              <hlword>
+                Яндекс
+              </hlword>
+              — поисковая система и интернет-портал
+            </title>
+            <headline>
+              Поиск по интернету с учётом региона пользователя. Возможность искать по картинкам, видео, картам, новостям, блогам, товарам и словарям. Бесплатная почта, фотохостинг и другие сервисы.
+            </headline>
+            <modtime>
+              20070327T050721
+            </modtime>
+            <size>
+              1085
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                ru
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+          </doc>
+        </group>
+        <group>
+          <doccount>
+            1
+          </doccount>
+          <relevance />
+          <doc id="Z5B779511BC0F69C2">
+            <relevance />
+            <url>
+              https://mail.yandex.ru/
+            </url>
+            <domain>
+              mail.yandex.ru
+            </domain>
+            <title>
+              <hlword>
+                Яндекс
+              </hlword>
+              .Почта — бесплатная электронная почта
+            </title>
+            <headline>
+              Защита от спама и вирусов, неограниченный размер почтового ящика, возможность получить короткий адрес (@ya.ru), проверка орфографии, перевод писем. Коллекция тем оформления почты.
+            </headline>
+            <modtime>
+              20120903T231117
+            </modtime>
+            <size>
+              515
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                ru
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+          </doc>
+        </group>
+        <group>
+          <doccount>
+            1
+          </doccount>
+          <relevance />
+          <doc id="ZC538825D14363E89">
+            <relevance />
+            <url>
+              https://news.yandex.ru/
+            </url>
+            <domain>
+              news.yandex.ru
+            </domain>
+            <title>
+              <hlword>
+                Яндекс
+              </hlword>
+              .Новости
+            </title>
+            <headline>
+              Новости России и мира из центральных, региональных, зарубежных и специализированных источников. Поиск информации по базе СМИ. Онлайн-подписка на новости.
+            </headline>
+            <modtime>
+              20050610T040015
+            </modtime>
+            <size>
+              1934
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                ru
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+          </doc>
+        </group>
+        <group>
+          <doccount>
+            1
+          </doccount>
+          <relevance />
+          <doc id="Z7AE510264F9CB3CA">
+            <relevance />
+            <url>
+              http://ip.yandex.ru/
+            </url>
+            <domain>
+              ip.yandex.ru
+            </domain>
+            <title>
+              ip.
+              <hlword>
+                yandex
+              </hlword>
+              .ru
+            </title>
+            <modtime>
+              20141115T144939
+            </modtime>
+            <size>
+              0
+            </size>
+            <charset>
+              windows-1251
+            </charset>
+            <passages>
+              <passage>
+                Определяет 
+                <hlword>
+                  Яндекс
+                </hlword>
+                кратко.
+              </passage>
+            </passages>
+            <properties>
+              <_PassagesType>
+                1
+              </_PassagesType>
+              <lang>
+                ru
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+          </doc>
+        </group>
+        <group>
+          <doccount>
+            1
+          </doccount>
+          <relevance />
+          <doc id="Z56DEE36FCB7DC0E0">
+            <relevance />
+            <url>
+              https://yandex.ru/maps/
+            </url>
+            <domain>
+              yandex.ru
+            </domain>
+            <title>
+              <hlword>
+                Яндекс
+              </hlword>
+              .Карты — подробная карта России и мира
+            </title>
+            <headline>
+              Подробные карты городов России, Европы и мира: улицы, номера домов и организации. Спутниковые фотографии, панорамы улиц и фотографии зданий. Пробки и построение...
+            </headline>
+            <modtime>
+              20130731T105826
+            </modtime>
+            <size>
+              434
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                ru
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+          </doc>
+        </group>
+        <group>
+          <doccount>
+            1
+          </doccount>
+          <relevance />
+          <doc id="ZDED3DC3450168B85">
+            <relevance />
+            <url>
+              https://yandex.ru/company/
+            </url>
+            <domain>
+              yandex.ru
+            </domain>
+            <title>
+              Компания 
+              <hlword>
+                Яндекс
+              </hlword>
+            </title>
+            <modtime>
+              20141106T215959
+            </modtime>
+            <size>
+              512
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <passages>
+              <passage>
+                <hlword>
+                  Яндекс
+                </hlword>
+                — это поисковая система и IT-компания, которая разрабатывает различные сервисы для России, Беларуси, Казахстана, Турции и Украины.
+              </passage>
+            </passages>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                ru
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+          </doc>
+        </group>
+        <group>
+          <doccount>
+            1
+          </doccount>
+          <relevance />
+          <doc id="ZE0DEBBEE56E3FE68">
+            <relevance />
+            <url>
+              https://yandex.ru/postcard
+            </url>
+            <domain>
+              yandex.ru
+            </domain>
+            <title>
+              <hlword>
+                Яндекс
+              </hlword>
+            </title>
+            <modtime>
+              20141225T182714
+            </modtime>
+            <size>
+              1051
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <passages>
+              <passage>
+                Директ — разместить рекламу Метрика Реклама Касса. Вакансии Блог Компания About© 
+                <hlword>
+                  Яндекс
+                </hlword>
+                .
+              </passage>
+            </passages>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                ru
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+          </doc>
+        </group>
+        <group>
+          <doccount>
+            1
+          </doccount>
+          <relevance />
+          <doc id="ZB8572C5794C54C59">
+            <relevance />
+            <url>
+              https://yandex.ru/video
+            </url>
+            <domain>
+              yandex.ru
+            </domain>
+            <title>
+              <hlword>
+                Яндекс
+              </hlword>
+              .Видео — поиск и просмотр видеороликов
+            </title>
+            <headline>
+              Сервис для поиска и просмотра видеороликов, размещенных в свободном доступе на различных видеоресурсах. Возможность делиться ими и добавлять понравившиеся видеоролики в свои коллекции.
+            </headline>
+            <modtime>
+              20130731T113142
+            </modtime>
+            <size>
+              1698
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                ru
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+          </doc>
+        </group>
+        <group>
+          <doccount>
+            1
+          </doccount>
+          <relevance />
+          <doc id="Z011B0C5FDAE03810">
+            <relevance />
+            <url>
+              https://market.yandex.ru/
+            </url>
+            <domain>
+              market.yandex.ru
+            </domain>
+            <title>
+              <hlword>
+                Яндекс
+              </hlword>
+              .Маркет — выбор товаров и места их покупки
+            </title>
+            <headline>
+              Поиск товаров в интернет- и офлайн-магазинах, сравнение цен и характеристик. Рейтинг магазинов. Отзывы покупателей. Возможность покупки некоторых товаров через сервис.
+            </headline>
+            <modtime>
+              20061111T030000
+            </modtime>
+            <size>
+              1226
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                ru
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+          </doc>
+        </group>
+        <group>
+          <doccount>
+            1
+          </doccount>
+          <relevance />
+          <doc id="Z942FBC8B1B868FE8">
+            <relevance />
+            <url>
+              https://music.yandex.ru/
+            </url>
+            <domain>
+              music.yandex.ru
+            </domain>
+            <title>
+              <hlword>
+                Яндекс
+              </hlword>
+              .Музыка
+            </title>
+            <headline>
+              Открывайте новую музыку каждый день. Лента с персональными рекомендациями и музыкальными новинками, радио, подборки на любой вкус, удобное управление своей...
+            </headline>
+            <modtime>
+              20170329T032010
+            </modtime>
+            <size>
+              969
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                ru
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+          </doc>
+        </group>
+      </grouping>
+    </results>
+  </response>
+</yandexsearch>

@@ -1,32 +1,23 @@
 from django.conf.urls import url, include
 from rest_framework import routers
-from crawl_engine.views import *
+import crawl_engine.views as views
 
 
 router = routers.DefaultRouter()
-# router.register(r'articles', ArticleListSet)
-
-
-class SearchTypesList(object):
-    pass
-
 
 urlpatterns = [
-    # url(r'^api/', include(router.urls, namespace='api')),
-    # url(r'add-task-url/', AddTaskURLView.as_view()),
-    # url(r'articles/', ArticleListSet.as_view({
-    #     'get': 'list',
-    # })),
-    url(r'^get_search_articles/(?P<search_id>[\w-]+)$', ArticlesListView.as_view()),
+    url(r'^get_search_articles/(?P<search_id>[\w-]+)$', views.ArticlesListView.as_view()),
 
-    url(r'^search_query/$', SearchQueryList.as_view()),
-    url(r'^search_query/(?P<search_id>[\w-]+)$', SearchQueryDetailView.as_view()),
+    url(r'^search_query/$', views.SearchQueryList.as_view()),
+    url(r'^search_query/(?P<search_id>[\w-]+)$', views.SearchQueryDetailView.as_view()),
 
-    url(r'^source_list/$', ListSources.as_view()),
-    url(r'^search_types_list/$', ListSearchTypes.as_view()),
+    url(r'^source_list/$', views.ListSources.as_view()),
+    url(r'^search_types_list/$', views.ListSearchTypes.as_view()),
 
-    url(r'^blocked_sites/$', BlockedSitesList.as_view()),
-    url(r'^blocked_sites/(?P<ibis_site_id>[\w-]+)$', BlockedSiteDetailView.as_view()),
+    url(r'^blocked_sites/$', views.BlockedSitesList.as_view()),
+    url(r'^blocked_sites/(?P<ibis_site_id>[\w-]+)$', views.BlockedSiteDetailView.as_view()),
+
+    url(r'^preview$', views.search_preview),
 
     url(r'^', include('rest_framework.urls', namespace='rest_framework')),
 ]
