@@ -80,9 +80,6 @@ SECRET_KEY = '@tx^51!8eobmvlrq$ytrfb9&bya6vvysp*lvy-%q#-rh(05+)p'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['139.59.138.205', 'endlessripples.com.au']
-
-
 # Application definition
 
 INSTALLED_APPS = [
