@@ -11,7 +11,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL.strip("/"))
 STATICFILES_LOCATION = 'static'
 
-MEDIA_URL = '/media/'
+MEDIA_URL = STATIC_ROOT + '/media/'
 MEDIA_ROOT = STATIC_ROOT + MEDIA_URL
 # URL that handles the media served from MEDIA_ROOT, used for managing
 # stored files.
