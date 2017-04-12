@@ -1,8 +1,6 @@
 import os
 from newspaper import settings as news
 
-from django.utils import six
-
 from ibis_crawl_engine.conf import *
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -11,57 +9,26 @@ DEBUG = False
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL.strip("/"))
+STATICFILES_LOCATION = 'static'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = STATIC_ROOT + MEDIA_URL
-
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '95.85.40.149']
-
-DATABASES = {
-    # Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
-    'default': env.db('DATABASE_URL', default='postgresql://crawler:13635724@0.0.0.0:5432/crawlerdb'),
-}
-
-# STORAGE CONFIGURATION
-# ------------------------------------------------------------------------------
-# Uploaded Media Files
-# ------------------------
-# See: http://django-storages.readthedocs.io/en/latest/index.html
-INSTALLED_APPS += (
-    'storages',
-)
-
-AWS_ACCESS_KEY_ID = 'AKIAIWBLWFT2XKFAAMUA'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'crawler-storage'
-AWS_AUTO_CREATE_BUCKET = False
-AWS_PRELOAD_METADATA = True
-AWS_S3_SECURE_URLS = True
-AWS_QUERYSTRING_AUTH = False
-# AWS_S3_CALLING_FORMAT = OrdinaryCallingFormat()
-
-# AWS cache settings, don't change unless you know what you're doing:
-AWS_EXPIRY = 60 * 60 * 24 * 7
-
-# Revert the following and use str after the above-mentioned bug is fixed in
-# either django-storage-redux or boto
-AWS_HEADERS = {
-    'Cache-Control': six.b('max-age=%d, s-maxage=%d, must-revalidate' % (
-        AWS_EXPIRY, AWS_EXPIRY))
-}
-
 # URL that handles the media served from MEDIA_ROOT, used for managing
 # stored files.
 MEDIAFILES_LOCATION = 'media'
-MEDIA_URL = 'https://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, MEDIAFILES_LOCATION)
-DEFAULT_FILE_STORAGE = 'ibis_crawl_engine.s3_config.MediaStorage'
 
+ALLOWED_HOSTS = env('ALLOWED_HOSTS', default=['*'])
 
-# Static Assets
-# ------------------------
-STATICFILES_STORAGE = 'ibis_crawl_engine.s3_config.StaticStorage'
-STATICFILES_LOCATION = 'static'
-COMPRESS_URL = "https://%s.s3.amazonaws.com/%s/" % (AWS_STORAGE_BUCKET_NAME, STATICFILES_LOCATION)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'crawlerdb',
+        'USER': 'crawler',
+        'PASSWORD': '840402136314',
+        'HOST': 'localhost',
+        'PORT': ''
+    }
+}
 
 EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 
@@ -81,7 +48,7 @@ PIPELINE_ENABLED = True
 
 news.TOP_DIRECTORY = BASE_DIR
 
-IBIS_ADDRESS = 'http://146.185.160.198/'
+IBIS_ADDRESS = env('IBIS_ADDRESS', default=None)
 
 # Error reports sending
 ADMINS = [('Justin', 'juswork@gmail.com'), ('Vladimir', 'vladimir.ganiushev@gmail.com'),

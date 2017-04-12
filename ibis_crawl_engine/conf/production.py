@@ -15,17 +15,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL.strip("/"))
 MEDIA_URL = '/media/'
 MEDIA_ROOT = STATIC_ROOT + MEDIA_URL
 
-ALLOWED_HOSTS = env('ALLOWED_HOSTS', default=['*'])
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '95.85.40.149']
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'crawlerdb',
-        'USER': 'crawler',
-        'PASSWORD': '840402136314',
-        'HOST': 'localhost',
-        'PORT': ''
-    }
+    # Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
+    'default': env.db('DATABASE_URL', default='postgresql://crawler:13635724@0.0.0.0:5432/crawlerdb'),
 }
 
 # STORAGE CONFIGURATION
@@ -59,9 +53,7 @@ AWS_HEADERS = {
 # URL that handles the media served from MEDIA_ROOT, used for managing
 # stored files.
 MEDIAFILES_LOCATION = 'media'
-MEDIA_URL = 'https://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, MEDIAFILES_LOCATION)
-DEFAULT_FILE_STORAGE = 'ibis_crawl_engine.s3_config.MediaStorage'
-
+MEDIA_URL = '/media/'
 
 # Static Assets
 # ------------------------
@@ -87,7 +79,7 @@ PIPELINE_ENABLED = True
 
 news.TOP_DIRECTORY = BASE_DIR
 
-IBIS_ADDRESS = env('IBIS_ADDRESS', default=None)
+IBIS_ADDRESS = 'http://146.185.160.198/'
 
 # Error reports sending
 ADMINS = [('Justin', 'juswork@gmail.com'), ('Vladimir', 'vladimir.ganiushev@gmail.com'),
