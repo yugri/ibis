@@ -68,3 +68,16 @@ class GoogleCseParserTestCase(TestCase):
         self.assertEqual(result[0]['url'], 'https://perldoc.perl.org/Test/More.html')
         self.assertEqual(result[0]['title'], 'Test::More - perldoc.perl.org')
         self.assertGreater(len(result[0]['text']), 0)
+
+
+class GoogleParserTestCase(TestCase):
+
+    @patch('requests.get')
+    def test_run(self, mock_get):
+        mock_get.return_value = mock_requests_get('google.html')
+        parser = GoogleParser('testing more', 1, None)
+        result = parser.run()
+        self.assertEqual(len(result), 10)
+        self.assertEqual(result[0]['url'], 'https://perldoc.perl.org/Test/More.html')
+        self.assertEqual(result[0]['title'], 'Test::More - perldoc.perl.org')
+        self.assertGreater(len(result[0]['text']), 0)

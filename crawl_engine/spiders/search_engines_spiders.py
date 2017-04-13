@@ -35,10 +35,24 @@ class SearchParser:
 
 
 class GoogleParser(SearchParser):
-    """ Immediatly banned by google right now """
+
+    def _parse_href(self, href):
+        """
+        Revise this method
+        """
+        # Method for normalising Google's result link. Receives the link, parse it and gets the direct
+        # url from querystring. E.g.: google's result links look's like:
+        # https://www.google.com/url?q=some+query&url=http://foo.bar.url
+        # so we should get only q parameter from google's querystring
+        try:
+            url = parse_qs(urlparse(href).query)['q'][0]
+            return unquote(url)
+        except KeyError:
+            return None
+
     def run(self):
         base_url = 'https://google.com/search'
-        self.seed_links = []
+        result = []
         for count in range(0, self.depth):
             r = requests.get(base_url, {'q': self.search_query, 'start': count * 10, 'sa': 'N'})
             tree = lxml.html.fromstring(r.text)
@@ -46,15 +60,14 @@ class GoogleParser(SearchParser):
             if "Google" not in tree.findtext('.//title'):
                 logger.info("I can't find Google in page title")
 
-            # Collect all result links for further crawling task
-            hrefs = tree.xpath('//h3/a/@href')
-            for href in hrefs:
-                if href.startswith('/url?'):
-                    clean_url = self._parse_google_href(href)
-                    if clean_url is not None:
-                        self.seed_links.append(clean_url)
+            for item in tree.xpath("//div[@class='g']"):
+                result.append(self._new_article(
+                    self._parse_href(item.xpath(".//a/@href")[0]),
+                    item.xpath(".//a")[0].text_content(),
+                    item.xpath(".//span[@class='st']")[0].text_content()
+                ))
 
-        return self.seed_links
+        return result
 
 
 
