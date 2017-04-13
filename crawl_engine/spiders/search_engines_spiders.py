@@ -35,7 +35,27 @@ class SearchParser:
 
 
 class GoogleParser(SearchParser):
-    pass
+    """ Immediatly banned by google right now """
+    def run(self):
+        base_url = 'https://google.com/search'
+        self.seed_links = []
+        for count in range(0, self.depth):
+            r = requests.get(base_url, {'q': self.search_query, 'start': count * 10, 'sa': 'N'})
+            tree = lxml.html.fromstring(r.text)
+
+            if "Google" not in tree.findtext('.//title'):
+                logger.info("I can't find Google in page title")
+
+            # Collect all result links for further crawling task
+            hrefs = tree.xpath('//h3/a/@href')
+            for href in hrefs:
+                if href.startswith('/url?'):
+                    clean_url = self._parse_google_href(href)
+                    if clean_url is not None:
+                        self.seed_links.append(clean_url)
+
+        return self.seed_links
+
 
 
 class GoogleScholarParser(SearchParser):
@@ -47,7 +67,54 @@ class GoogleNewsParser(SearchParser):
 
 
 class GoogleCseParser(SearchParser):
-    pass
+    """
+    Another method for getting google's search results but from CSE (custom search engine):
+    https://developers.google.com/custom-search/json-api/v1/using_rest.
+    Using Requests library
+    :return: seed_links list
+    """
+
+    def __init__(self, search_query, depth, options):
+        # Check search depth value if it higher than 10
+        # redefine it to display only 100 first results
+        # see: https://developers.google.com/custom-search/json-api/v1/using_rest
+        if depth > 10:
+            logger.warn("Only the first 100 results will be displayed, due to CSE search depth limit.")
+            depth = 10
+
+        # We store options at JSONField. So we need to load them.
+        options = json.loads(options) if options else None
+
+        super(GoogleCseParser, self).__init__(search_query, depth, options)
+
+    def run(self):
+        base_url = 'https://www.googleapis.com/customsearch/v1'
+        result = []
+
+        for count in range(0, self.depth):
+            params = {
+                'key': settings.GOOGLE_TRANSLATE_API_KEY,
+                'cx': settings.CSE_ID,
+                'q': self.search_query,
+                'safe': 'medium',
+                'start': count * 10 + 1
+            }
+            if self.options:
+                params.update(self.options)
+
+            r = requests.get(base_url, params=params)
+            data = json.loads(r.text)
+            if 'items' not in data:
+                return []
+
+            for item in data['items']:
+                result.append(self._new_article(
+                    item['link'],
+                    item['title'],
+                    item['snippet']
+                ))
+
+        return result
 
 
 class GoogleBlogsParser(SearchParser):
