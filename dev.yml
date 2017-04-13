@@ -27,6 +27,6 @@ services:
     volumes:
       - .:/app
     ports:
-      - "8100:8000"
+      - "8070:8000"
     links:
       - postgres
