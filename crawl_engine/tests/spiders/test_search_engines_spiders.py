@@ -2,7 +2,8 @@ from os import path
 from unittest.mock import patch, Mock
 from django.test import TestCase
 from crawl_engine.spiders.search_engines_spiders import (
-    get_search_parser, YandexParser, BingParser, GoogleParser, GoogleCseParser)
+    get_search_parser, YandexParser, BingParser, GoogleParser, GoogleCseParser,
+    GoogleScholarParser)
 
 
 class HelperTestCase(TestCase):
@@ -80,4 +81,27 @@ class GoogleParserTestCase(TestCase):
         self.assertEqual(len(result), 10)
         self.assertEqual(result[0]['url'], 'https://perldoc.perl.org/Test/More.html')
         self.assertEqual(result[0]['title'], 'Test::More - perldoc.perl.org')
+        self.assertGreater(len(result[0]['text']), 0)
+
+
+class GoogleScholarParserTestCase(TestCase):
+
+    @patch('requests.get')
+    def test_run(self, mock_get):
+        mock_get.return_value = mock_requests_get('google_scholar.html')
+        parser = GoogleScholarParser('test', 1, None)
+        result = parser.run()
+        self.assertEqual(len(result), 10)
+        self.assertEqual(result[0]['url'], 'http://www.jstor.org/stable/2238402')
+        self.assertEqual(result[0]['title'], 'On testing more than one hypothesis')
+        self.assertGreater(len(result[0]['text']), 0)
+
+    @patch('requests.get')
+    def test_run_with_cites(self, mock_get):
+        mock_get.return_value = mock_requests_get('google_scholar2.html')
+        parser = GoogleScholarParser('test', 1, None)
+        result = parser.run()
+        self.assertEqual(len(result), 6)
+        self.assertEqual(result[0]['url'], 'http://archpsyc.jamanetwork.com/article.aspx?articleid=492295')
+        self.assertEqual(result[0]['title'], 'Alternative to mental hospital treatment: I. Conceptual model, treatment program, and clinical evaluation')
         self.assertGreater(len(result[0]['text']), 0)

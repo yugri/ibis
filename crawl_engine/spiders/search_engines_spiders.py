@@ -34,8 +34,10 @@ class SearchParser:
         return {'url': url.strip(), 'title': title.strip(), 'text': text.strip()}
 
 
-class GoogleParser(SearchParser):
-
+class GoogleGeneralParser(SearchParser):
+    """
+    BAse class for parsing google search results
+    """
     def _parse_href(self, href):
         """
         Revise this method
@@ -48,17 +50,26 @@ class GoogleParser(SearchParser):
             url = parse_qs(urlparse(href).query)['q'][0]
             return unquote(url)
         except KeyError:
-            return None
+            return href
+
+    def _get_tree(self, url, params):
+        sleep(randint(1, 2))
+        r = requests.get(url, params)
+        tree = lxml.html.fromstring(r.text)
+
+        if "Google" not in tree.findtext('.//title'):
+            logger.info("I can't find Google in page title")
+
+        return tree
+
+
+class GoogleParser(GoogleGeneralParser):
 
     def run(self):
         base_url = 'https://google.com/search'
         result = []
         for count in range(0, self.depth):
-            r = requests.get(base_url, {'q': self.search_query, 'start': count * 10, 'sa': 'N'})
-            tree = lxml.html.fromstring(r.text)
-
-            if "Google" not in tree.findtext('.//title'):
-                logger.info("I can't find Google in page title")
+            tree = self._get_tree(base_url, {'q': self.search_query, 'start': count * 10, 'sa': 'N'})
 
             for item in tree.xpath("//div[@class='g']"):
                 result.append(self._new_article(
@@ -70,9 +81,29 @@ class GoogleParser(SearchParser):
         return result
 
 
+class GoogleScholarParser(GoogleGeneralParser):
+    """
+    Class for fetching results from google's scholar.google.com.
+    Search query example: https://scholar.google.com.ua/scholar?start=30&q=robotics+ai&start=30
+    start parameter responsible for results pagination
+    :return: seed_links
+    """
+    def run(self):
+        base_url = 'https://scholar.google.com/scholar'
+        result = []
+        for count in range(0, self.depth):
+            tree = self._get_tree(base_url, {'q': self.search_query, 'start': count * 10, 'sa': 'N'})
 
-class GoogleScholarParser(SearchParser):
-    pass
+            for item in tree.xpath("//div[@class='gs_ri']"):
+                if (len(item.xpath(".//a/@href")) == 0) or (len(item.xpath(".//div[@class='gs_rs']")) == 0):
+                    continue
+                result.append(self._new_article(
+                    self._parse_href(item.xpath(".//a/@href")[0]),
+                    item.xpath(".//a")[0].text_content(),
+                    item.xpath(".//div[@class='gs_rs']")[0].text_content()
+                ))
+
+        return result
 
 
 class GoogleNewsParser(SearchParser):
