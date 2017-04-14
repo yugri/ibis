@@ -1,6 +1,7 @@
-
 import logging
 import json
+import feedparser
+
 from random import randint
 from time import sleep
 
@@ -107,7 +108,34 @@ class GoogleScholarParser(GoogleGeneralParser):
 
 
 class GoogleNewsParser(SearchParser):
-    pass
+    """
+    Gets results from google's news.google.com and parses all them by feedparser
+    Search query example: https://news.google.com/news/feeds?output=rss&q=banking&num=30.
+    num parameter responsible for the number of returned entries (max=30, default=30)
+    output parameter responsible for response format (ATOM or RSS)
+    :return: seed_links
+    """
+    def _parse_href(self, href):
+        """
+        Revise this method
+        """
+        # Method for normalising Google's result link. Receives the link, parse it and gets the direct
+        # url from querystring. E.g.: google's result links look's like:
+        # https://www.google.com/url?q=some+query&url=http://foo.bar.url
+        # so we should get only q parameter from google's querystring
+        try:
+            url = parse_qs(urlparse(href).query)['url'][0]
+            return unquote(url)
+        except KeyError:
+            return href
+
+    def run(self):
+        base_url = 'https://news.google.com/news'
+        r = requests.get(base_url, {'q': self.search_query, 'output': 'rss', 'num': self.depth * 10})
+        feed = feedparser.parse(r.text)
+
+        return [self._new_article(self._parse_href(entry.link), entry.title, entry.description)
+                for entry in feed.entries]
 
 
 class GoogleCseParser(SearchParser):
