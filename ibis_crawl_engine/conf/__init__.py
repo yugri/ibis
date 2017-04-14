@@ -183,6 +183,8 @@ CSE_ID = env.get_value('CSE_ID', default=None)  # The custom search engine ID
 YANDEX_API_USER = env.get_value('YANDEX_API_USER', default=None)
 YANDEX_API_KEY = env.get_value('YANDEX_API_KEY', default=None)
 
+SOCIAL_SEARCHER_API_KEY = env.get_value('SOCIAL_SEARCHER_API_KEY', default=None)
+
 SOURCES = (
     ('google', 'Google'),
     ('google_cse', 'Google CSE'),
