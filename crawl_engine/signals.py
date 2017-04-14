@@ -37,7 +37,6 @@ def crawl_email_search_links(sender, instance, created, **kwargs):
     without any warnings, so then email searches will be proceed as searches of all types(according to their period).
 
     """
-    return
 
     if instance.search_type == 'email':
         for value in instance.email_links.values():
