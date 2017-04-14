@@ -161,8 +161,23 @@ class GoogleCseParser(SearchParser):
         return result
 
 
-class GoogleBlogsParser(SearchParser):
-    pass
+class GoogleBlogsParser(GoogleGeneralParser):
+
+    def run(self):
+
+        base_url = 'https://google.com/search'
+        result = []
+        for count in range(0, self.depth):
+            tree = self._get_tree(base_url, {'q': self.search_query, 'start': count * 10, 'tbm': 'nws', 'tbs': 'nrt:b'})
+
+            for item in tree.xpath("//div[@class='g']"):
+                result.append(self._new_article(
+                    self._parse_href(item.xpath(".//a/@href")[0]),
+                    item.xpath(".//a")[0].text_content(),
+                    item.xpath(".//div[@class='st']")[0].text_content()
+                ))
+
+        return result
 
 
 class BingParser(SearchParser):
