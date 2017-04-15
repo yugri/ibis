@@ -30,7 +30,7 @@ class SearchQuery(models.Model):
     search_type = models.CharField(max_length=20, choices=TYPES, default='search_engine')
     article_url = models.CharField(max_length=1000, blank=True, null=True)
     rss_link = models.CharField(max_length=1000, blank=True, null=True)
-    query = models.TextField(blank=True)
+    query = models.TextField(blank=True, null=True)
     source = models.CharField(max_length=200, default='google',
                               help_text='Type please with 1 backspace and 1 coma btw words. Ex.: google, yahoo')
     channel = models.CharField(max_length=64, choices=CHANNELS, default='general', db_column='search_channel')

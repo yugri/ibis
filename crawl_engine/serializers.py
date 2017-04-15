@@ -109,7 +109,7 @@ class OptionsSerializer(serializers.Serializer):
 
 class SearchQuerySerializer(serializers.ModelSerializer):
     options = OptionsSerializer(required=False)
-    response_address = serializers.CharField(required=False)
+    #response_address = serializers.CharField(required=False)
 
     def validate_source(self, value):
         source_choices = [x[0] for x in settings.SOURCES]
