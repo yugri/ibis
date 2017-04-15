@@ -38,7 +38,7 @@ class SearchQuery(models.Model):
     active = models.BooleanField(default=True)
     period = models.CharField(max_length=20, choices=PERIODS, default='daily')
     last_processed = models.DateTimeField(blank=True, null=True)
-    response_address = models.CharField(max_length=50, blank=True, null=True)
+    response_address = models.CharField(max_length=50, blank=True, null=True, default=None)
     options = JSONField(blank=True, null=True)
     email_links = JSONField(blank=True, null=True)
 
