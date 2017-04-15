@@ -1,5 +1,6 @@
-import json
-import logging
+import json, logging
+from ipware.ip import get_ip
+
 from django.shortcuts import get_object_or_404
 
 from rest_framework import generics
@@ -51,8 +52,7 @@ class SearchQueryList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         # Add additional field to the request.data. Client host address in our case
         # and save serializer
-        response_address = self.request.META.get('REMOTE_ADDR', None)
-        serializer.save(response_address=response_address)
+        serializer.save(response_address=get_ip(self.request))
 
 
 class SearchQueryDetailView(generics.RetrieveUpdateAPIView):
