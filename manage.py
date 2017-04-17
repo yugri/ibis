@@ -2,8 +2,8 @@
 import os
 import sys
 
-if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ibis_crawl_engine.settings")
+if __name__ == '__main__':
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ibis_crawl_engine.settings.common')
 
     from django.core.management import execute_from_command_line
 
