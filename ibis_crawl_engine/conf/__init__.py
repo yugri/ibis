@@ -27,14 +27,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Celery settings #
 ###################
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'
-# BROKER_URL = 'redis://localhost:6379/0'
-# BROKER_HEARTBEAT = 0
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_IGNORE_RESULT = False
 CELERY_CACHE_BACKEND = 'redis://localhost:6379/0'
-# CELERY_ACCEPT_CONTENT = ['json']
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_RESULT_SERIALIZER = 'json'
 CELERYD_MAX_TASKS_PER_CHILD = 100
 
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']
@@ -65,10 +60,6 @@ CELERY_ROUTES = {
         'queue': 'alchemy',
     },
 }
-
-# CELERY_DEFAULT_EXCHANGE = 'tasks'
-# CELERY_DEFAULT_EXCHANGE_TYPE = 'crawler'
-# CELERY_DEFAULT_ROUTING_KEY = 'task.default'
 
 
 # Quick-start development settings - unsuitable for production
@@ -197,19 +188,3 @@ ALCHEMY_API_KEY = env('ALCHEMY_API_KEY')
 
 IBIS_ADDRESS = None
 
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-        },
-    },
-}
