@@ -14,14 +14,19 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
-import os
-import environ
+import os, environ
 from kombu import Queue
-env = environ.Env(DEBUG=(bool, False),)  # set default values and casting
-environ.Env.read_env()  # reading .env file
+
+ROOT_DIR = environ.Path(__file__) - 3  # (ibis_core/config/settings/common.py - 3 = ibis_core/)
+
+env = environ.Env(DEBUG=(bool, False),)
+environ.Env.read_env('{}/.env'.format(ROOT_DIR))
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+from .assets import PIPELINE
 
 ###################
 # Celery settings #
