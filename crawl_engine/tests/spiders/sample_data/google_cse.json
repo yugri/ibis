@@ -1,0 +1,538 @@
+{
+ "kind": "customsearch#search",
+ "url": {
+  "type": "application/json",
+  "template": "https://www.googleapis.com/customsearch/v1?q={searchTerms}&num={count?}&start={startIndex?}&lr={language?}&safe={safe?}&cx={cx?}&cref={cref?}&sort={sort?}&filter={filter?}&gl={gl?}&cr={cr?}&googlehost={googleHost?}&c2coff={disableCnTwTranslation?}&hq={hq?}&hl={hl?}&siteSearch={siteSearch?}&siteSearchFilter={siteSearchFilter?}&exactTerms={exactTerms?}&excludeTerms={excludeTerms?}&linkSite={linkSite?}&orTerms={orTerms?}&relatedSite={relatedSite?}&dateRestrict={dateRestrict?}&lowRange={lowRange?}&highRange={highRange?}&searchType={searchType}&fileType={fileType?}&rights={rights?}&imgSize={imgSize?}&imgType={imgType?}&imgColorType={imgColorType?}&imgDominantColor={imgDominantColor?}&alt=json"
+ },
+ "queries": {
+  "request": [
+   {
+    "title": "Google Custom Search - testing more",
+    "totalResults": "71400000",
+    "searchTerms": "testing more",
+    "count": 10,
+    "startIndex": 1,
+    "inputEncoding": "utf8",
+    "outputEncoding": "utf8",
+    "safe": "medium",
+    "cx": "012065428559517091395:-hbqhgchz-y"
+   }
+  ],
+  "nextPage": [
+   {
+    "title": "Google Custom Search - testing more",
+    "totalResults": "71400000",
+    "searchTerms": "testing more",
+    "count": 10,
+    "startIndex": 11,
+    "inputEncoding": "utf8",
+    "outputEncoding": "utf8",
+    "safe": "medium",
+    "cx": "012065428559517091395:-hbqhgchz-y"
+   }
+  ]
+ },
+ "context": {
+  "title": "Biosecurity Intelligence"
+ },
+ "searchInformation": {
+  "searchTime": 0.297029,
+  "formattedSearchTime": "0.30",
+  "totalResults": "71400000",
+  "formattedTotalResults": "71,400,000"
+ },
+ "items": [
+  {
+   "kind": "customsearch#result",
+   "title": "Test::More - perldoc.perl.org",
+   "htmlTitle": "\u003cb\u003eTest\u003c/b\u003e::\u003cb\u003eMore\u003c/b\u003e - perldoc.perl.org",
+   "link": "https://perldoc.perl.org/Test/More.html",
+   "displayLink": "perldoc.perl.org",
+   "snippet": "Test::More. NAME; SYNOPSIS; DESCRIPTION. I love it when a plan comes \ntogether; Test names; I'm ok, you're not ok. Module tests; Complex data structures\n ...",
+   "htmlSnippet": "\u003cb\u003eTest\u003c/b\u003e::\u003cb\u003eMore\u003c/b\u003e. NAME; SYNOPSIS; DESCRIPTION. I love it when a plan comes \u003cbr\u003e\ntogether; \u003cb\u003eTest\u003c/b\u003e names; I&#39;m ok, you&#39;re not ok. Module \u003cb\u003etests\u003c/b\u003e; Complex data structures\u003cbr\u003e\n&nbsp;...",
+   "cacheId": "nu-FWNU1RWQJ",
+   "formattedUrl": "https://perldoc.perl.org/Test/More.html",
+   "htmlFormattedUrl": "https://perldoc.perl.org/\u003cb\u003eTest\u003c/b\u003e/\u003cb\u003eMore\u003c/b\u003e.html"
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "Testing More, Teaching Less: What America's",
+   "htmlTitle": "\u003cb\u003eTesting More\u003c/b\u003e, Teaching Less: What America&#39;s",
+   "link": "http://www.aft.org/sites/default/files/news/testingmore2013.pdf",
+   "displayLink": "www.aft.org",
+   "snippet": "Testing More,. Teaching Less. What America's Obsession with Student Testing \nCosts in Money and Lost Instructional Time by Howard Nelson ...",
+   "htmlSnippet": "\u003cb\u003eTesting More\u003c/b\u003e,. Teaching Less. What America&#39;s Obsession with Student Testing \u003cbr\u003e\nCosts in Money and Lost Instructional Time by Howard Nelson&nbsp;...",
+   "cacheId": "sp9AcUMGeY4J",
+   "mime": "application/pdf",
+   "fileFormat": "PDF/Adobe Acrobat",
+   "formattedUrl": "www.aft.org/sites/default/files/news/testingmore2013.pdf",
+   "htmlFormattedUrl": "www.aft.org/sites/default/files/news/\u003cb\u003etestingmore\u003c/b\u003e2013.pdf",
+   "pagemap": {
+    "metatags": [
+     {
+      "creationdate": "D:20130722185817-04'00'",
+      "creator": "Adobe InDesign CS6 (Macintosh)",
+      "moddate": "D:20130722190732-04'00'",
+      "producer": "Adobe PDF Library 10.0.1"
+     }
+    ]
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "More Agile Testing: Learning Journeys for the Whole Team (Addison ...",
+   "htmlTitle": "\u003cb\u003eMore\u003c/b\u003e Agile \u003cb\u003eTesting\u003c/b\u003e: Learning Journeys for the Whole Team (Addison ...",
+   "link": "https://www.amazon.com/More-Agile-Testing-Addison-Wesley-Signature/dp/0321967054",
+   "displayLink": "www.amazon.com",
+   "snippet": "Janet Gregory and Lisa Crispin pioneered the agile testing discipline with their \nprevious work, Agile Testing. Now, in More Agile Testing, they reflect on all ...",
+   "htmlSnippet": "Janet Gregory and Lisa Crispin pioneered the agile \u003cb\u003etesting\u003c/b\u003e discipline with their \u003cbr\u003e\nprevious work, Agile \u003cb\u003eTesting\u003c/b\u003e. Now, in \u003cb\u003eMore\u003c/b\u003e Agile \u003cb\u003eTesting\u003c/b\u003e, they reflect on all&nbsp;...",
+   "cacheId": "h_cnS-YGp64J",
+   "formattedUrl": "https://www.amazon.com/More-Agile-Testing.../dp/0321967054",
+   "htmlFormattedUrl": "https://www.amazon.com/\u003cb\u003eMore\u003c/b\u003e-Agile-\u003cb\u003eTesting\u003c/b\u003e.../dp/0321967054",
+   "pagemap": {
+    "scraped": [
+     {
+      "image_link": "https://images-na.ssl-images-amazon.com/images/I/518ynWYe6NL._SX340_BO1,204,203,200_.jpg"
+     }
+    ],
+    "metatags": [
+     {
+      "og:url": "http://www.amazon.com/dp/0321967054/ref=tsm_1_fb_lk",
+      "og:title": "More Agile Testing: Learning Journeys for the Whole Team (Addison-Wesley Signature Series (Cohn))",
+      "og:description": "Janet Gregory and Lisa Crispin pioneered the agile testing discipline with their previous work, Agile Testing. Now, in More Agile Testing, they reflect on all they’ve learned since. They address crucial emerging issues, share evolved agile practices, and cover key issues agile testers have ...",
+      "og:image": "https://images-na.ssl-images-amazon.com/images/I/518ynWYe6NL._SR600%2c315_PIWhiteStrip%2cBottomLeft%2c0%2c35_PIAmznPrime%2cBottomLeft%2c0%2c-5_PIStarRatingFOURANDHALF%2cBottomLeft%2c360%2c-6_SR600%2c315_ZA(21%20Reviews)%2c445%2c286%2c400%2c400%2carial%2c12%2c4%2c0%2c0%2c5_SCLZZZZZZZ_.jpg",
+      "title": "More Agile Testing: Learning Journeys for the Whole Team (Addison-Wesley Signature Series (Cohn)): Janet Gregory, Lisa Crispin: 9780321967053: Amazon.com: Books"
+     }
+    ],
+    "cse_image": [
+     {
+      "src": "https://images-na.ssl-images-amazon.com/images/I/518ynWYe6NL._SX340_BO1,204,203,200_.jpg",
+      "type": "1",
+      "width": "186",
+      "height": "271"
+     }
+    ]
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "More Testing, Less Play: Study Finds Higher Expectations For ...",
+   "htmlTitle": "\u003cb\u003eMore Testing\u003c/b\u003e, Less Play: Study Finds Higher Expectations For ...",
+   "link": "http://www.npr.org/sections/ed/2016/06/21/481404169/more-testing-less-play-study-finds-higher-expectations-for-kindergartners",
+   "displayLink": "www.npr.org",
+   "snippet": "Jun 21, 2016 ... As kindergarten becomes the new first grade, some worry that the joy of learning \nis being lost with higher rigor.",
+   "htmlSnippet": "Jun 21, 2016 \u003cb\u003e...\u003c/b\u003e As kindergarten becomes the new first grade, some worry that the joy of learning \u003cbr\u003e\nis being lost with higher rigor.",
+   "formattedUrl": "www.npr.org/.../more-testing-less-play-study-finds-higher-expectations-for- kindergartners",
+   "htmlFormattedUrl": "www.npr.org/.../\u003cb\u003emore\u003c/b\u003e-\u003cb\u003etesting\u003c/b\u003e-less-play-study-finds-higher-expectations-for- kindergartners",
+   "pagemap": {
+    "metatags": [
+     {
+      "rating": "General",
+      "viewport": "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no",
+      "date": "2016-06-21",
+      "og:title": "More Testing, Less Play: Study Finds Higher Expectations For Kindergartners",
+      "og:url": "http://www.npr.org/sections/ed/2016/06/21/481404169/more-testing-less-play-study-finds-higher-expectations-for-kindergartners",
+      "og:type": "article",
+      "og:description": "As kindergarten becomes the new first grade, some worry that the joy of learning is being lost with higher rigor.",
+      "og:image": "https://media.npr.org/assets/img/2016/06/20/growing-up-faster_wide-59700f9a011fe7ed7ce444e8c0038840cb4a9596.jpg?s=1400",
+      "og:site_name": "NPR.org",
+      "fb:app_id": "138837436154588",
+      "fb:pages": "10643211755",
+      "twitter:card": "summary_large_image",
+      "twitter:site": "@NPR",
+      "twitter:domain": "npr.org",
+      "twitter:image:src": "https://media.npr.org/assets/img/2016/06/20/growing-up-faster_wide-59700f9a011fe7ed7ce444e8c0038840cb4a9596.jpg?s=1400"
+     }
+    ],
+    "cse_image": [
+     {
+      "src": "https://media.npr.org/assets/img/2016/06/20/growing-up-faster_wide-59700f9a011fe7ed7ce444e8c0038840cb4a9596.jpg?s=1400",
+      "type": "1",
+      "width": "300",
+      "height": "168"
+     }
+    ]
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "High-Stakes Testing",
+   "htmlTitle": "High-Stakes \u003cb\u003eTesting\u003c/b\u003e",
+   "link": "http://www.massteacher.org/issues_and_action/high_stakes_testing.aspx",
+   "displayLink": "www.massteacher.org",
+   "snippet": "C. oncerned about the overuse and misuse of standardized testing, MTA \nmembers are organizing for “Less Testing and More Learning.” There are many \nways to ...",
+   "htmlSnippet": "C. oncerned about the overuse and misuse of standardized \u003cb\u003etesting\u003c/b\u003e, MTA \u003cbr\u003e\nmembers are organizing for “Less \u003cb\u003eTesting\u003c/b\u003e and \u003cb\u003eMore\u003c/b\u003e Learning.” There are many \u003cbr\u003e\nways to&nbsp;...",
+   "cacheId": "piySJACcbSgJ",
+   "formattedUrl": "www.massteacher.org/issues_and_action/high_stakes_testing.aspx",
+   "htmlFormattedUrl": "www.massteacher.org/issues_and_action/high_stakes_\u003cb\u003etesting\u003c/b\u003e.aspx",
+   "pagemap": {
+    "hcard": [
+     {
+      "fn": "Massachusetts Teachers Association"
+     }
+    ],
+    "metatags": [
+     {
+      "author": "MTA: Massachusetts Teachers Association"
+     }
+    ],
+    "cse_image": [
+     {
+      "src": "http://www.massteacher.org/issues_and_action/~/media/Images/toolkit/high_stakes_testing/opt_out_quote.png?w=300&h=150&as=1",
+      "type": "1",
+      "width": "240",
+      "height": "120"
+     }
+    ]
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "As more Americans fail drug tests, employers turn to refugees",
+   "htmlTitle": "As \u003cb\u003emore\u003c/b\u003e Americans fail drug \u003cb\u003etests\u003c/b\u003e, employers turn to refugees",
+   "link": "http://www.cnn.com/2017/03/27/us/refugees-jobs-drug-testing/",
+   "displayLink": "www.cnn.com",
+   "snippet": "Mar 29, 2017 ... The percentage of American workers testing positive for illegal drugs is at its \nhighest level in a decade. Some employers are turning to ...",
+   "htmlSnippet": "Mar 29, 2017 \u003cb\u003e...\u003c/b\u003e The percentage of American workers \u003cb\u003etesting\u003c/b\u003e positive for illegal drugs is at its \u003cbr\u003e\nhighest level in a decade. Some employers are turning to&nbsp;...",
+   "cacheId": "i-X9O3oKxnQJ",
+   "formattedUrl": "www.cnn.com/2017/03/27/us/refugees-jobs-drug-testing/",
+   "htmlFormattedUrl": "www.cnn.com/2017/03/27/us/refugees-jobs-drug-\u003cb\u003etesting\u003c/b\u003e/",
+   "pagemap": {
+    "thumbnail": [
+     {
+      "src": "http://i2.cdn.cnn.com/cnnnext/dam/assets/170324113322-refugee-jobs-drug-testing-fails-mg-super-tease.jpg"
+     }
+    ],
+    "metatags": [
+     {
+      "viewport": "width=device-width, initial-scale=1.0, minimum-scale=1.0",
+      "section": "us",
+      "og:pubdate": "2017-03-27T11:30:31Z",
+      "pubdate": "2017-03-27T11:30:31Z",
+      "lastmod": "2017-03-29T20:40:35Z",
+      "og:url": "http://www.cnn.com/2017/03/27/us/refugees-jobs-drug-testing/index.html",
+      "author": "Story by Dan Lieberman, CNN Video by Matt Gannon, CNN",
+      "og:title": "Refugees fill US job gaps created by drugs",
+      "twitter:title": "Refugees fill US job gaps created by drugs",
+      "og:description": "The percentage of American workers testing positive for illegal drugs is at its highest level in a decade. Some employers are turning to refugees.",
+      "twitter:description": "The percentage of American workers testing positive for illegal drugs is at its highest level in a decade. Some employers are turning to refugees.",
+      "og:site_name": "CNN",
+      "twitter:card": "summary_large_image",
+      "og:type": "article",
+      "og:image": "http://i2.cdn.cnn.com/cnnnext/dam/assets/170324113322-refugee-jobs-drug-testing-fails-mg-super-tease.jpg",
+      "og:image:width": "1100",
+      "og:image:height": "619",
+      "thumbnail": "http://i2.cdn.cnn.com/cnnnext/dam/assets/170324113322-refugee-jobs-drug-testing-fails-mg-super-tease.jpg",
+      "twitter:image": "http://i2.cdn.cnn.com/cnnnext/dam/assets/170324113322-refugee-jobs-drug-testing-fails-mg-super-tease.jpg",
+      "vr:canonical": "http://www.cnn.com/2017/03/27/us/refugees-jobs-drug-testing/index.html",
+      "fb:app_id": "80401312489",
+      "fb:pages": "5550296508,18793419640",
+      "template-top": "us,art-vid-vls-col,col-refugee-stories"
+     }
+    ],
+    "cse_image": [
+     {
+      "src": "http://i2.cdn.cnn.com/cnnnext/dam/assets/170324113322-refugee-jobs-drug-testing-fails-mg-super-tease.jpg",
+      "type": "1",
+      "width": "299",
+      "height": "168"
+     }
+    ],
+    "newsarticle": [
+     {
+      "articlesection": "us",
+      "datecreated": "2017-03-27T11:30:31Z",
+      "datepublished": "2017-03-27T11:30:31Z",
+      "datemodified": "2017-03-29T20:40:35Z",
+      "url": "http://www.cnn.com/2017/03/27/us/refugees-jobs-drug-testing/index.html",
+      "author": "Story by Dan Lieberman, CNN Video by Matt Gannon, CNN",
+      "headline": "As Americans fail drug tests, employers hire refugees - CNN.com",
+      "description": "The percentage of American workers testing positive for illegal drugs is at its highest level in a decade. Some employers are turning to refugees.",
+      "keywords": "us, As Americans fail drug tests, employers hire refugees - CNN.com",
+      "image": "//i2.cdn.cnn.com/cnnnext/dam/assets/170324113322-refugee-jobs-drug-testing-fails-mg-super-tease.jpg",
+      "thumbnailurl": "//i2.cdn.cnn.com/cnnnext/dam/assets/170324113322-refugee-jobs-drug-testing-fails-mg-super-tease.jpg",
+      "alternativeheadline": "As more Americans fail drug tests, employers turn to refugees",
+      "articlebody": "Story highlightsPercentage of American workers testing positive for illegal drugs is at highest level in a decadeFailed drug tests have real consequences for the economyErie, Pennsylvania (CNN)Insi..."
+     }
+    ]
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "GAM-HB0461 Summary 2017 Regular Session",
+   "htmlTitle": "GAM-HB0461 Summary 2017 Regular Session",
+   "link": "http://mgaleg.maryland.gov/webmga/frmMain.aspx?stab=01&pid=billpage&tab=subject3&ys=2017rs&id=HB0461",
+   "displayLink": "mgaleg.maryland.gov",
+   "snippet": "2 days ago ... *Invalid Number. 2017 Regular Session. Entitled: Education - Accountability \nProgram - Assessments (More Learning, Less Testing Act of 2017) ...",
+   "htmlSnippet": "2 days ago \u003cb\u003e...\u003c/b\u003e *Invalid Number. 2017 Regular Session. Entitled: Education - Accountability \u003cbr\u003e\nProgram - Assessments (\u003cb\u003eMore\u003c/b\u003e Learning, Less \u003cb\u003eTesting\u003c/b\u003e Act of 2017)&nbsp;...",
+   "cacheId": "38WsG_H-_s8J",
+   "formattedUrl": "mgaleg.maryland.gov/webmga/frmMain.aspx?stab=01...",
+   "htmlFormattedUrl": "mgaleg.maryland.gov/webmga/frmMain.aspx?stab=01...",
+   "pagemap": {
+    "metatags": [
+     {
+      "viewport": "width=device-width,height=device-height, initial-scale=0.90, user-scalable=yes"
+     }
+    ]
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "Some Marketers Want More Ad Testing, Less Debating About Metrics",
+   "htmlTitle": "Some Marketers Want \u003cb\u003eMore\u003c/b\u003e Ad \u003cb\u003eTesting\u003c/b\u003e, Less Debating About Metrics",
+   "link": "https://www.wsj.com/articles/some-marketers-want-more-ad-testing-less-debating-about-metrics-1491300000",
+   "displayLink": "www.wsj.com",
+   "snippet": "Apr 4, 2017 ... Some performance marketers, such as Airbnb and Wayfair, are contrarians when \nit comes to the digital ad industry's push to emphasize ...",
+   "htmlSnippet": "Apr 4, 2017 \u003cb\u003e...\u003c/b\u003e Some performance marketers, such as Airbnb and Wayfair, are contrarians when \u003cbr\u003e\nit comes to the digital ad industry&#39;s push to emphasize&nbsp;...",
+   "formattedUrl": "https://www.wsj.com/.../some-marketers-want-more-ad-testing-less-debating- about-metrics-1491300000",
+   "htmlFormattedUrl": "https://www.wsj.com/.../some-marketers-want-\u003cb\u003emore\u003c/b\u003e-ad-\u003cb\u003etesting\u003c/b\u003e-less-debating- about-metrics-1491300000",
+   "pagemap": {
+    "imageobject": [
+     {
+      "representativeofpage": "https://si.wsj.net/public/resources/images/BN-SC927_measur_J_20170215164744.jpg",
+      "contenturl": "https://si.wsj.net/public/resources/images/BN-SC927_measur_J_20170215164744.jpg",
+      "caption": "Photo: Getty Images/iStockphoto",
+      "creator": "Photo: Getty Images/iStockphoto"
+     },
+     {
+      "representativeofpage": "https://si.wsj.net/public/resources/images/BN-ST999_shoeda_F_20170403172126.jpg",
+      "contenturl": "https://si.wsj.net/public/resources/images/BN-ST999_shoeda_F_20170403172126.jpg",
+      "caption": "E-commerce brands like Shoedazzle are proponents of testing various ad tactics and relying heavily on data.",
+      "description": "E-commerce brands like Shoedazzle are proponents of testing various ad tactics and relying heavily on data.",
+      "creator": "Photo: Shoedazzle"
+     },
+     {
+      "representativeofpage": "https://si.wsj.net/public/resources/images/BN-SU007_wayfai_P_20170403172316.jpg",
+      "contenturl": "https://si.wsj.net/public/resources/images/BN-SU007_wayfai_P_20170403172316.jpg",
+      "caption": "Companies like Wayfair are building out proprietary technology to help better measure the impact of advertising on sales.",
+      "description": "Companies like Wayfair are building out proprietary technology to help better measure the impact of advertising on sales.",
+      "creator": "Photo: wayfair"
+     },
+     {
+      "contenturl": "https://m.wsj.net/video/20170310/031017lunchtestartrek/031017lunchtestartrek_115x65.jpg"
+     },
+     {
+      "contenturl": "https://m.wsj.net/video/20170410/041017lunchyhealth1/041017lunchyhealth1_115x65.jpg"
+     },
+     {
+      "contenturl": "https://m.wsj.net/video/20170410/041017lunchamazon/041017lunchamazon_115x65.jpg"
+     },
+     {
+      "contenturl": "https://m.wsj.net/video/20170406/040617neilbugatti/040617neilbugatti_115x65.jpg"
+     },
+     {
+      "contenturl": "https://m.wsj.net/video/20170410/041017lunchbreak/041017lunchbreak_115x65.jpg"
+     },
+     {
+      "contenturl": "https://s.wsj.net/public/resources/images/BN-SX164_Noonan_C_20170410165953.jpg"
+     },
+     {
+      "contenturl": "https://s.wsj.net/public/resources/images/BN-SX587_31JOH_C_20170411150740.jpg"
+     },
+     {
+      "contenturl": "https://s.wsj.net/public/resources/images/BN-SX380_2YDWL_C_20170411103239.jpg"
+     },
+     {
+      "contenturl": "https://s.wsj.net/public/resources/images/BN-SW885_30yeK_C_20170410103735.jpg"
+     },
+     {
+      "contenturl": "https://s.wsj.net/public/resources/images/BN-SX394_TILLER_C_20170411112010.jpg"
+     },
+     {
+      "contenturl": "https://m.wsj.net/video/20170410/041017united/041017united_167x94.jpg"
+     },
+     {
+      "contenturl": "https://m.wsj.net/video/20170411/041117hardtimes3/041117hardtimes3_167x94.jpg"
+     },
+     {
+      "contenturl": "https://m.wsj.net/video/20170410/041017lunchyhealth1/041017lunchyhealth1_167x94.jpg"
+     },
+     {
+      "contenturl": "https://m.wsj.net/video/20170410/041017lunchamazon/041017lunchamazon_167x94.jpg"
+     },
+     {
+      "contenturl": "https://m.wsj.net/video/20170410/041017seib/041017seib_167x94.jpg"
+     },
+     {
+      "contenturl": "https://s.wsj.net/public/resources/images/BN-SX164_Noonan_C_20170410165953.jpg"
+     },
+     {
+      "contenturl": "https://s.wsj.net/public/resources/images/BN-SX587_31JOH_C_20170411150740.jpg"
+     },
+     {
+      "contenturl": "https://s.wsj.net/public/resources/images/BN-SX380_2YDWL_C_20170411103239.jpg"
+     },
+     {
+      "contenturl": "https://s.wsj.net/public/resources/images/BN-SW885_30yeK_C_20170410103735.jpg"
+     },
+     {
+      "contenturl": "https://s.wsj.net/public/resources/images/BN-SX394_TILLER_C_20170411112010.jpg"
+     }
+    ],
+    "person": [
+     {
+      "name": "Mike Shields",
+      "url": "Mike Shields",
+      "email": "mike.shields@wsj.com"
+     }
+    ],
+    "metatags": [
+     {
+      "viewport": "width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no",
+      "dj.asn": "i-09c2",
+      "user.type": "nonsubscriber",
+      "user.exp": "default",
+      "testkeys": "B",
+      "page.section": "Article",
+      "page.content.type": "Article",
+      "page.content.format": "responsive",
+      "og:type": "article",
+      "page.content.source": "WSJ Online Article",
+      "article.template": "full",
+      "page.site": "wsj",
+      "page.site.product": "WSJ",
+      "page.region": "na,us",
+      "article.id": "SB12134028983285014108004583063221171311336",
+      "article.type": "CMO",
+      "article.access": "free",
+      "article.origheadline": "Some Marketers Want More Ad Testing, Less Debating About Metrics",
+      "article.headline": "Some marketers want more ad testing and less debating about metrics",
+      "article.summary": "Some performance marketers, such as Airbnb and Wayfair, are contrarians when it comes to the digital ad industry’s push to emphasize viewability and TV-like metrics.",
+      "apple-itunes-app": "app-id=364387007,app-argument=wsj://launch?articleid=SB12134028983285014108004583063221171311336&headline=Some%20marketers%20want%20more%20ad%20testing%20and%20less%20debating%20about%20metrics&weburl=http://www.wsj.com/articles/SB12134028983285014108004583063221171311336",
+      "al:ios:url": "wsj://launch?articleid=SB12134028983285014108004583063221171311336&headline=Some%20marketers%20want%20more%20ad%20testing%20and%20less%20debating%20about%20metrics&weburl=http://www.wsj.com/articles/SB12134028983285014108004583063221171311336",
+      "article.page": "Media & Marketing",
+      "article.section": "Business",
+      "article.published": "2017-04-04T10:00:00.000Z",
+      "article.updated": "2017-04-04T10:00:00.000Z",
+      "article.created": "2017-04-04T10:00:00.000Z",
+      "author": "Mike Shields",
+      "cxenseparse:wsj-keywords": "marketing,markets,advertising,branding,corporate,industrial news,market research,consumer trends,digital marketing,public relations,business,consumer services",
+      "news_keywords": "marketing,markets,advertising,branding,corporate,industrial news,market research,consumer trends,digital marketing,public relations",
+      "article:word_count": "1001",
+      "article:image_count": "3",
+      "article:embed_count": "1",
+      "article:internal_link_count": "8",
+      "article:external_link_count": "6",
+      "cxenseparse:wsj-primary-inset": "image",
+      "language": "en-US",
+      "twitter:title": "Some Marketers Want More Ad Testing, Less Debating About Metrics",
+      "twitter:description": "Some performance marketers, such as Airbnb and Wayfair, are contrarians when it comes to the digital ad industry’s push to emphasize viewability and TV-like metrics.",
+      "twitter:image": "https://si.wsj.net/public/resources/images/BN-SC927_measur_TOP_20170215164744.jpg",
+      "twitter:card": "summary_large_image",
+      "twitter:image:alt": "Some marketers want more ad testing and less debating about metrics",
+      "twitter:creator": "@digitalshields",
+      "twitter:site": "@WSJ",
+      "twitter:domain": "wsj.com",
+      "fb:app_id": "368513495882",
+      "og:title": "Some Marketers Want More Ad Testing, Less Debating About Metrics",
+      "og:description": "Some performance marketers, such as Airbnb and Wayfair, are contrarians when it comes to the digital ad industry’s push to emphasize viewability and TV-like metrics.",
+      "og:url": "https://www.wsj.com/articles/some-marketers-want-more-ad-testing-less-debating-about-metrics-1491300000",
+      "og:image": "https://si.wsj.net/public/resources/images/BN-SC927_measur_TOP_20170215164744.jpg"
+     }
+    ],
+    "webpage": [
+     {
+      "datepublished": "2017-04-04T10:00:00.000Z",
+      "datemodified": "2017-04-04T10:00:00.000Z",
+      "datecreated": "2017-04-04T10:00:00.000Z",
+      "description": "Some performance marketers, such as Airbnb and Wayfair, are contrarians when it comes to the digital ad industry’s push to emphasize viewability and TV-like metrics.",
+      "inlanguage": "en-US",
+      "image": "https://si.wsj.net/public/resources/images/BN-SC927_measur_TOP_20170215164744.jpg",
+      "publisher": "wsj.com",
+      "headline": "Some Marketers Want More Ad Testing, Less Debating About Metrics",
+      "articlebody": "Photo: Getty Images/iStockphoto By Mike Shields Mike Shields The Wall Street Journal BiographyMike Shields @digitalshields mike.shields@wsj.com April 4, 2017 6:00 a.m. ET 0 COMMENTS Not every..."
+     }
+    ],
+    "cse_image": [
+     {
+      "src": "https://si.wsj.net/public/resources/images/BN-SC927_measur_TOP_20170215164744.jpg",
+      "type": "1",
+      "width": "318",
+      "height": "159"
+     }
+    ],
+    "listitem": [
+     {
+      "item": "Business"
+     },
+     {
+      "item": "Media & Marketing"
+     },
+     {
+      "item": "CMO"
+     }
+    ]
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "NOVA - Official Website | When More Testing Is Good",
+   "htmlTitle": "NOVA - Official Website | When \u003cb\u003eMore Testing\u003c/b\u003e Is Good",
+   "link": "http://www.pbs.org/wgbh/nova/body/more-testing-good.html",
+   "displayLink": "www.pbs.org",
+   "snippet": "When More Testing Is Good. By Eben Bein & Ari Daniel; Posted 08.18.16; NOVA. \nCognitive scientists and teachers have teamed up to help students retain what ...",
+   "htmlSnippet": "When \u003cb\u003eMore Testing\u003c/b\u003e Is Good. By Eben Bein &amp; Ari Daniel; Posted 08.18.16; NOVA. \u003cbr\u003e\nCognitive scientists and teachers have teamed up to help students retain what&nbsp;...",
+   "cacheId": "6qIgRrbEFw4J",
+   "formattedUrl": "www.pbs.org/wgbh/nova/body/more-testing-good.html",
+   "htmlFormattedUrl": "www.pbs.org/wgbh/nova/body/\u003cb\u003emore\u003c/b\u003e-\u003cb\u003etesting\u003c/b\u003e-good.html",
+   "pagemap": {
+    "metatags": [
+     {
+      "viewport": "width=device-width, initial-scale=1",
+      "og:url": "http://www.pbs.org/wgbh/nova/body/more-testing-good.html",
+      "og:title": "When More Testing Is Good — NOVA | PBS",
+      "og:description": "Students who get tested a lot without being graded can more easily recall what they learn.",
+      "og:image": "http://www.pbs.org/wgbh/nova/assets/img/full-size/more-testing-good-merl.jpg"
+     }
+    ],
+    "cse_image": [
+     {
+      "src": "http://www.pbs.org/wgbh/nova/assets/img/26/school-of-future.jpg",
+      "type": "1",
+      "width": "150",
+      "height": "84"
+     }
+    ]
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "Less Testing, More Learning in Maryland Schools",
+   "htmlTitle": "Less \u003cb\u003eTesting\u003c/b\u003e, \u003cb\u003eMore\u003c/b\u003e Learning in Maryland Schools",
+   "link": "http://lesstestingmorelearning.com/",
+   "displayLink": "lesstestingmorelearning.com",
+   "snippet": "95% of educators and 70% of citizens in Maryland think there's too much time \nspent on standardized testing. Let's change that, together.",
+   "htmlSnippet": "95% of educators and 70% of citizens in Maryland think there&#39;s too much time \u003cbr\u003e\nspent on standardized \u003cb\u003etesting\u003c/b\u003e. Let&#39;s change that, together.",
+   "cacheId": "jHELNGb4TJoJ",
+   "formattedUrl": "lesstestingmorelearning.com/",
+   "htmlFormattedUrl": "less\u003cb\u003etestingmore\u003c/b\u003elearning.com/",
+   "pagemap": {
+    "metatags": [
+     {
+      "viewport": "width=device-width, initial-scale=1",
+      "og:locale": "en_US",
+      "og:type": "website",
+      "og:title": "Less Testing, More Learning in Maryland Schools",
+      "og:description": "Add your name to the list of Maryland parents and educators taking a stand for #LessTesting & #MoreLearning at LessTestingMoreLearning.com.",
+      "og:url": "http://lesstestingmorelearning.com/",
+      "og:site_name": "Less Testing, More Learning",
+      "og:image": "http://lesstestingmorelearning.com/wp-content/uploads/2015/08/og-img.jpg",
+      "twitter:card": "summary",
+      "twitter:description": "95% of educators and 70% of citizens in Maryland think there’s too much time spent on standardized testing. Let's change that, together.",
+      "twitter:title": "Less Testing, More Learning in Maryland Schools",
+      "twitter:domain": "Less Testing, More Learning",
+      "twitter:image:src": "http://lesstestingmorelearning.com/wp-content/uploads/2015/08/og-img.jpg"
+     }
+    ],
+    "cse_image": [
+     {
+      "src": "http://lesstestingmorelearning.com/wp-content/uploads/2015/08/og-img.jpg",
+      "type": "1",
+      "width": "310",
+      "height": "163"
+     }
+    ]
+   }
+  }
+ ]
+}

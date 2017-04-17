@@ -1,6 +1,7 @@
-
 import logging
 import json
+import feedparser
+
 from random import randint
 from time import sleep
 
@@ -34,24 +35,177 @@ class SearchParser:
         return {'url': url.strip(), 'title': title.strip(), 'text': text.strip()}
 
 
-class GoogleParser(SearchParser):
-    pass
+class GoogleGeneralParser(SearchParser):
+    """
+    BAse class for parsing google search results
+    """
+    def _parse_href(self, href):
+        """
+        Revise this method
+        """
+        # Method for normalising Google's result link. Receives the link, parse it and gets the direct
+        # url from querystring. E.g.: google's result links look's like:
+        # https://www.google.com/url?q=some+query&url=http://foo.bar.url
+        # so we should get only q parameter from google's querystring
+        try:
+            url = parse_qs(urlparse(href).query)['q'][0]
+            return unquote(url)
+        except KeyError:
+            return href
+
+    def _get_tree(self, url, params):
+        sleep(randint(1, 2))
+        r = requests.get(url, params)
+        tree = lxml.html.fromstring(r.text)
+
+        if "Google" not in tree.findtext('.//title'):
+            logger.info("I can't find Google in page title")
+
+        return tree
 
 
-class GoogleScholarParser(SearchParser):
-    pass
+class GoogleParser(GoogleGeneralParser):
+
+    def run(self):
+        base_url = 'https://google.com/search'
+        result = []
+        for count in range(0, self.depth):
+            tree = self._get_tree(base_url, {'q': self.search_query, 'start': count * 10, 'sa': 'N'})
+
+            for item in tree.xpath("//div[@class='g']"):
+                result.append(self._new_article(
+                    self._parse_href(item.xpath(".//a/@href")[0]),
+                    item.xpath(".//a")[0].text_content(),
+                    item.xpath(".//span[@class='st']")[0].text_content()
+                ))
+
+        return result
+
+
+class GoogleScholarParser(GoogleGeneralParser):
+    """
+    Class for fetching results from google's scholar.google.com.
+    Search query example: https://scholar.google.com.ua/scholar?start=30&q=robotics+ai&start=30
+    start parameter responsible for results pagination
+    :return: seed_links
+    """
+    def run(self):
+        base_url = 'https://scholar.google.com/scholar'
+        result = []
+        for count in range(0, self.depth):
+            tree = self._get_tree(base_url, {'q': self.search_query, 'start': count * 10, 'sa': 'N'})
+
+            for item in tree.xpath("//div[@class='gs_ri']"):
+                if (len(item.xpath(".//a/@href")) == 0) or (len(item.xpath(".//div[@class='gs_rs']")) == 0):
+                    continue
+                result.append(self._new_article(
+                    self._parse_href(item.xpath(".//a/@href")[0]),
+                    item.xpath(".//a")[0].text_content(),
+                    item.xpath(".//div[@class='gs_rs']")[0].text_content()
+                ))
+
+        return result
 
 
 class GoogleNewsParser(SearchParser):
-    pass
+    """
+    Gets results from google's news.google.com and parses all them by feedparser
+    Search query example: https://news.google.com/news/feeds?output=rss&q=banking&num=30.
+    num parameter responsible for the number of returned entries (max=30, default=30)
+    output parameter responsible for response format (ATOM or RSS)
+    :return: seed_links
+    """
+    def _parse_href(self, href):
+        """
+        Revise this method
+        """
+        # Method for normalising Google's result link. Receives the link, parse it and gets the direct
+        # url from querystring. E.g.: google's result links look's like:
+        # https://www.google.com/url?q=some+query&url=http://foo.bar.url
+        # so we should get only q parameter from google's querystring
+        try:
+            url = parse_qs(urlparse(href).query)['url'][0]
+            return unquote(url)
+        except KeyError:
+            return href
+
+    def run(self):
+        base_url = 'https://news.google.com/news'
+        r = requests.get(base_url, {'q': self.search_query, 'output': 'rss', 'num': self.depth * 10})
+        feed = feedparser.parse(r.text)
+
+        return [self._new_article(self._parse_href(entry.link), entry.title, entry.description)
+                for entry in feed.entries]
 
 
 class GoogleCseParser(SearchParser):
-    pass
+    """
+    Another method for getting google's search results but from CSE (custom search engine):
+    https://developers.google.com/custom-search/json-api/v1/using_rest.
+    Using Requests library
+    :return: seed_links list
+    """
+
+    def __init__(self, search_query, depth, options):
+        # Check search depth value if it higher than 10
+        # redefine it to display only 100 first results
+        # see: https://developers.google.com/custom-search/json-api/v1/using_rest
+        if depth > 10:
+            logger.warn("Only the first 100 results will be displayed, due to CSE search depth limit.")
+            depth = 10
+
+        # We store options at JSONField. So we need to load them.
+        options = json.loads(options) if options else None
+
+        super(GoogleCseParser, self).__init__(search_query, depth, options)
+
+    def run(self):
+        base_url = 'https://www.googleapis.com/customsearch/v1'
+        result = []
+
+        for count in range(0, self.depth):
+            params = {
+                'key': settings.GOOGLE_TRANSLATE_API_KEY,
+                'cx': settings.CSE_ID,
+                'q': self.search_query,
+                'safe': 'medium',
+                'start': count * 10 + 1
+            }
+            if self.options:
+                params.update(self.options)
+
+            r = requests.get(base_url, params=params)
+            data = json.loads(r.text)
+            if 'items' not in data:
+                return []
+
+            for item in data['items']:
+                result.append(self._new_article(
+                    item['link'],
+                    item['title'],
+                    item['snippet']
+                ))
+
+        return result
 
 
-class GoogleBlogsParser(SearchParser):
-    pass
+class GoogleBlogsParser(GoogleGeneralParser):
+
+    def run(self):
+
+        base_url = 'https://google.com/search'
+        result = []
+        for count in range(0, self.depth):
+            tree = self._get_tree(base_url, {'q': self.search_query, 'start': count * 10, 'tbm': 'nws', 'tbs': 'nrt:b'})
+
+            for item in tree.xpath("//div[@class='g']"):
+                result.append(self._new_article(
+                    self._parse_href(item.xpath(".//a/@href")[0]),
+                    item.xpath(".//a")[0].text_content(),
+                    item.xpath(".//div[@class='st']")[0].text_content()
+                ))
+
+        return result
 
 
 class BingParser(SearchParser):

@@ -54,7 +54,7 @@ class YaSearch:
                 result += self._xml_extract_helper(child)
         return result
 
-    def __init__(self, api_user, api_key, domain='com'):
+    def __init__(self, api_user, api_key, domain='ru'):
         self._api_user = api_user
         self._api_key = api_key
         if domain not in self.VALID_DOMAINS:

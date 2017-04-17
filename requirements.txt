@@ -5,10 +5,10 @@ asgiref==1.0.0
 attrs==16.3.0
 autobahn==0.17.1
 Automat==0.5.0
-awscli==1.11.76
 Babel==2.3.4
 beautifulsoup4==4.5.3
 billiard==3.5.0.2
+boto==2.45.0
 celery==4.0.2
 cffi==1.9.1
 chardet==2.3.0
@@ -21,6 +21,7 @@ Django==1.10.5
 django-autoslug==1.9.3
 django-environ==0.4.1
 django-filter==1.0.1
+django-ipware==1.1.6
 django-pipeline==1.6.11
 djangorestframework==3.5.4
 ecdsa==0.13
@@ -28,7 +29,7 @@ Fabric==1.13.1
 Fabric3==1.12.post1
 feedfinder2==0.0.4
 feedparser==5.2.1
-flower
+flower==0.9.1
 futures==3.0.5
 geopy==1.11.0
 google-api-python-client==1.6.2
@@ -55,10 +56,11 @@ paramiko==2.1.1
 Pillow==4.0.0
 protobuf==3.2.0
 psycopg2==2.6.2
-pyasn1==0.2.3
+pyasn1==0.2.2
 pyasn1-modules==0.0.8
 pycparser==2.17
 pycrypto==2.6.1
+pymongo==3.4.0
 pyOpenSSL==16.2.0
 pyparsing==2.1.10
 python-dateutil==2.6.0
