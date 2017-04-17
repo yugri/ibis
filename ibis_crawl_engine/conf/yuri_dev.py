@@ -6,7 +6,7 @@ DEBUG = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL.strip("/"))
 
-MEDIA_URL = '/media/'
+MEDIA_URL = '/static/media/'
 MEDIA_ROOT = STATIC_ROOT + MEDIA_URL
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
