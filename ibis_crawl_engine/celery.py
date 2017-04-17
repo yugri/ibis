@@ -5,7 +5,7 @@ import os
 from celery import Celery
 
 # set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ibis_crawl_engine.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ibis_crawl_engine.settings.common')
 
 from django.conf import settings
 
@@ -17,6 +17,3 @@ app.config_from_object('django.conf:settings')
 app.autodiscover_tasks()
 
 
-@app.task(bind=False)
-def debug_task(self):
-    print('Request: {0!r}'.format(self.request))
