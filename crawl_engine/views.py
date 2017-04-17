@@ -4,6 +4,7 @@ from ipware.ip import get_ip
 from django.shortcuts import get_object_or_404
 
 from rest_framework import generics
+from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -27,6 +28,18 @@ class ArticlesListView(generics.ListAPIView):
         search_instance = get_object_or_404(SearchQuery, search_id=search_id)
 
         return Article.objects.filter(search_id=search_instance.id)
+
+
+class ArticleView(generics.RetrieveAPIView):
+    serializer_class = ArticleSerializer
+    queryset = Article.objects.all()
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        obj = get_object_or_404(queryset, article_url=self.kwargs['article_url'])
+
+        return obj
 
 
 class UrlsProcessor:
