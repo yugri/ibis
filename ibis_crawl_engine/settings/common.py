@@ -190,7 +190,7 @@ SOURCES = (
 
 ALCHEMY_API_KEY = env('ALCHEMY_API_KEY')
 
-ALLOWED_HOSTS = env('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
 
 DATABASES = {
     'default': env.db('DATABASE_URL', default='postgresql://ibis:13635724@0.0.0.0:5433/ibis'),
