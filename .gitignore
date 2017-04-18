@@ -142,7 +142,6 @@ crashlytics-build.properties
 fabric.properties
 
 # Ignore django's settings.py
-settings.py
 items_news_keywords_13.json
 local_tests.py
 Буде вилучено crawl_engine/search_testing.py
@@ -155,3 +154,7 @@ ibis_crawl_engine/conf/vladimir.py
 
 celerybeat-schedule.db
 /static/
+
+#celery
+celerybeat.pid
+
