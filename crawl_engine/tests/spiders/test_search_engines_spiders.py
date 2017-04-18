@@ -3,7 +3,7 @@ from unittest.mock import patch, Mock
 from django.test import TestCase
 from crawl_engine.spiders.search_engines_spiders import (
     get_search_parser, YandexParser, BingParser, GoogleParser, GoogleCseParser,
-    GoogleScholarParser, GoogleBlogsParser, GoogleNewsParser)
+    GoogleScholarParser, GoogleBlogsParser, GoogleNewsParser, SocialParser)
 
 
 class HelperTestCase(TestCase):
@@ -130,4 +130,17 @@ class GoogleNewsParserTestCase(TestCase):
         self.assertEqual(len(result), 10)
         self.assertEqual(result[0]['url'], 'http://www.nbcnews.com/news/world/north-korean-nuclear-test-will-be-when-leaders-see-fit-n746441')
         self.assertEqual(result[0]['title'], 'North Korean Nuclear Test Will Be When Leaders See Fit, Vice Minister Says - NBCNews.com')
+        self.assertGreater(len(result[0]['text']), 0)
+
+
+class SocialParserTestCase(TestCase):
+
+    @patch('requests.get')
+    def test_run(self, mock_get):
+        mock_get.return_value = mock_requests_get('social.json')
+        parser = SocialParser('test', 1, None)
+        result = parser.run()
+        self.assertEqual(len(result), 10)
+        self.assertEqual(result[0]['url'], 'http://twitter.com/Infern_arny/statuses/854307064516161536')
+        self.assertEqual(result[0]['title'], 'twitter - @A  r  n  y')
         self.assertGreater(len(result[0]['text']), 0)
