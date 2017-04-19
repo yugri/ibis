@@ -47,15 +47,9 @@ in file <requirements.txt> & <requirements_prod.txt>
 
 ## Local development with Docker
 
-Create the ./ibis_crawl_engine/conf/.env file with api credentials
+1. Copy `sample.env` to  `.env` file and fill api credentials.
 
-```
-GOOGLE_TRANSLATE_API_KEY=????
-CSE_ID=????
-ALCHEMY_API_KEY=????
-```
-
-Open a terminal at the project root and run the following for local development:
+2. Open a terminal at the project root and run local development:
 
 ```sh
 $ docker-compose -f dev.yml up
