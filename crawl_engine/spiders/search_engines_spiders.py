@@ -242,6 +242,22 @@ class YandexParser(SearchParser):
         return [self._new_article(i.url, i.title, i.snippet) for i in results.items]
 
 
+class SocialParser(SearchParser):
+
+    def run(self):
+        base_url = 'https://api.social-searcher.com/v2/search'
+        r = requests.get(base_url,
+                         {'q': self.search_query,
+                          'key': settings.SOCIAL_SEARCHER_API_KEY,
+                          'limit': self.depth * 10}, verify=False)
+        posts = json.loads(r.text).get('posts')
+        return [self._new_article(
+                    post.get('url'),
+                    post.get('network') + ' - @' + post.get('user', {}).get('name'),
+                    post.get('text'))
+                for post in posts]
+
+
 SEARCH_PARSERS = {
     'google': GoogleParser,
     'google_scholar': GoogleScholarParser,
@@ -249,7 +265,8 @@ SEARCH_PARSERS = {
     'google_cse': GoogleCseParser,
     'google_blogs': GoogleBlogsParser,
     'bing': BingParser,
-    'yandex': YandexParser
+    'yandex': YandexParser,
+    'social': SocialParser,
 }
 
 
