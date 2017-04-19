@@ -23,7 +23,7 @@ services:
     environment:
       - POSTGRES_USER=ibis
       - USE_DOCKER=yes
-      - DJANGO_SETTINGS_MODULE=ibis_crawl_engine.conf.local
+      - DJANGO_SETTINGS_MODULE=ibis_crawl_engine.settings.dev
     volumes:
       - .:/app
     ports:
