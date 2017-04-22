@@ -158,3 +158,6 @@ celerybeat-schedule.db
 #celery
 celerybeat.pid
 
+
+# User-uploaded media
+ibis_crawl_engine/media/
