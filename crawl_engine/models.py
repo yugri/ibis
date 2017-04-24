@@ -247,8 +247,10 @@ class BlockedSite(models.Model):
     Sites, that need to be omitted by crawler
     """
     ibis_site_id = models.CharField(max_length=20)
-    site = models.CharField(max_length=255)
+    site = models.CharField(
+        max_length=255,
+        help_text='<b>Some</b>',
+        verbose_name='Block url regexp')
 
     def __str__(self):
         return self.site
-
