@@ -15,6 +15,18 @@ from crawl_engine.spiders.rss_spider import RSSFeedParser
 logger = logging.getLogger(__name__)
 
 
+def xpath_first(item, path):
+    """ method for safelly get first element """
+    items = item.xpath(path)
+    return items[0] if len(items) > 0 else ""
+
+
+def xpath_first_text(item, path):
+    """ method for safelly get first element text_content() """
+    item = xpath_first(item, path)
+    return item.text_content() if item != "" else ""
+
+
 class MaxSearchDepthError(Exception):
     pass
 
@@ -74,9 +86,9 @@ class GoogleParser(GoogleGeneralParser):
 
             for item in tree.xpath("//div[@class='g']"):
                 result.append(self._new_article(
-                    self._parse_href(item.xpath(".//a/@href")[0]),
-                    item.xpath(".//a")[0].text_content(),
-                    item.xpath(".//span[@class='st']")[0].text_content()
+                    self._parse_href(xpath_first(item, ".//a/@href")),
+                    xpath_first_text(item, ".//a"),
+                    xpath_first_text(item, ".//span[@class='st']")
                 ))
 
         return result
@@ -99,9 +111,9 @@ class GoogleScholarParser(GoogleGeneralParser):
                 if (len(item.xpath(".//a/@href")) == 0) or (len(item.xpath(".//div[@class='gs_rs']")) == 0):
                     continue
                 result.append(self._new_article(
-                    self._parse_href(item.xpath(".//a/@href")[0]),
-                    item.xpath(".//a")[0].text_content(),
-                    item.xpath(".//div[@class='gs_rs']")[0].text_content()
+                    self._parse_href(xpath_first(item, ".//a/@href")),
+                    xpath_first_text(item, ".//a"),
+                    xpath_first_text(item, ".//div[@class='gs_rs']")
                 ))
 
         return result
@@ -200,9 +212,9 @@ class GoogleBlogsParser(GoogleGeneralParser):
 
             for item in tree.xpath("//div[@class='g']"):
                 result.append(self._new_article(
-                    self._parse_href(item.xpath(".//a/@href")[0]),
-                    item.xpath(".//a")[0].text_content(),
-                    item.xpath(".//div[@class='st']")[0].text_content()
+                    self._parse_href(xpath_first(item, ".//a/@href")),
+                    xpath_first_text(item, ".//a"),
+                    xpath_first_text(item, ".//div[@class='st']")
                 ))
 
         return result
@@ -223,9 +235,9 @@ class BingParser(SearchParser):
 
             for item in tree.xpath("//li[contains(@class, 'b_algo')]"):
                 result.append(self._new_article(
-                    item.xpath(".//a/@href")[0],
-                    item.xpath(".//a")[0].text_content(),
-                    item.xpath(".//p")[0].text_content()
+                    xpath_first(item, ".//a/@href"),
+                    xpath_first_text(item, ".//a"),
+                    xpath_first_text(item, ".//p")
                 ))
 
         return result
@@ -251,6 +263,8 @@ class SocialParser(SearchParser):
                           'key': settings.SOCIAL_SEARCHER_API_KEY,
                           'limit': self.depth * 10}, verify=False)
         posts = json.loads(r.text).get('posts')
+        if posts is None:
+            raise ParserError('Social search returned empty result')
         return [self._new_article(
                     post.get('url'),
                     post.get('network') + ' - @' + post.get('user', {}).get('name'),
