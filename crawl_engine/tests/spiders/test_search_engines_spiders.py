@@ -3,7 +3,8 @@ from unittest.mock import patch, Mock
 from django.test import TestCase
 from crawl_engine.spiders.search_engines_spiders import (
     get_search_parser, YandexParser, BingParser, GoogleParser, GoogleCseParser,
-    GoogleScholarParser, GoogleBlogsParser, GoogleNewsParser, SocialParser)
+    GoogleScholarParser, GoogleBlogsParser, GoogleNewsParser, SocialParser,
+    SearchEngineParser, ParserError)
 
 
 class HelperTestCase(TestCase):
@@ -11,6 +12,27 @@ class HelperTestCase(TestCase):
     def test_get_search_parser(self):
         parser = get_search_parser('query', 'google')
         self.assertEqual(type(parser).__name__, 'GoogleParser')
+
+
+class SearchEngineParserTestCase(TestCase):
+
+    @patch('crawl_engine.spiders.search_engines_spiders.get_search_parser')
+    def test_extracts_url_from_parser(self, mock_get_search_parser):
+        mock = Mock()
+        mock.run.return_value = [{'url': 'http://example.com'}]
+        mock_get_search_parser.return_value = mock
+        parser = SearchEngineParser('test')
+        self.assertEqual(parser.run(), ['http://example.com'])
+
+    @patch('crawl_engine.spiders.search_engines_spiders.get_search_parser')
+    def test_logs_exception(self, mock_get_search_parser):
+        mock = Mock()
+        mock.run.return_value = []
+        mock.run.side_effect = ParserError('error')
+        mock_get_search_parser.return_value = mock
+        parser = SearchEngineParser('test')
+        with self.assertLogs('crawl_engine.spiders.search_engines_spiders', level='INFO'):
+            self.assertEqual(parser.run(), [])
 
 
 def data_filename(name):
