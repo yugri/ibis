@@ -249,7 +249,12 @@ class BlockedSite(models.Model):
     ibis_site_id = models.CharField(max_length=20)
     site = models.CharField(
         max_length=255,
-        help_text='<b>Some</b>',
+        help_text='''
+            To block entire domain use <b>example\.com</b>.
+            To block subdomain use <b>sub\.example\.com</b>.
+            To blcok specific files from domain use <b>sub\.example\.com.*\.pdf</b>.
+            You can test expressions in <a href="http://regexr.com/" target="_blank">online tool</a>.
+        ''',
         verbose_name='Block url regexp')
 
     def __str__(self):
