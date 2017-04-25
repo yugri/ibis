@@ -44,6 +44,30 @@ celery -A ibis_crawl_engine beat -l info
 
 in file <requirements.txt> & <requirements_prod.txt>
 
+## Deploying on staging
+
+Connect via ssh and pull new version:
+
+```sh
+$ ssh root@STAGING_IP
+root@crawl:~# cd /webapps/crawler/ibis_crawl_engine
+root@crawl:/webapps/crawler/ibis_crawl_engine# git pull
+```
+
+Apply migrations:
+
+```sh
+root@crawl:/webapps/crawleribis_crawl_engine# . ../venv3/bin/activate
+(venv3)root@crawl:/webapps/crawler/ibis_crawl_engine# python manage.py migrate
+```
+
+Restart processes:
+```sh
+# django site
+supervisorctl restart crawler-django
+# crawler process 
+supervisorctl restart celery-workers:crawler-worker
+```
 
 ## Local development with Docker
 
