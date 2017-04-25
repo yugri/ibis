@@ -1,7 +1,6 @@
 import io
 import json
 import logging
-import os
 import redis
 
 from datetime import datetime
@@ -19,17 +18,16 @@ from django.core.files.base import ContentFile
 from django.db import IntegrityError
 from django.db import transaction
 from django.utils.timezone import utc
-from django.forms.models import model_to_dict
 
-from crawl_engine.exceptions import BlacklistedURLException
-from crawl_engine.models import Article, SearchQuery, SearchTask
+
+from crawl_engine.models import Article, SearchQuery
 from crawl_engine.serializers import ArticleTransferSerializer
 from crawl_engine.spiders.single_url_parser import ArticleParser
 from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
 from crawl_engine.spiders.rss_spider import RSSFeedParser
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from requests.exceptions import HTTPError
+
 
 from crawl_engine.utils.article_processing_utils import is_url_blacklisted
 from crawl_engine.utils.geo_entities_extractor import convert_to_json
@@ -42,24 +40,19 @@ logger = logging.getLogger(__name__)
 
 @shared_task(name='crawl_engine.tasks.crawl_url')
 def crawl_url(url, search=None):
-    result = None
-    # Check if URL is in blacklist
+    blocked = is_url_blacklisted(url)
+    if blocked:
+        return 'Blacklisted resource "%s" found.' % blocked
+
+    if Article.objects.filter(article_url=url).exists():
+        return "Url was already crawled [%s]" % url
+
     try:
-        is_url_blacklisted(url)
-        if Article.objects.filter(article_url=url).exists():
-            result = "Url was already crawled [%s]" % url
-        else:
-            try:
-                parser = ArticleParser(url, search)
-                result = parser.run()
+        parser = ArticleParser(url, search)
+        return parser.run()
 
-            except Exception as e:
-                result = 'An exception cached. TRACEBACK: %s' % e
-
-    except BlacklistedURLException as e:
-        result = 'Blacklisted resource "%s" found.' % e.resource
-
-    return result
+    except Exception as e:
+        return 'An exception cached. TRACEBACK: %s' % e
 
 
 @shared_task(name="crawl_engine.tasks.upload_file")
