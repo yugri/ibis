@@ -187,7 +187,8 @@ SOURCES = (
     ('google_news', 'Google News'),
     ('google_scholar', 'Google Scholar'),
     ('bing', 'Bing'),
-    ('yandex', 'Yandex')
+    ('yandex', 'Yandex'),
+    ('social', 'Social')
 )
 
 ALCHEMY_API_KEY = env('ALCHEMY_API_KEY')
