@@ -442,9 +442,8 @@ def upload_articles(self, test=False):
             for article_chunk in chunks(articles, 50):
                 data = ArticleTransferSerializer(article_chunk, many=True).data
                 client = IbisClient()
-                payload = json.dumps(data)
                 try:
-                    result = client.push_articles(data=payload)
+                    result = client.push_articles(data=data)
 
                     if result.status_code == 201:
                         for article in article_chunk:
