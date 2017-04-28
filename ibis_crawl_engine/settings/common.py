@@ -206,7 +206,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'yugritsai@gmail.com'
 EMAIL_HOST_PASSWORD = 'uuvzryrcqosnhefv'
 
-IBIS_ADDRESS = env('IBIS_ADDRESS', default='http://endlessripples.com.au/')
+IBIS_ADDRESS = env('IBIS_ADDRESS', default='https://endlessripples.com.au/')
 
 
 ACCOUNT_EMAIL_UNIQUE = True
