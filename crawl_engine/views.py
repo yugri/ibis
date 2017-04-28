@@ -68,7 +68,7 @@ class SearchQueryList(generics.ListCreateAPIView):
         serializer.save(response_address=get_ip(self.request))
 
 
-class SearchQueryDetailView(generics.RetrieveUpdateAPIView):
+class SearchQueryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = SearchQuery.objects.all()
     serializer_class = SearchQuerySerializer
 
