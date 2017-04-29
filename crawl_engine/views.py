@@ -134,8 +134,6 @@ def search_preview(request):
     engine = request.query_params.get('engine', None)
     try:
         parser = get_search_parser(query, engine, 1)
-        print(parser)
-        print('hurray')
         return Response(parser.run())
     except Exception as e:
         return Response({'message': str(e)}, status=400)

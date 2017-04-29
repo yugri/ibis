@@ -64,7 +64,6 @@ class GoogleGeneralParser(SearchParser):
     def _get_tree(self, url, params):
         sleep(randint(1, 2))
         r = requests.get(url, params)
-        print(r.text)
         tree = lxml.html.fromstring(r.text)
 
         if "Google" not in tree.findtext('.//title'):
