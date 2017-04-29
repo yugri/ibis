@@ -78,7 +78,6 @@ INSTALLED_APPS = [
     'pipeline',
     'rest_framework',
     'crawl_engine.apps.CrawlEngineConfig',
-    'dashboard.apps.DashboardConfig',
     'tagging.apps.TaggingConfig',
 ]
 
