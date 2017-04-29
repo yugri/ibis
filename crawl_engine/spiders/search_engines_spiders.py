@@ -242,7 +242,7 @@ class BingParser(SearchParser):
 class YandexParser(SearchParser):
 
     def run(self):
-        search = YaSearch(settings.YANDEX_API_USER, settings.YANDEX_API_KEY)
+        search = YaSearch(settings.YANDEX_API_USER, settings.YANDEX_API_KEY, 'com')
         results = search.search(self.search_query)
         if results.error is not None:
             raise ParserError(results.error.description)
