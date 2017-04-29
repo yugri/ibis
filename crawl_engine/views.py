@@ -1,7 +1,8 @@
 import json, logging
 from ipware.ip import get_ip
 
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
+from django.views.generic import View
 
 from rest_framework import generics
 from rest_framework import viewsets
@@ -40,6 +41,16 @@ class ArticleView(generics.RetrieveAPIView):
         obj = get_object_or_404(queryset, article_url=self.kwargs['article_url'])
 
         return obj
+
+
+class IndexView(View):
+
+    def get(self, request):
+        return render(
+            request,
+            'index.html',
+            {}
+        )
 
 
 class UrlsProcessor:
