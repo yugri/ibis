@@ -98,7 +98,7 @@ ROOT_URLCONF = 'ibis_crawl_engine.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['dashboard/templates'],
+        'DIRS': ['crawl_engine/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
