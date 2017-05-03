@@ -1,13 +1,10 @@
-import json
 import logging
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from crawl_engine import tasks
 from crawl_engine.models import Article, SearchQuery
 from crawl_engine.tasks import run_job
-from celery import chord
 
 logger = logging.getLogger(__name__)
 
@@ -40,4 +37,4 @@ def crawl_email_search_links(sender, instance, created, **kwargs):
     if instance.search_type == 'email':
         for value in instance.email_links.values():
             links = value.get('links', [])
-            job = run_job.delay(links, instance.pk)
+            run_job.delay(links, instance.pk)
