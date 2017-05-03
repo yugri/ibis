@@ -1,0 +1,5 @@
+[run]
+include = crawl_engine/*
+omit = *migrations*, *tests*
+plugins =
+	django_coverage_plugin
