@@ -77,7 +77,7 @@ class TaskURLListSerializer(serializers.Serializer):
         url_list = data.get('url_list')
         issue_id = data.get('issue_id')
 
-        #Validate the data
+        # Validate the data
         if not url_list or not isinstance(url_list, list):
             raise ValidationError({
                 'url_list': 'You should specify the url\'s list'
@@ -109,7 +109,6 @@ class OptionsSerializer(serializers.Serializer):
 
 class SearchQuerySerializer(serializers.ModelSerializer):
     options = OptionsSerializer(required=False)
-    #response_address = serializers.CharField(required=False)
 
     def validate_source(self, value):
         source_choices = [x[0] for x in settings.SOURCES]

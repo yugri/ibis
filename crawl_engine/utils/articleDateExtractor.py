@@ -18,7 +18,7 @@ def parseStrDate(dateString):
 
 def _extractFromURL(url):
 
-    #Regex by Newspaper3k  - https://github.com/codelucas/newspaper/blob/master/newspaper/urls.py
+    # Regex by Newspaper3k  - https://github.com/codelucas/newspaper/blob/master/newspaper/urls.py
     m = re.search(r'([\./\-_]{0,1}(19|20)\d{2})[\./\-_]{0,1}(([0-3]{0,1}[0-9][\./\-_])|(\w{3,5}[\./\-_]))([0-3]{0,1}[0-9][\./\-]{0,1})?', url)
     if m:
         return parseStrDate(m.group(0))
@@ -60,60 +60,60 @@ def _extractFromMeta(parsedHTML):
         httpEquiv = meta.get('http-equiv', '').lower()
         metaProperty = meta.get('property', '').lower()
 
-        #<meta name="pubdate" content="2015-11-26T07:11:02Z" >
+        # <meta name="pubdate" content="2015-11-26T07:11:02Z" >
         if 'pubdate' == metaName:
             metaDate = meta['content'].strip()
             break
 
-        #<meta name='publishdate' content='201511261006'/>
+        # <meta name='publishdate' content='201511261006'/>
         if 'publishdate' == metaName:
             metaDate = meta['content'].strip()
             break
 
-        #<meta name="timestamp"  data-type="date" content="2015-11-25 22:40:25" />
+        # <meta name="timestamp"  data-type="date" content="2015-11-25 22:40:25" />
         if 'timestamp' == metaName:
             metaDate = meta['content'].strip()
             break
 
-        #<meta name="DC.date.issued" content="2015-11-26">
+        # <meta name="DC.date.issued" content="2015-11-26">
         if 'dc.date.issued' == metaName:
             metaDate = meta['content'].strip()
             break
 
-        #<meta property="article:published_time"  content="2015-11-25" />
+        # <meta property="article:published_time"  content="2015-11-25" />
         if 'article:published_time' == metaProperty:
             metaDate = meta['content'].strip()
             break
-            #<meta name="Date" content="2015-11-26" />
+        # <meta name="Date" content="2015-11-26" />
         if 'date' == metaName:
             metaDate = meta['content'].strip()
             break
 
-        #<meta property="bt:pubDate" content="2015-11-26T00:10:33+00:00">
+        # <meta property="bt:pubDate" content="2015-11-26T00:10:33+00:00">
         if 'bt:pubdate' == metaProperty:
             metaDate = meta['content'].strip()
             break
-            #<meta name="sailthru.date" content="2015-11-25T19:56:04+0000" />
+        # <meta name="sailthru.date" content="2015-11-25T19:56:04+0000" />
         if 'sailthru.date' == metaName:
             metaDate = meta['content'].strip()
             break
 
-        #<meta name="article.published" content="2015-11-26T11:53:00.000Z" />
+        # <meta name="article.published" content="2015-11-26T11:53:00.000Z" />
         if 'article.published' == metaName:
             metaDate = meta['content'].strip()
             break
 
-        #<meta name="published-date" content="2015-11-26T11:53:00.000Z" />
+        # <meta name="published-date" content="2015-11-26T11:53:00.000Z" />
         if 'published-date' == metaName:
             metaDate = meta['content'].strip()
             break
 
-        #<meta name="article.created" content="2015-11-26T11:53:00.000Z" />
+        # <meta name="article.created" content="2015-11-26T11:53:00.000Z" />
         if 'article.created' == metaName:
             metaDate = meta['content'].strip()
             break
 
-        #<meta name="article_date_original" content="Thursday, November 26, 2015,  6:42 AM" />
+        # <meta name="article_date_original" content="Thursday, November 26, 2015,  6:42 AM" />
         if 'article_date_original' == metaName:
             metaDate = meta['content'].strip()
             break
@@ -123,22 +123,22 @@ def _extractFromMeta(parsedHTML):
             metaDate = meta['content'].strip()
             break
 
-        #<meta name="DATE_PUBLISHED" content="11/24/2015 01:05AM" />
+        # <meta name="DATE_PUBLISHED" content="11/24/2015 01:05AM" />
         if 'date_published' == metaName:
             metaDate = meta['content'].strip()
             break
 
-        #<meta itemprop="datePublished" content="2015-11-26T11:53:00.000Z" />
+        # <meta itemprop="datePublished" content="2015-11-26T11:53:00.000Z" />
         if 'datepublished' == itemProp:
             metaDate = meta['content'].strip()
             break
 
-        #<meta itemprop="datePublished" content="2015-11-26T11:53:00.000Z" />
+        # <meta itemprop="datePublished" content="2015-11-26T11:53:00.000Z" />
         if 'datecreated' == itemProp:
             metaDate = meta['content'].strip()
             break
 
-        #<meta http-equiv="data" content="10:27:15 AM Thursday, November 26, 2015">
+        # <meta http-equiv="data" content="10:27:15 AM Thursday, November 26, 2015">
         if 'date' == httpEquiv:
             metaDate = meta['content'].strip()
             break
@@ -207,8 +207,7 @@ def extractArticlePublishedDate(articleLink, html=None):
         if possibleDate is None:
             possibleDate = _extractFromHTMLTag(parsedHTML)
 
-
-        articleDate = possibleDate if possibleDate != None else ''
+        articleDate = possibleDate if possibleDate is not None else ''
 
     except Exception as e:
         print("Exception in extractArticlePublishedDate for " + articleLink)

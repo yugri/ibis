@@ -1,15 +1,18 @@
-from crawl_engine import tasks
 from django.contrib import admin
 from crawl_engine.models import Article, SearchQuery, SearchTask, BlockedSite
 
 
 def mark_as_non_pushed(modeladmin, request, queryset):
     queryset.update(pushed=False)
+
+
 mark_as_non_pushed.short_description = "Mark selected articles as NOT pushed"
 
 
 def mark_as_processed(modeladmin, request, queryset):
     queryset.update(processed=True)
+
+
 mark_as_processed.short_description = "Mark selected articles as processed"
 
 
