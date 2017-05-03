@@ -1,6 +1,4 @@
 import re
-import redis
-from datetime import datetime, timedelta
 
 
 def separate(str1, threshold=1000):
@@ -41,7 +39,7 @@ def separate(str1, threshold=1000):
             j = i + ' '
     else:
         out_list.append(j)
-        j=''
+        j = ''
     return out_list
 
 
