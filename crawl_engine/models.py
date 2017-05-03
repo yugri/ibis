@@ -162,7 +162,7 @@ class Article(models.Model):
     def run_file_upload_task(self):
         from crawl_engine.tasks import upload_file
         # TODO: return some stuff after task running
-        result = upload_file.apply_async((self.article_url, self.id))
+        upload_file.apply_async((self.article_url, self.id))
 
     def run_translation_task(self, instance):
         from crawl_engine.tasks import google_translate, detect_lang_by_google, bound_and_save
@@ -206,16 +206,16 @@ class Article(models.Model):
                     logger.info("No need to execute the translation task because article's language is EN.")
                 # Else run translation tasks. Tasks will run separately for the body and the title.
                 else:
-                    result_body = chord([google_translate.s(part, source) for part in splitted_body]) \
-                        (bound_and_save.s(article_id, source, 'body'))
+                    result_body = chord([google_translate.s(part, source)
+                                        for part in splitted_body])(bound_and_save.s(article_id, source, 'body'))
                     logger.info("Translation task for BODY has been queued, ID: %s" % result_body.id)
-                    result_title = chord([google_translate.s(part, source) for part in splitted_title]) \
-                        (bound_and_save.s(article_id, source, 'title'))
+                    result_title = chord([google_translate.s(part, source)
+                                         for part in splitted_title])(bound_and_save.s(article_id, source, 'title'))
                     logger.info("Translation task for TITLE has been queued, ID: %s" % result_title.id)
 
     def run_entities_collecting_task(self):
         from crawl_engine.tasks import get_geo_entity_for_article
-        result = get_geo_entity_for_article.apply_async((self.id,))
+        get_geo_entity_for_article.apply_async((self.id,))
 
     @property
     def related_search_id(self):
