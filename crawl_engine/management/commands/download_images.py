@@ -1,5 +1,5 @@
 import logging
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from crawl_engine.spiders.single_url_parser import ArticleParser
 
 from crawl_engine.models import Article

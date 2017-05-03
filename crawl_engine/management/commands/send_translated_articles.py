@@ -1,5 +1,3 @@
-import json
-
 from django.core.management import BaseCommand
 from crawl_engine.tasks import upload_articles
 

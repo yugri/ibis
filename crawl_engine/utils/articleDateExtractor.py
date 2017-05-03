@@ -118,7 +118,7 @@ def _extractFromMeta(parsedHTML):
             metaDate = meta['content'].strip()
             break
 
-        #<meta name="cXenseParse:recs:publishtime" content="2015-11-26T14:42Z"/>
+        # <meta name="cXenseParse:recs:publishtime" content="2015-11-26T14:42Z"/>
         if 'cxenseparse:recs:publishtime' == metaName:
             metaDate = meta['content'].strip()
             break
