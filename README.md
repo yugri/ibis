@@ -96,6 +96,22 @@ To run tests run:
 $ docker-compose -f dev.yml run django pytest
 ```
 
+### Tests coverage
+
+To run a simple test coverage:
+
+```sh
+$ docker-compose -f dev.yml run django pytest --cov=crawl_engine/
+```
+
+To make a pretty HTML report:
+
+```sh
+$  docker-compose -f dev.yml run django pytest --cov-report html --cov=crawl_engine/
+```
+
+Report will be saved in *htmlcov* folder.
+
 ### Code lint
 
 We need to choose the codeguide. But for now, check newly created files against flake8
