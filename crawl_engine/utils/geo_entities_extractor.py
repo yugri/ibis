@@ -1,9 +1,10 @@
-import time, json
+import time
 
 from alchemyapi.alchemyapi import AlchemyAPI
 
 
 api = AlchemyAPI()
+
 
 def del_non_characters(x, del_str='–-—`~!@#$^&*()_+\\|\'":;<>,.?/{}[]=+%0123456789’'):
     """
@@ -17,14 +18,14 @@ def del_non_characters(x, del_str='–-—`~!@#$^&*()_+\\|\'":;<>,.?/{}[]=+%0123
 
 def extract_locations(text):
     text = text.encode(errors='replace').decode('utf-8')
-    time.sleep(1) #well... should get rid of it
+    time.sleep(1)  # well... should get rid of it
     all_entities = api.entities('text', text)
 
     result = []
     try:
         for entity in all_entities['entities']:
             entity_type = entity['type'].lower()
-            if entity_type not in { 'country', 'city', 'region' }:
+            if entity_type not in {'country', 'city', 'region'}:
                 continue
             result.append({
                 'name': del_non_characters(entity['text'].title()),
@@ -52,7 +53,3 @@ def convert_to_json(text):
         'keywords': extract_keywords(text),
         'locations': extract_locations(text)
     }
-
-
-
-

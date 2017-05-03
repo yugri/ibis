@@ -269,9 +269,8 @@ def check_search_queries():
             if search_query.search_type == 'search_engine' or search_query.search_type == 'simple_search':
                 for source in search_query.get_sources:
                     job = chain(
-                    search_by_query.s(search_query.query, source, search_query.search_depth,search_query.options),
-                        run_job.s(search_query.pk)
-                    )()
+                        search_by_query.s(search_query.query, source, search_query.search_depth, search_query.options),
+                        run_job.s(search_query.pk))()
                     job_keys.append(job.id)
 
             elif search_query.search_type == 'rss':
@@ -368,7 +367,7 @@ def get_geo_entity_for_article(self, article_id):
 
                     # Prepare locations data
                     if entities['locations']:
-                        locations = { 'coordinates': entities['locations'] }
+                        locations = {'coordinates': entities['locations']}
                         article.locations = json.dumps(locations)
 
                     # Get keyword tags and get_or_create Tag object by slug field.

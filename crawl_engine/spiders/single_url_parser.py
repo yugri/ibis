@@ -1,4 +1,3 @@
-import re
 import logging
 
 import requests
@@ -165,7 +164,6 @@ class ArticleParser:
         :param article_instance:
         :return: nothing
         """
-        article_url = self.url
         page = np(self.url)
         page.download()
         page.parse()
