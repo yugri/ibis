@@ -1,5 +1,5 @@
 import logging
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from langdetect import detect
 from langdetect.detector import LangDetectException
 
