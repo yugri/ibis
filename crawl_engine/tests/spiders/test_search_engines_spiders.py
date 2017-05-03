@@ -124,8 +124,12 @@ class GoogleScholarParserTestCase(TestCase):
         parser = GoogleScholarParser('test', 1, None)
         result = parser.run()
         self.assertEqual(len(result), 6)
-        self.assertEqual(result[0]['url'], 'http://archpsyc.jamanetwork.com/article.aspx?articleid=492295')
-        self.assertEqual(result[0]['title'], 'Alternative to mental hospital treatment: I. Conceptual model, treatment program, and clinical evaluation')
+        self.assertEqual(
+            result[0]['url'],
+            'http://archpsyc.jamanetwork.com/article.aspx?articleid=492295')
+        self.assertEqual(
+            result[0]['title'],
+            'Alternative to mental hospital treatment: I. Conceptual model, treatment program, and clinical evaluation')
         self.assertGreater(len(result[0]['text']), 0)
 
 
@@ -137,7 +141,10 @@ class GoogleBlogsParserTestCase(TestCase):
         parser = GoogleBlogsParser('test', 1, None)
         result = parser.run()
         self.assertEqual(len(result), 10)
-        self.assertEqual(result[0]['url'], 'http://blogs.edweek.org/edweek/high_school_and_beyond/2017/04/rhode_island_to_dump_parcc_use_massachusetts_test_instead.html')
+        self.assertEqual(
+            result[0]['url'],
+            ('http://blogs.edweek.org/edweek/high_school_and_beyond/2017/04/'
+             'rhode_island_to_dump_parcc_use_massachusetts_test_instead.html'))
         self.assertEqual(result[0]['title'], 'Rhode Island to Dump PARCC, Use Massachusetts Test Instead')
         self.assertGreater(len(result[0]['text']), 0)
 
@@ -150,8 +157,12 @@ class GoogleNewsParserTestCase(TestCase):
         parser = GoogleNewsParser('test', 1, None)
         result = parser.run()
         self.assertEqual(len(result), 10)
-        self.assertEqual(result[0]['url'], 'http://www.nbcnews.com/news/world/north-korean-nuclear-test-will-be-when-leaders-see-fit-n746441')
-        self.assertEqual(result[0]['title'], 'North Korean Nuclear Test Will Be When Leaders See Fit, Vice Minister Says - NBCNews.com')
+        self.assertEqual(
+            result[0]['url'],
+            'http://www.nbcnews.com/news/world/north-korean-nuclear-test-will-be-when-leaders-see-fit-n746441')
+        self.assertEqual(
+            result[0]['title'],
+            'North Korean Nuclear Test Will Be When Leaders See Fit, Vice Minister Says - NBCNews.com')
         self.assertGreater(len(result[0]['text']), 0)
 
 
