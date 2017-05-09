@@ -3,7 +3,7 @@ import json
 from django.conf import settings
 from rest_framework.exceptions import ValidationError
 
-from crawl_engine.models import Article, SearchQuery, BlockedSite
+from crawl_engine.models import Article, SearchQuery, TrashFilter
 from rest_framework import serializers
 
 from tagging.models import Tag
@@ -123,7 +123,9 @@ class SearchQuerySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class BlockedSiteSerializer(serializers.ModelSerializer):
+class TrashFilterSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(label='ID')  # make id writable
+
     class Meta:
-        model = BlockedSite
+        model = TrashFilter
         fields = '__all__'

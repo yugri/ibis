@@ -1,5 +1,5 @@
 from django.contrib import admin
-from crawl_engine.models import Article, SearchQuery, SearchTask, BlockedSite
+from crawl_engine.models import Article, SearchQuery, SearchTask, TrashFilter
 
 
 def mark_as_non_pushed(modeladmin, request, queryset):
@@ -44,4 +44,4 @@ class SearchQueryAdmin(admin.ModelAdmin):
 
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(SearchQuery, SearchQueryAdmin)
-admin.site.register(BlockedSite)
+admin.site.register(TrashFilter)

@@ -15,8 +15,8 @@ urlpatterns = [
     url(r'^source_list/$', views.ListSources.as_view()),
     url(r'^search_types_list/$', views.ListSearchTypes.as_view()),
 
-    url(r'^blocked_sites/$', views.BlockedSitesList.as_view()),
-    url(r'^blocked_sites/(?P<ibis_site_id>[\w-]+)$', views.BlockedSiteDetailView.as_view()),
+    url(r'^trash_filter/$', views.TrashFilterList.as_view()),
+    url(r'^trash_filter/(?P<pk>[0-9]+)$', views.TrashFilterDetailView.as_view()),
 
     url(r'^preview$', views.search_preview),
     url(r'^$', views.IndexView.as_view()),

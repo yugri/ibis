@@ -12,9 +12,9 @@ from rest_framework.decorators import api_view
 
 from crawl_engine.common.constants import TYPES
 from crawl_engine.spiders.search_engines_spiders import get_search_parser
-from crawl_engine.models import Article, SearchQuery, BlockedSite
+from crawl_engine.models import Article, SearchQuery, TrashFilter
 from crawl_engine.serializers import (ArticleSerializer,
-                                      SearchQuerySerializer, BlockedSiteSerializer)
+                                      SearchQuerySerializer, TrashFilterSerializer)
 from django.conf import settings
 
 
@@ -111,21 +111,14 @@ class ListSearchTypes(APIView):
         return Response(search_types)
 
 
-class BlockedSitesList(generics.ListCreateAPIView):
-    queryset = BlockedSite.objects.all()
-    serializer_class = BlockedSiteSerializer
+class TrashFilterList(generics.ListCreateAPIView):
+    queryset = TrashFilter.objects.all()
+    serializer_class = TrashFilterSerializer
 
 
-class BlockedSiteDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = BlockedSite.objects.all()
-    serializer_class = BlockedSiteSerializer
-
-    def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        obj = get_object_or_404(queryset, ibis_site_id=self.kwargs['ibis_site_id'])
-
-        return obj
+class TrashFilterDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = TrashFilter.objects.all()
+    serializer_class = TrashFilterSerializer
 
 
 @api_view(['GET'])
