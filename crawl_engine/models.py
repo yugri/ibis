@@ -1,4 +1,5 @@
 import io
+import re
 import requests
 import logging
 from time import sleep
@@ -242,20 +243,24 @@ class Article(models.Model):
         return status, search_channel
 
 
-class BlockedSite(models.Model):
+class TrashFilter(models.Model):
     """
-    Sites, that need to be omitted by crawler
+    Articles, that should be marked by crawler as Trash
     """
-    ibis_site_id = models.CharField(max_length=20)
-    site = models.CharField(
-        max_length=255,
-        help_text='''
-            To block entire domain use <b>example\.com</b>.
-            To block subdomain use <b>sub\.example\.com</b>.
-            To blcok specific files from domain use <b>sub\.example\.com.*\.pdf</b>.
-            You can test expressions in <a href="http://regexr.com/" target="_blank">online tool</a>.
-        ''',
-        verbose_name='Block url regexp')
+    url = models.CharField(max_length=255, default='.', verbose_name='Url filter regular expression')
+    text = models.CharField(max_length=255, default='.', verbose_name='Text filter regular expression')
+    length = models.IntegerField(default=0, verbose_name='Maximum text length for filter to work.')
 
     def __str__(self):
-        return self.site
+        return "Trash filter #%s" % self.id
+
+    def is_trash(self, article):
+        if article.article_url is not None and re.search(self.url, article.article_url) is None:
+            return False
+        if article.body is not None:
+            if re.search(self.text, article.body) is None:
+                return False
+            if self.length != 0 and len(article.body) > self.length:
+                return False
+
+        return True

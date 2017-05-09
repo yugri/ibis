@@ -1,21 +1,7 @@
-import re
 import mimetypes
 
 
 def is_url_blacklisted(url):
-    """
-    Checks if given url matches blacklisted resources. Reacts at the first occurrence.
-    :param url:
-    :return: None or string representing blacklisted url
-    """
-    # import is here in case of circular import problems
-    from crawl_engine.models import BlockedSite
-
-    blacklist = BlockedSite.objects.values_list('site', flat=True)
-    for resource in blacklist:
-        if re.search(resource, url) is not None:
-            return resource
-
     return None
 
 
