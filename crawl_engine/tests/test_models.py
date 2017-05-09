@@ -1,6 +1,6 @@
 import pytest
-
-from crawl_engine.models import TrashFilter, Article
+from django.test import TestCase
+from crawl_engine.models import TrashFilter, Article, SearchQuery
 
 filter_test_data = [
     # filter domain to trash
@@ -28,3 +28,30 @@ filter_test_data = [
 @pytest.mark.parametrize("filter,article,is_trash", filter_test_data)
 def test_is_trash(filter, article, is_trash):
     assert filter.is_trash(article) == is_trash
+
+
+class ArticleTestCase(TestCase):
+
+    def test_get_initial_status_keep(self):
+        article = Article(channel='research')
+        self.assertEqual(article.get_initial_status(), 'keep')
+
+    def test_get_initial_status_raw(self):
+        article = Article(channel='search_engines')
+        self.assertEqual(article.get_initial_status(), 'raw')
+
+    def test_get_initial_status_trash(self):
+        TrashFilter.objects.create(url='example.com')
+        article = Article(article_url='http://www.example.com/sample.html')
+        self.assertEqual(article.get_initial_status(), 'trash')
+
+    def test_channel_set_on_save(self):
+        search = SearchQuery.objects.create(channel='research')
+        article = Article(search=search)
+        article.save()
+        self.assertEqual(article.channel, 'research')
+
+    def test_initial_status_set_on_save(self):
+        article = Article(channel='research')
+        article.save()
+        self.assertEqual(article.status, 'keep')

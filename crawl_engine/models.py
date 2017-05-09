@@ -133,7 +133,7 @@ class Article(models.Model):
         if self.search is not None:
             self.channel = self.search.channel
 
-        if self.status in None:
+        if self.status is None:
             self.status = self.get_initial_status()
 
         super(Article, self).save(*args, **kwargs)
@@ -230,8 +230,12 @@ class Article(models.Model):
         return self.search.search_id
 
     def get_initial_status(self):
+        if any([f.is_trash(self) for f in TrashFilter.objects.all()]):
+            return 'trash'
+
         if self.channel in ['industry', 'research', 'government', 'other']:
             return 'keep'
+
         return 'raw'
 
 
