@@ -29,7 +29,6 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 
-from crawl_engine.utils.article_processing_utils import is_url_blacklisted
 from crawl_engine.utils.geo_entities_extractor import convert_to_json
 from crawl_engine.utils.ibis_client import IbisClient, chunks
 from crawl_engine.utils.text_processing_utils import tag_p, split_by_sentences, untag
@@ -40,10 +39,6 @@ logger = logging.getLogger(__name__)
 
 @shared_task(name='crawl_engine.tasks.crawl_url')
 def crawl_url(url, search=None):
-    blocked = is_url_blacklisted(url)
-    if blocked:
-        return 'Blacklisted resource "%s" found.' % blocked
-
     if Article.objects.filter(article_url=url).exists():
         return "Url was already crawled [%s]" % url
 
