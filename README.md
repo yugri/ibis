@@ -117,7 +117,7 @@ Report will be saved in *htmlcov* folder.
 We need to choose the codeguide. But for now, check newly created files against flake8
 
 ```sh
-$ docker-compose -f dev.yml run django flake8
+$ docker-compose -f dev.yml run django flake8 crawl_engine/
 ```
 
 The config for flake8 is located in .flake8.
