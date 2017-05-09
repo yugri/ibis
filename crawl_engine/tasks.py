@@ -388,8 +388,7 @@ def get_geo_entity_for_article(self, article_id):
                         article.tags.add(*tags)
                     except IntegrityError as e:
                         result['exception_msg'] = e
-                    if not article.status:
-                        article.status, article.channel = article.article_status_from_search()
+
                     article.processed = True
                     article.save()
                     sid = transaction.savepoint()

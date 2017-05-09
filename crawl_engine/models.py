@@ -130,8 +130,11 @@ class Article(models.Model):
             filename = str(hash(img_url))
             self.set_image(img_url, filename)
 
-        if not self.status:
-            self.article_status_from_search()
+        if self.search is not None:
+            self.channel = self.search.channel
+
+        if self.status in None:
+            self.status = self.get_initial_status()
 
         super(Article, self).save(*args, **kwargs)
 
@@ -226,21 +229,10 @@ class Article(models.Model):
         """
         return self.search.search_id
 
-    def push_article(self):
-        """
-        Method for pushing an article to IBIS through it's API endpoint
-        :return: nothing
-        """
-        raise NotImplementedError
-
-    def article_status_from_search(self):
-        search_channel = self.search.channel
-
-        if search_channel in ['industry', 'research', 'government', 'other']:
-            status = 'keep'
-        else:
-            status = 'raw'
-        return status, search_channel
+    def get_initial_status(self):
+        if self.channel in ['industry', 'research', 'government', 'other']:
+            return 'keep'
+        return 'raw'
 
 
 class TrashFilter(models.Model):
