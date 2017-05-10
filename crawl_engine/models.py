@@ -86,7 +86,7 @@ class SearchTask(models.Model):
 
 
 class Article(models.Model):
-    article_url = models.URLField(max_length=2048, db_index=True)
+    article_url = models.URLField(max_length=2048, unique=True)
     source_language = models.CharField(max_length=50, blank=True, null=True)
     title = models.CharField(max_length=1000, blank=True, db_index=True)
     translated_title = models.CharField(max_length=1000, blank=True)
