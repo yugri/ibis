@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^trash_filter/(?P<pk>[0-9]+)$', views.TrashFilterDetailView.as_view()),
 
     url(r'^preview$', views.search_preview),
+    url(r'^parser$', views.parser_preview),
     url(r'^$', views.IndexView.as_view()),
 
     url(r'^', include('rest_framework.urls', namespace='rest_framework')),

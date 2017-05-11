@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
 from crawl_engine.common.constants import TYPES
+from crawl_engine.spiders.single_url_parser import ArticleParser
 from crawl_engine.spiders.search_engines_spiders import get_search_parser
 from crawl_engine.models import Article, SearchQuery, TrashFilter
 from crawl_engine.serializers import (ArticleSerializer,
@@ -119,6 +120,17 @@ class TrashFilterList(generics.ListCreateAPIView):
 class TrashFilterDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = TrashFilter.objects.all()
     serializer_class = TrashFilterSerializer
+
+
+@api_view(['GET'])
+def parser_preview(request):
+    url = request.META.get('QUERY_STRING', None)
+    if url is None:
+        return Response({'message': 'add "?http://sample.com/" param'}, status=400)
+
+    parser = ArticleParser(url)
+    serializer = ArticleSerializer(parser.run(save=False))
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
