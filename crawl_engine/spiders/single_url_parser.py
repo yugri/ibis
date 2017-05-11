@@ -8,7 +8,7 @@ from newspaper import ArticleException
 from crawl_engine.models import SearchQuery
 from crawl_engine.utils.articleAuthorExtractor import extractArticleAuthor
 from crawl_engine.utils.articleDateExtractor import extractArticlePublishedDate
-from crawl_engine.utils.articleTextExtractor import extractArticleText, extractArticleTitle
+from crawl_engine.utils.articleTextExtractor import extractArticleTitle
 from crawl_engine.utils.timeout import timeout, TimeoutException
 from langdetect import detect
 from readability.readability import Document
