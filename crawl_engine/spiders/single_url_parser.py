@@ -11,7 +11,7 @@ from crawl_engine.utils.articleDateExtractor import extractArticlePublishedDate
 from crawl_engine.utils.articleTextExtractor import extractArticleText, extractArticleTitle
 from crawl_engine.utils.timeout import timeout, TimeoutException
 from langdetect import detect
-
+from readability.readability import Document
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +38,14 @@ class ArticleParser:
     def __init__(self, url, search=None):
         self.url = url
         self.search = search
+
+    def _fallback_article_html(delf, html):
+        """ detect atricle html via Readbility library
+        """
+        try:
+            return Document(html).content()
+        except:
+            return ''
 
     def run(self):
         """
@@ -101,14 +109,9 @@ class ArticleParser:
         article.top_image_url = page.top_image
         article.post_date_created = extractArticlePublishedDate(self.url, page.html)
 
-        text = page.text if page.text else extractArticleText(page.html)
-        # We should keep an articles html too for displaying it later
-        article_html = page.article_html if page.text else None
-
-        if len(text) == 0:
+        article.body = page.article_html if page.article_html else self._fallback_article_html(page.html)
+        if len(article.body) == 0:
             return "No body text in article."
-
-        article.body = article_html if article_html else text
 
         # Detect article source language at this point.
         # If language is 'en' we save an <article.translated_title>
@@ -128,10 +131,7 @@ class ArticleParser:
             pass
 
         if title_lang == 'en' and text_lang == 'en':
-            # Redefine articles body and translated_body to hold an
-            # article_html ONLY IF we deal with English language
-            article.body = article_html if article_html else text
-            article.translated_body = article_html if article_html else text
+            article.translated_body = article.body
             article.translated_title = article.title
             article.translated = True
 
