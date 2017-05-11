@@ -1,8 +1,10 @@
 import logging
 import requests
+import re
 
 from langdetect.lang_detect_exception import LangDetectException
 from langdetect import detect
+from lxml.html.clean import clean_html
 from newspaper import Article as np
 from newspaper import ArticleException
 from readability.readability import Document
@@ -30,7 +32,7 @@ class ArticleParser:
         """ detect atricle html via Readbility library
         """
         try:
-            return Document(html).content()
+            return Document(html).summary(html_partial=True)
         except:
             return ''
 
@@ -94,7 +96,10 @@ class ArticleParser:
         article.top_image_url = page.top_image
         article.post_date_created = extractArticlePublishedDate(self.url, page.html)
 
-        article.body = page.article_html if page.article_html else self._fallback_article_html(page.html)
+        body = page.article_html if page.article_html else self._fallback_article_html(page.html)
+        # reduce number of chars and cleanup html
+        article.body = re.sub("\s+", " ", clean_html(body))
+
         if len(article.body) == 0:
             return "No body text in article."
 
