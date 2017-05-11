@@ -30,3 +30,5 @@ class RegressionTestCase(TestCase):
         self.assertEqual(article.source_language, "en")
         assert len(article.body) > 0
         assert len(article.title) > 0
+        assert len(article.top_image_url) > 0
+        assert len(article.post_date_created) > 0

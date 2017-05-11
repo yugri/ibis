@@ -71,50 +71,44 @@ class ArticleParser:
         try:
             # Pass our response as 'r' argument
             page = self._download_page(page, r)
+            page.parse()
         except TimeoutException as e:
             logger.info(e)
             return e
         except ResponseCodeException as e:
             logger.info("A resource responded with ERROR: %d" % e.status_code)
             return e.status_code
-
-        try:
-            page.parse()
         except ArticleException as e:
             logger.info(e)
             return e
 
         try:
             author = extractArticleAuthor(page.html)
-        except (ValueError, OSError, KeyError):
+            article.authors = author if author else article.authors[0]
+        except (ValueError, OSError, KeyError, IndexError, TypeError):
             # We pass all errors raised by a Newspaper module
             # during getting all article's data
-            author = None
+            article.authors = ''
+
         try:
-            title = extractArticleTitle(page.html)
+            article.title = extractArticleTitle(page.html)
         except (ValueError, OSError, KeyError):
             # We pass all errors raised by a Newspaper module
             # during getting all article's data
-            title = None
+            pass
+
+        article.article_url = page.url
+        article.top_image_url = page.top_image
+        article.post_date_created = extractArticlePublishedDate(self.url, page.html)
 
         text = page.text if page.text else extractArticleText(page.html)
         # We should keep an articles html too for displaying it later
         article_html = page.article_html if page.text else None
-        date = extractArticlePublishedDate(self.url, page.html)
 
         if len(text) == 0:
             return "No body text in article."
 
-        article.article_url = page.url
-        article.title = title
-        article.top_image_url = page.top_image
-        try:
-            article.authors = author if author else article.authors[0]
-        except (IndexError, TypeError):
-            article.authors = ''
-
         article.body = article_html if article_html else text
-        article.post_date_created = date
 
         # Detect article source language at this point.
         # If language is 'en' we save an <article.translated_title>
@@ -138,10 +132,11 @@ class ArticleParser:
             # article_html ONLY IF we deal with English language
             article.body = article_html if article_html else text
             article.translated_body = article_html if article_html else text
-            article.translated_title = title
+            article.translated_title = article.title
             article.translated = True
 
         article.source_language = text_lang if text_lang == title_lang else None
+
         article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
         article.save(start_translation=not article.translated)
         return article.id
