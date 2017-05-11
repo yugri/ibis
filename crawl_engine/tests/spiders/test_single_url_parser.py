@@ -27,7 +27,7 @@ class RegressionTestCase(TestCase):
 
         parser = ArticleParser('http://example.com/industry.html')
         article = Article.objects.get(pk=parser.run())
-        print(serializers.serialize('json', [article]))
+
         self.assertEqual(article.body, article.translated_body)
         self.assertEqual(article.title, article.translated_title)
         self.assertEqual(article.source_language, "en")
@@ -35,6 +35,21 @@ class RegressionTestCase(TestCase):
         assert len(article.title) > 0
         assert len(article.top_image_url) > 0
         assert len(article.post_date_created) > 0
+
+    @patch('requests.get')
+    def test_vietnamese(self, mock_get):
+        # mock response
+        mock_response = Mock()
+        mock_response.text = self.read_sample_file('vietnamese.html')
+        mock_response.headers = {'content-type': 'text/html'}
+        mock_response.status_code = 200
+        mock_get.return_value = mock_response
+
+        parser = ArticleParser('http://example.com/vietnamese.html')
+        article = parser.run(save=False)
+
+        self.assertEqual(article.title, "Những tác dụng không tốt của một số thực phẩm khi ăn vào bữa tối")
+        assert "Một số thực phẩm khi" in article.body
 
     def test__fallback_article_html(self):
         parser = ArticleParser('http://example.com/industry.html')
