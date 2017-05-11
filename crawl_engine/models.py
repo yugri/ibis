@@ -98,6 +98,10 @@ class Article(models.Model):
     translated = models.BooleanField(default=False, db_index=True)
     top_image_url = models.URLField(max_length=1000, blank=True)
     top_image = models.ImageField(upload_to='article-images', blank=True, null=True, max_length=1000)
+
+    # Defines if article.top_image_url has been processed for downloading an image
+    top_image_processed = models.BooleanField(default=False)
+
     file = models.FileField(upload_to='article-files', blank=True, null=True)
     search = models.ForeignKey(SearchQuery, blank=True, null=True, related_name='articles')
     processed = models.BooleanField(default=False, db_index=True)
@@ -124,11 +128,9 @@ class Article(models.Model):
         return truncatechars(self.article_url, 30)
 
     def save(self, start_translation=False, push=False, upload_file=False, *args, **kwargs):
-        img_url = self.top_image_url
-        if is_url_image(img_url) and not self.top_image:
-            # TODO: Rewrite this behavior to save images and files in async mode
-            filename = str(hash(img_url))
-            self.set_image(img_url, filename)
+        if self.top_image_url and not self.top_image and not self.top_image_processed:
+            if is_url_image(self.top_image_url):
+                self.run_download_image_file_task()
 
         if self.search is not None:
             self.channel = self.search.channel
@@ -220,6 +222,10 @@ class Article(models.Model):
     def run_entities_collecting_task(self):
         from crawl_engine.tasks import get_geo_entity_for_article
         get_geo_entity_for_article.apply_async((self.id,))
+
+    def run_download_image_file_task(self):
+        from crawl_engine.tasks import download_image_file
+        download_image_file.apply_async((self.id,))
 
     @property
     def related_search_id(self):

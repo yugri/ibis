@@ -9,6 +9,7 @@ from random import randint
 
 import requests
 from autoslug.utils import slugify
+from PIL import Image
 from celery import shared_task, chain, group
 from celery.schedules import crontab
 from celery.exceptions import MaxRetriesExceededError
@@ -426,6 +427,7 @@ def upload_articles(self, test=False):
         else:
             articles = Article.objects.filter(
                 translated=True,
+                top_image_processed=True,
                 processed=True,
                 pushed=False,
                 post_date_crawled__gte=datetime(2016, 10, 4).replace(tzinfo=utc),
@@ -459,3 +461,46 @@ def upload_articles(self, test=False):
                     pass
 
     r.delete(self.name)
+
+
+@shared_task(
+    name='crawl_engine.tasks.download_image_file',
+    bind=True
+)
+def download_image_file(self, article_id):
+    # This method executes new request to the resource
+    # for loading articles top_image
+    result = dict()
+    try:
+        article = Article.objects.get(id=article_id)
+    except Article.DoesNotExist:
+        self.retry(countdown=10, max_retries=3)
+        article = None
+        result['error'] = "Couldn't get the article {0} from the database.".format(article_id)
+
+    if article:
+        try:
+            r = requests.get(article.top_image_url, stream=True)
+        except requests.ConnectionError as e:
+            self.retry(countdown=10, max_retries=3)
+            r = None
+            logger.error(e)
+            result['error'] = "Couldn't connect to the node {0} for image downloading".format(article_id.top_image_url)
+
+        if r is not None and r.status_code == 200:
+            # Prepare hashed filename from image url
+            filename = str(hash(article_id.top_image_url))
+
+            img = Image.open(io.BytesIO(r.content))
+            img_io = io.BytesIO()
+            img.save(img_io, format=img.format)
+            image_name = "{0}.{1}".format(filename, str(img.format).lower())
+            article.top_image_processed = True
+            article.top_image.save(image_name, ContentFile(img_io.getvalue()))
+            result['status'] = 'Image has been downloaded.'
+        else:
+            article.top_image_processed = True
+            result['status'] = 'Image download connection error. Article will be pushed without image.'
+        article.save()
+
+    return result

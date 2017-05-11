@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 from ipware.ip import get_ip
@@ -36,9 +37,12 @@ class ArticleView(generics.RetrieveAPIView):
     queryset = Article.objects.all()
 
     def get_object(self):
+        article_encoded_url = self.kwargs['article_encoded_url']
+        decoded_url = base64.b64decode(article_encoded_url)
         queryset = self.filter_queryset(self.get_queryset())
+        article_url = str(decoded_url, 'utf-8')
 
-        obj = get_object_or_404(queryset, article_url=self.kwargs['article_url'])
+        obj = get_object_or_404(queryset, article_url=article_url)
 
         return obj
 
