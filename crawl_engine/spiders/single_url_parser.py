@@ -1,34 +1,21 @@
 import logging
-
 import requests
+
 from langdetect.lang_detect_exception import LangDetectException
+from langdetect import detect
 from newspaper import Article as np
 from newspaper import ArticleException
+from readability.readability import Document
 
 from crawl_engine.models import SearchQuery
+from crawl_engine.models import Article
+
 from crawl_engine.utils.articleAuthorExtractor import extractArticleAuthor
 from crawl_engine.utils.articleDateExtractor import extractArticlePublishedDate
 from crawl_engine.utils.articleTextExtractor import extractArticleTitle
-from crawl_engine.utils.timeout import timeout, TimeoutException
-from langdetect import detect
-from readability.readability import Document
+
 
 logger = logging.getLogger(__name__)
-
-
-RESPONSE_ERROR_CODES = [400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418,
-                        421, 422, 423, 424, 426, 428, 429, 431, 451, 500, 501, 502, 503, 504, 505, 506, 507, 508, 510,
-                        511]
-
-
-class EmptyBodyException(Exception):
-    pass
-
-
-class ResponseCodeException(Exception):
-    def __init__(self, status_code):
-        self.status_code = status_code
-    pass
 
 
 class ArticleParser:
@@ -39,7 +26,7 @@ class ArticleParser:
         self.url = url
         self.search = search
 
-    def _fallback_article_html(delf, html):
+    def _fallback_article_html(self, html):
         """ detect atricle html via Readbility library
         """
         try:
@@ -47,14 +34,15 @@ class ArticleParser:
         except:
             return ''
 
-    def run(self):
+    def run(self, save=True):
         """
+        Save DEPRECATED param. If true saves Artivle and returns article id
+        if false return unsaved article
+
         Executes the regular url loading and parsing
         :return: article.id
         """
 
-        # Set our article DB model instance
-        from crawl_engine.models import Article
         article = Article()
 
         # Try to load url and check if there is any other content type rather than html
@@ -69,6 +57,9 @@ class ArticleParser:
         # if PDF file
         if self._define_url_type(r) == '.pdf':
             article.article_url = self.url
+            if not save:
+                return article
+
             article.save(upload_file=True)
             return article.id
 
@@ -80,12 +71,6 @@ class ArticleParser:
             # Pass our response as 'r' argument
             page = self._download_page(page, r)
             page.parse()
-        except TimeoutException as e:
-            logger.info(e)
-            return e
-        except ResponseCodeException as e:
-            logger.info("A resource responded with ERROR: %d" % e.status_code)
-            return e.status_code
         except ArticleException as e:
             logger.info(e)
             return e
@@ -127,6 +112,9 @@ class ArticleParser:
             article.translated = True
 
         article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
+        if not save:
+            return article
+
         article.save(start_translation=not article.translated)
         return article.id
 
@@ -143,7 +131,6 @@ class ArticleParser:
         article_instance.top_image_url = page.top_image
         article_instance.save(start_translation=False)
 
-    @timeout(5)
     def _download_page(self, page, response):
         """
         Method for downloading an article's page for further parsing by newspaper library
@@ -159,23 +146,21 @@ class ArticleParser:
             logger.info(e)
         return page
 
-    @timeout(7)
     def _download_resource(self, url):
         """
         Method for requesting resource with Requests
-        @timeout decorator provides a TimeoutException when it occurs after defined time passed
         :param url:
         :return: response
         """
+        response = None
         try:
-            response = requests.get(url)
-            # Check response status code for errors
-            if response.status_code in RESPONSE_ERROR_CODES:
-                ex = ResponseCodeException(status_code=response.status_code)
-                raise ex
-        except TimeoutException:
+            response = requests.get(url, timeout=7)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            logger.info("Failed loading [%s] - %s" % (url, e))
+        except requests.exceptions.Timeout:
             logger.info("Page loading [%s] takes to long. Retry later." % url)
-            response = None
+
         return response
 
     def _define_url_type(self, response):
