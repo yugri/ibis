@@ -114,28 +114,17 @@ class ArticleParser:
             return "No body text in article."
 
         # Detect article source language at this point.
-        # If language is 'en' we save an <article.translated_title>
-        # and <article.translated_body> same as <title> and <body>.
-        title_lang = ''
-        text_lang = ''
         try:
-            title_lang = detect(article.title)
+            article.source_language = detect(article.body)
         except LangDetectException as e:
             logger.error(e)
-            pass
 
-        try:
-            text_lang = detect(article.body)
-        except LangDetectException as e:
-            logger.error(e)
-            pass
-
-        if title_lang == 'en' and text_lang == 'en':
+        if article.source_language == 'en':
+            # If language is 'en' we save an <article.translated_title>
+            # and <article.translated_body> same as <title> and <body>.
             article.translated_body = article.body
             article.translated_title = article.title
             article.translated = True
-
-        article.source_language = text_lang if text_lang == title_lang else None
 
         article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
         article.save(start_translation=not article.translated)
