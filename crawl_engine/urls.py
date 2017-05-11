@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.conf.urls import url, include
+from django.views.static import serve
 from rest_framework import routers
 import crawl_engine.views as views
 
@@ -23,3 +25,10 @@ urlpatterns = [
 
     url(r'^', include('rest_framework.urls', namespace='rest_framework')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        url(r'^media/(?P<path>.*)$', serve, {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+    ]
