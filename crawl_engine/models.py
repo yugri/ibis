@@ -98,10 +98,6 @@ class Article(models.Model):
     translated = models.BooleanField(default=False, db_index=True)
     top_image_url = models.URLField(max_length=1000, blank=True)
     top_image = models.ImageField(upload_to='article-images', blank=True, null=True, max_length=1000)
-
-    # Defines if article.top_image_url has been processed for downloading an image
-    top_image_processed = models.BooleanField(default=False)
-
     file = models.FileField(upload_to='article-files', blank=True, null=True)
     search = models.ForeignKey(SearchQuery, blank=True, null=True, related_name='articles')
     processed = models.BooleanField(default=False, db_index=True)
@@ -128,7 +124,7 @@ class Article(models.Model):
         return truncatechars(self.article_url, 30)
 
     def save(self, start_translation=False, push=False, upload_file=False, *args, **kwargs):
-        if self.top_image_url and not self.top_image and not self.top_image_processed:
+        if self.top_image_url and not self.top_image:
             if is_url_image(self.top_image_url):
                 self.run_download_image_file_task()
 

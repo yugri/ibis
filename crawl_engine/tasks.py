@@ -495,11 +495,9 @@ def download_image_file(self, article_id):
             img_io = io.BytesIO()
             img.save(img_io, format=img.format)
             image_name = "{0}.{1}".format(filename, str(img.format).lower())
-            article.top_image_processed = True
             article.top_image.save(image_name, ContentFile(img_io.getvalue()))
             result['status'] = 'Image has been downloaded.'
         else:
-            article.top_image_processed = True
             result['status'] = 'Image download connection error. Article will be pushed without image.'
         article.save()
 
