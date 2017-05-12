@@ -488,7 +488,7 @@ def download_image_file(self, article_id):
 
         if r is not None and r.status_code == 200:
             # Prepare hashed filename from image url
-            filename = str(hash(article_id.top_image_url))
+            filename = str(hash(article.top_image_url))
 
             img = Image.open(io.BytesIO(r.content))
             img_io = io.BytesIO()
