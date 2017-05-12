@@ -144,10 +144,6 @@ fabric.properties
 # Ignore django's settings.py
 items_news_keywords_13.json
 local_tests.py
-Буде вилучено crawl_engine/search_testing.py
-Буде вилучено static/
-Буде вилучено url.bloom
-Буде вилучено dump.rdb
 
 #custom config
 ibis_crawl_engine/conf/vladimir.py
@@ -161,3 +157,4 @@ celerybeat.pid
 
 # User-uploaded media
 ibis_crawl_engine/media/
+ibis_crawl_engine/static/
