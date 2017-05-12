@@ -481,7 +481,7 @@ def download_image_file(self, article_id):
         try:
             r = requests.get(article.top_image_url, stream=True)
         except requests.ConnectionError as e:
-            self.retry(countdown=10, max_retries=3)
+            # self.retry(countdown=10, max_retries=3)
             r = None
             logger.error(e)
             result['error'] = "Couldn't connect to the node {0} for image downloading".format(article_id.top_image_url)
