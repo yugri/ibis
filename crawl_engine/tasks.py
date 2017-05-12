@@ -486,7 +486,7 @@ def download_image_file(self, article_id):
             logger.error(e)
             result['error'] = "Couldn't connect to the node {0} for image downloading".format(article_id.top_image_url)
 
-        if r.status_code == 200:
+        if r is not None and r.status_code == 200:
             # Prepare hashed filename from image url
             filename = str(hash(article.top_image_url))
 
