@@ -427,7 +427,6 @@ def upload_articles(self, test=False):
         else:
             articles = Article.objects.filter(
                 translated=True,
-                top_image_processed=True,
                 processed=True,
                 pushed=False,
                 post_date_crawled__gte=datetime(2016, 10, 4).replace(tzinfo=utc),
