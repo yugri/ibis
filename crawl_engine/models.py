@@ -124,9 +124,6 @@ class Article(models.Model):
         return truncatechars(self.article_url, 30)
 
     def save(self, start_translation=False, push=False, upload_file=False, *args, **kwargs):
-        if self.top_image_url and not self.top_image:
-            if is_url_image(self.top_image_url):
-                self.run_download_image_file_task()
 
         if self.search is not None:
             self.channel = self.search.channel
@@ -140,6 +137,11 @@ class Article(models.Model):
             self.run_translation_task(self)
         if push:
             self.push_article()
+
+        if self.top_image_url and not self.top_image:
+            if is_url_image(self.top_image_url):
+                self.run_download_image_file_task()
+
         if upload_file:
             self.run_file_upload_task()
 

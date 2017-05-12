@@ -473,7 +473,7 @@ def download_image_file(self, article_id):
     try:
         article = Article.objects.get(id=article_id)
     except Article.DoesNotExist:
-        self.retry(countdown=10, max_retries=3)
+        # self.retry(countdown=10, max_retries=3)
         article = None
         result['error'] = "Couldn't get the article {0} from the database.".format(article_id)
 
