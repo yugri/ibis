@@ -52,6 +52,9 @@ CELERY_ROUTES = {
     'crawl_engine.tasks.upload_articles': {
         'queue': 'uploader',
     },
+    'crawl_engine.tasks.download_image_file': {
+        'queue': 'uploader',
+    },
     'crawl_engine.tasks.get_geo_entity_for_article': {
         'queue': 'alchemy',
     },
