@@ -56,6 +56,10 @@ class ArticleParser:
             # TODO: For now we don't RETRY. Should be implemented later
             return "Some troubles with connection. Check Celery logs."
 
+        # fix request encoding issue (should test it carefully)
+        FAIL_ENCODING = 'ISO-8859-1'
+        html = r.text if r.encoding != FAIL_ENCODING else r.content
+
         # if PDF file
         if self._define_url_type(r) == '.pdf':
             article.article_url = self.url
@@ -78,7 +82,7 @@ class ArticleParser:
             return e
 
         try:
-            author = extractArticleAuthor(page.html)
+            author = extractArticleAuthor(html)
             article.authors = author if author else article.authors[0]
         except (ValueError, OSError, KeyError, IndexError, TypeError):
             # We pass all errors raised by a Newspaper module
@@ -86,7 +90,7 @@ class ArticleParser:
             article.authors = ''
 
         try:
-            article.title = extractArticleTitle(page.html)
+            article.title = extractArticleTitle(html)
         except (ValueError, OSError, KeyError):
             # We pass all errors raised by a Newspaper module
             # during getting all article's data
@@ -94,9 +98,9 @@ class ArticleParser:
 
         article.article_url = page.url
         article.top_image_url = page.top_image
-        article.post_date_created = extractArticlePublishedDate(self.url, page.html)
+        article.post_date_created = extractArticlePublishedDate(self.url, html)
 
-        body = page.article_html if page.article_html else self._fallback_article_html(page.html)
+        body = page.article_html if page.article_html else self._fallback_article_html(html)
         # reduce number of chars and cleanup html
         article.body = re.sub("\s+", " ", clean_html(body))
 
@@ -161,6 +165,7 @@ class ArticleParser:
         try:
             response = requests.get(url, timeout=7)
             response.raise_for_status()
+
             return response
         except requests.exceptions.HTTPError as e:
             logger.info("Failed loading [%s] - %s" % (url, e))

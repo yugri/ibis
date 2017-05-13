@@ -133,7 +133,9 @@ def parser_preview(request):
         return Response({'message': 'add "?http://sample.com/" param'}, status=400)
 
     parser = ArticleParser(url)
-    serializer = ArticleSerializer(parser.run(save=False))
+    article = parser.run(save=False)
+    serializer = ArticleSerializer(article)
+
     return Response(serializer.data)
 
 
