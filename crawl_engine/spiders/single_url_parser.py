@@ -157,16 +157,17 @@ class ArticleParser:
         :param url:
         :return: response
         """
-        response = None
+
         try:
             response = requests.get(url, timeout=7)
             response.raise_for_status()
+            return response
         except requests.exceptions.HTTPError as e:
             logger.info("Failed loading [%s] - %s" % (url, e))
         except requests.exceptions.Timeout:
             logger.info("Page loading [%s] takes to long. Retry later." % url)
 
-        return response
+        return None
 
     def _define_url_type(self, response):
         content_type = response.headers.get('content-type')

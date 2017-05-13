@@ -1,7 +1,6 @@
 from os import path
 from unittest.mock import patch, Mock
 from django.test import TestCase
-from django.core import serializers
 
 from crawl_engine.spiders.single_url_parser import ArticleParser
 from crawl_engine.models import Article
@@ -50,6 +49,11 @@ class RegressionTestCase(TestCase):
 
         self.assertEqual(article.title, "Những tác dụng không tốt của một số thực phẩm khi ăn vào bữa tối")
         assert "Một số thực phẩm khi" in article.body
+
+    def test_empty_response_on_http_error(self):
+        parser = ArticleParser('http://httpbin.org/status/403')
+        assert 'connection' in parser.run(save=False)
+
 
     def test__fallback_article_html(self):
         parser = ArticleParser('http://example.com/industry.html')
