@@ -10,6 +10,7 @@ router = routers.DefaultRouter()
 urlpatterns = [
     url(r'^get_search_articles/(?P<search_id>[\w-]+)$', views.ArticlesListView.as_view()),
     url(r'^article/(?P<article_encoded_url>.+)/$', views.ArticleView.as_view()),
+    url(r'^articles/status/$', views.reset_status),
 
     url(r'^search_query/$', views.SearchQueryList.as_view()),
     url(r'^search_query/(?P<search_id>[\w-]+)$', views.SearchQueryDetailView.as_view()),
