@@ -242,6 +242,17 @@ class Article(models.Model):
 
         return 'raw'
 
+    def reset_initial_status(self):
+        """ Resets initial status, save model id changed
+        """
+        status = self.get_initial_status()
+        if self.status != status:
+            self.status = status
+            # for now skip default save actions (as there should be no such actions)
+            super(Article, self).save(update_fields=['status'])
+
+        return status
+
 
 class TrashFilter(models.Model):
     """

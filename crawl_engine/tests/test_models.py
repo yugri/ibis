@@ -55,3 +55,10 @@ class ArticleTestCase(TestCase):
         article = Article(channel='research')
         article.save()
         self.assertEqual(article.status, 'keep')
+
+    def test_reset_initial_status(self):
+        article = Article(channel='research', status='raw')
+        article.save()
+        article.reset_initial_status()
+        article.refresh_from_db()
+        self.assertEqual(article.status, 'keep')
