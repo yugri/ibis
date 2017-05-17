@@ -21,7 +21,9 @@ filter_test_data = [
      Article(article_url='http://example.com/', body='JavaScipt blocked'), True),
     # do not filter from other domain
     (TrashFilter(url='example.com', text='JavaScipt'),
-     Article(article_url='http://example2.com/', body='JavaScipt blocked'), False)
+     Article(article_url='http://example2.com/', body='JavaScipt blocked'), False),
+    # filter empty body
+    (TrashFilter(url='example.com'), Article(article_url='http://www.example.com/sample.html', body=''), True),
 ]
 
 

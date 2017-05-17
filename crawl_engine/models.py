@@ -268,7 +268,7 @@ class TrashFilter(models.Model):
     def is_trash(self, article):
         if article.article_url is not None and re.search(self.url, article.article_url) is None:
             return False
-        if article.body is not None:
+        if article.body is not None and article.body != '':
             if re.search(self.text, article.body) is None:
                 return False
             if self.length != 0 and len(article.body) > self.length:
