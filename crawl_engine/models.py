@@ -237,7 +237,7 @@ class Article(models.Model):
         if any([f.is_trash(self) for f in TrashFilter.objects.all()]):
             return 'trash'
 
-        if self.channel in ['industry', 'research', 'government', 'other']:
+        if self.channel in ['industry', 'research', 'government', 'other', 'general']:
             return 'keep'
 
         return 'raw'
