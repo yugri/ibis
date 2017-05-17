@@ -129,9 +129,8 @@ class TrashFilterDetailView(generics.RetrieveUpdateDestroyAPIView):
 @api_view(['POST'])
 def reset_status(request):
     url = request.data.get('url', None)
-    print(url)
     article = get_object_or_404(Article, article_url=url)
-    return Response({'satus': article.reset_initial_status()})
+    return Response({'status': article.reset_initial_status()})
 
 
 @api_view(['GET'])
