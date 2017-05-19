@@ -55,3 +55,9 @@ class RegressionTestCase(TestCase):
     def test_empty_response_on_http_error(self):
         parser = ArticleParser('http://httpbin.org/status/403')
         assert 'connection' in parser.run(save=False)
+
+    def test_non_html_with_initial(self):
+        parser = ArticleParser('http://httpbin.org/image/jpeg')
+        article = parser.run(save=False, initial={'title': 'some title'})
+        assert article.status == 'trash'
+        assert article.title == 'some title'
