@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+	<title>OIE - Mammals : Immediate alerts</title>
+	<link>http://www.oie.int/eng/en_index.htm</link>
+	<description>World Organisation for Animal Health (OIE)</description>
+
+	<item>
+		<title>Niger : Anthrax</title>
+		<link>http://www.oie.int/wahis_2/public/wahid.php/Reviewreport/Review?reportid=23744</link>
+		<description><![CDATA[Report date : 2017-05-17 16:34:10<br />Country : Niger<br />Disease: : Anthrax]]></description>
+		<pubDate>Wed, 17 May 2017 17:36:27 +0100</pubDate>
+	</item>
+
+	<item>
+		<title>Spain : Bovine spongiform encephalopathy</title>
+		<link>http://www.oie.int/wahis_2/public/wahid.php/Reviewreport/Review?reportid=23747</link>
+		<description><![CDATA[Report date : 2017-05-12 00:00:00<br />Country : Spain<br />Disease: : Bovine spongiform encephalopathy]]></description>
+		<pubDate>Tue, 16 May 2017 17:39:49 +0100</pubDate>
+	</item>
+
+	<item>
+		<title>Palestinian Auton. Territories : Foot and mouth disease</title>
+		<link>http://www.oie.int/wahis_2/public/wahid.php/Reviewreport/Review?reportid=23797</link>
+		<description><![CDATA[Report date : 2017-05-16 13:42:57<br />Country : Palestinian Auton. Territories<br />Disease: : Foot and mouth disease]]></description>
+		<pubDate>Tue, 16 May 2017 13:47:06 +0100</pubDate>
+	</item>
+
+	<item>
+		<title>Israel : Foot and mouth disease</title>
+		<link>http://www.oie.int/wahis_2/public/wahid.php/Reviewreport/Review?reportid=23732</link>
+		<description><![CDATA[Report date : 2017-05-08 00:00:00<br />Country : Israel<br />Disease: : Foot and mouth disease]]></description>
+		<pubDate>Tue, 09 May 2017 11:30:20 +0100</pubDate>
+	</item>
+
+	<item>
+		<title>Switzerland : Anthrax</title>
+		<link>http://www.oie.int/wahis_2/public/wahid.php/Reviewreport/Review?reportid=23717</link>
+		<description><![CDATA[Report date : 2017-05-08 17:10:36<br />Country : Switzerland<br />Disease: : Anthrax]]></description>
+		<pubDate>Mon, 08 May 2017 17:11:43 +0100</pubDate>
+	</item>
+
+	<item>
+		<title>Ecuador : Porcine reproductive/respiratory syndr.</title>
+		<link>http://www.oie.int/wahis_2/public/wahid.php/Reviewreport/Review?reportid=23703</link>
+		<description><![CDATA[Report date : 2017-05-05 00:00:00<br />Country : Ecuador<br />Disease: : Porcine reproductive/respiratory syndr.]]></description>
+		<pubDate>Mon, 08 May 2017 11:30:15 +0100</pubDate>
+	</item>
+
+	<item>
+		<title>Burkina Faso : Anthrax</title>
+		<link>http://www.oie.int/wahis_2/public/wahid.php/Reviewreport/Review?reportid=23634</link>
+		<description><![CDATA[Report date : 2017-04-26 00:00:00<br />Country : Burkina Faso<br />Disease: : Anthrax]]></description>
+		<pubDate>Thu, 27 Apr 2017 17:33:55 +0100</pubDate>
+	</item>
+
+	<item>
+		<title>Zambia : African swine fever</title>
+		<link>http://www.oie.int/wahis_2/public/wahid.php/Reviewreport/Review?reportid=23633</link>
+		<description><![CDATA[Report date : 2017-04-26 14:28:01<br />Country : Zambia<br />Disease: : African swine fever]]></description>
+		<pubDate>Wed, 26 Apr 2017 15:59:33 +0100</pubDate>
+	</item>
+
+	<item>
+		<title>Zambia : Contagious bov. pleuropneumonia</title>
+		<link>http://www.oie.int/wahis_2/public/wahid.php/Reviewreport/Review?reportid=23612</link>
+		<description><![CDATA[Report date : 2017-04-21 16:33:22<br />Country : Zambia<br />Disease: : Contagious bov. pleuropneumonia]]></description>
+		<pubDate>Fri, 21 Apr 2017 16:44:48 +0100</pubDate>
+	</item>
+</channel>
+</rss>
