@@ -4,7 +4,7 @@ import requests
 from datetime import datetime
 from time import mktime
 
-from crawl_engine.spiders.search_engines_spiders import SearchParser
+from crawl_engine.spiders.search_parser import SearchParser
 
 
 logger = logging.getLogger(__name__)
