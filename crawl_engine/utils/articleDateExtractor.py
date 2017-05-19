@@ -16,16 +16,6 @@ def parseStrDate(dateString):
         return None
 
 
-def _extractFromURL(url):
-
-    # Regex by Newspaper3k  - https://github.com/codelucas/newspaper/blob/master/newspaper/urls.py
-    m = re.search(r'([\./\-_]{0,1}(19|20)\d{2})[\./\-_]{0,1}(([0-3]{0,1}[0-9][\./\-_])|(\w{3,5}[\./\-_]))([0-3]{0,1}[0-9][\./\-]{0,1})?', url)
-    if m:
-        return parseStrDate(m.group(0))
-
-    return None
-
-
 def _extractFromLDJson(parsedHTML):
     jsonDate = None
     try:
@@ -183,14 +173,9 @@ def _extractFromHTMLTag(parsedHTML):
 
 def extractArticlePublishedDate(articleLink, html=None):
 
-    # print("Extracting date from " + articleLink)
     logger.info("Extracting date from " + articleLink)
 
-    articleDate = None
-
     try:
-        articleDate = _extractFromURL(articleLink)
-
         if html is None:
             headers = {
                 'user-agent': 'Mozilla/5.0 (Windows NT 6.1) '
@@ -207,10 +192,10 @@ def extractArticlePublishedDate(articleLink, html=None):
         if possibleDate is None:
             possibleDate = _extractFromHTMLTag(parsedHTML)
 
-        articleDate = possibleDate if possibleDate is not None else ''
+        return possibleDate
 
     except Exception as e:
         print("Exception in extractArticlePublishedDate for " + articleLink)
         print(e.message, e.args)
 
-    return articleDate
+    return None
