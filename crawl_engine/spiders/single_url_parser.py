@@ -1,20 +1,20 @@
 import logging
 import requests
 import re
+from readability import readability
 
 from langdetect.lang_detect_exception import LangDetectException
 from langdetect import detect
 from lxml.html.clean import clean_html
 from newspaper import Article as np
 from newspaper import ArticleException
-from readability.readability import Document
+
 
 from crawl_engine.models import SearchQuery
 from crawl_engine.models import Article
 
 from crawl_engine.utils.articleAuthorExtractor import extractArticleAuthor
 from crawl_engine.utils.articleDateExtractor import extractArticlePublishedDate
-from crawl_engine.utils.articleTextExtractor import extractArticleTitle
 
 
 logger = logging.getLogger(__name__)
@@ -28,15 +28,18 @@ class ArticleParser:
         self.url = url
         self.search = search
 
-    def _fallback_article_html(self, html):
-        """ detect atricle html via Readbility library
-        """
-        try:
-            return Document(html).summary(html_partial=True)
-        except:
-            return ''
+    def setattr(self, attr, value):
+        """ Update attribiute only if new present """
+        if value is None or value == '':
+            return
 
-    def run(self, save=True):
+        setattr(self.article, attr, value)
+
+    def setattrs(self, dic):
+        for attr, value in dic.items():
+            self.setattr(attr, value)
+
+    def run(self, save=True, initial={}):
         """
         Save DEPRECATED param. If true saves Artivle and returns article id
         if false return unsaved article
@@ -45,87 +48,84 @@ class ArticleParser:
         :return: article.id
         """
 
-        article = Article()
+        self.article = Article()
+
+        # we start from less trusted methods and rewrite attributes
+        # by more trusted resources
+        self.setattrs(initial)
 
         # Try to load url and check if there is any other content type rather than html
-        # If connections problems are take a place > handle request.ConnectionError and set r to None
-        # We pass this response through all methods to avoid duplicate queries
         r = self._download_resource(self.url)
 
         if r is None:
             # TODO: For now we don't RETRY. Should be implemented later
             return "Some troubles with connection. Check Celery logs."
 
+        self.setattr('article_url', r.url)
+
+        # if not html
+        if 'html' not in r.headers.get('content-type', '').lower():
+            self.article.status = 'trash'
+            if not save:
+                return self.article
+
+            self.article.save()
+            return self.article.id
+
         # fix request encoding issue (should test it carefully)
         FAIL_ENCODING = 'ISO-8859-1'
         html = r.text if r.encoding != FAIL_ENCODING else r.content
 
-        # if PDF file
-        if self._define_url_type(r) == '.pdf':
-            article.article_url = self.url
-            if not save:
-                return article
-
-            article.save(upload_file=True)
-            return article.id
-
-        # parse url by the Newspaper's library
-        # Instantiate newspaper's Article api and download an article from given url
-        page = np(self.url)
-
+        # try readability parser
         try:
-            # Pass our response as 'r' argument
-            page = self._download_page(page, r)
+            document = readability.Document(html)
+            self.setattr('title', document.short_title())
+            self.setattr('body', document.summary(html_partial=True))
+        except:
+            pass
+
+        # try the Newspaper's parser
+        try:
+            page = np(self.article.article_url)
+            page.download(html=html)
             page.parse()
         except ArticleException as e:
             logger.info(e)
-            return e
-
-        try:
-            author = extractArticleAuthor(html)
-            article.authors = author if author else article.authors[0]
-        except (ValueError, OSError, KeyError, IndexError, TypeError):
-            # We pass all errors raised by a Newspaper module
-            # during getting all article's data
-            article.authors = ''
-
-        try:
-            article.title = extractArticleTitle(html)
-        except (ValueError, OSError, KeyError):
-            # We pass all errors raised by a Newspaper module
-            # during getting all article's data
             pass
 
-        article.article_url = page.url
-        article.top_image_url = page.top_image
-        article.post_date_created = extractArticlePublishedDate(self.url, html)
+        self.setattr('body', page.article_html)
+        self.setattr('authors', ', '.join(page.authors))
+        self.setattr('top_image_url', page.top_image)
 
-        body = page.article_html if page.article_html else self._fallback_article_html(html)
+        # the most preferable way is custom parsers
+        self.setattr('authors', extractArticleAuthor(html))
+        self.setattr('post_date_created', extractArticlePublishedDate(self.article.article_url, html))
+
         # reduce number of chars and cleanup html
-        article.body = re.sub("\s+", " ", clean_html(body))
+        self.article.body = re.sub("\s+", " ", clean_html(self.article.body))
 
-        if len(article.body) == 0:
+        if len(self.article.body) == 0:
             return "No body text in article."
 
         # Detect article source language at this point.
         try:
-            article.source_language = detect(article.body)
+            self.article.source_language = detect(self.article.body)
         except LangDetectException as e:
             logger.error(e)
 
-        if article.source_language == 'en':
+        if self.article.source_language == 'en':
             # If language is 'en' we save an <article.translated_title>
             # and <article.translated_body> same as <title> and <body>.
-            article.translated_body = article.body
-            article.translated_title = article.title
-            article.translated = True
+            self.article.translated_body = self.article.body
+            self.article.translated_title = self.article.title
+            self.article.translated = True
 
-        article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
+        self.article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
         if not save:
-            return article
+            return self.article
 
-        article.save(start_translation=not article.translated)
-        return article.id
+        self.article.save(start_translation=not self.article.translated)
+        return self.article.id
 
     def download_image(self, article_instance):
         """
@@ -139,21 +139,6 @@ class ArticleParser:
         page.parse()
         article_instance.top_image_url = page.top_image
         article_instance.save(start_translation=False)
-
-    def _download_page(self, page, response):
-        """
-        Method for downloading an article's page for further parsing by newspaper library
-        @timeout decorator provides a TimeoutException when it occurs after defined time passed
-        :param page:
-        :return: page
-        """
-        try:
-            # Newspaper Article handle html content from previous request
-            # without new call
-            page.download(html=response.text)
-        except ArticleException as e:
-            logger.info(e)
-        return page
 
     def _download_resource(self, url):
         """
@@ -173,15 +158,3 @@ class ArticleParser:
             logger.info("Page loading [%s] takes to long. Retry later." % url)
 
         return None
-
-    def _define_url_type(self, response):
-        content_type = response.headers.get('content-type')
-
-        if 'application/pdf' in content_type:
-            ext = '.pdf'
-        elif 'text/html' in content_type:
-            ext = '.html'
-        else:
-            ext = ''
-            print('Unknown type: {}'.format(content_type))
-        return ext
