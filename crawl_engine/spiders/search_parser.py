@@ -9,6 +9,6 @@ class SearchParser:
         self.depth = depth
         self.options = options
 
-    def _new_article(self, url, title, text):
+    def _new_article(self, article_url, title, body):
         """ Probably replace this with Article models """
-        return {'url': url.strip(), 'title': title.strip(), 'text': text.strip()}
+        return {'article_url': article_url.strip(), 'title': title.strip(), 'body': body.strip()}

@@ -15,11 +15,11 @@ class RSSFeedParserTestCase(TestCase):
         result = parser.run()
         self.assertEqual(len(result), 9)
         self.assertEqual(
-            result[0]['url'],
+            result[0]['article_url'],
             'http://www.oie.int/wahis_2/public/wahid.php/Reviewreport/Review?reportid=23744')
         self.assertEqual(result[0]['title'], 'Niger : Anthrax')
         self.assertEqual(
-            result[0]['text'],
+            result[0]['body'],
             'Report date : 2017-05-17 16:34:10<br />Country : Niger<br />Disease: : Anthrax')
         self.assertEqual(
             result[0]['post_date_created'],

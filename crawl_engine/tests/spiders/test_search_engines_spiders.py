@@ -19,7 +19,7 @@ class SearchEngineParserTestCase(TestCase):
     @patch('crawl_engine.spiders.search_engines_spiders.get_search_parser')
     def test_extracts_url_from_parser(self, mock_get_search_parser):
         mock = Mock()
-        mock.run.return_value = [{'url': 'http://example.com'}]
+        mock.run.return_value = [{'article_url': 'http://example.com'}]
         mock_get_search_parser.return_value = mock
         parser = SearchEngineParser('test')
         self.assertEqual(parser.run(), ['http://example.com'])
@@ -52,10 +52,10 @@ class YandexParserTestCase(TestCase):
         parser = YandexParser('testing more', 1, None)
         result = parser.run()
         self.assertEqual(len(result), 10)
-        self.assertEqual(result[0]['url'], 'https://yandex.ru/')
+        self.assertEqual(result[0]['article_url'], 'https://yandex.ru/')
         self.assertEqual(result[0]['title'],
                          'Яндекс\n              \n              — поисковая система и интернет-портал')
-        self.assertGreater(len(result[6]['text']), 0)
+        self.assertGreater(len(result[6]['body']), 0)
 
 
 def mock_requests_get(filename):
@@ -74,9 +74,9 @@ class BingParserTestCase(TestCase):
         parser = BingParser('testing more', 1, None)
         result = parser.run()
         self.assertEqual(len(result), 10)
-        self.assertEqual(result[0]['url'], 'https://www.speedtest.net/')
+        self.assertEqual(result[0]['article_url'], 'https://www.speedtest.net/')
         self.assertEqual(result[0]['title'], 'Speedtest.net - Official Site')
-        self.assertGreater(len(result[0]['text']), 0)
+        self.assertGreater(len(result[0]['body']), 0)
 
 
 class GoogleCseParserTestCase(TestCase):
@@ -88,9 +88,9 @@ class GoogleCseParserTestCase(TestCase):
         parser = GoogleCseParser('testing more', 1, None)
         result = parser.run()
         self.assertEqual(len(result), 10)
-        self.assertEqual(result[0]['url'], 'https://perldoc.perl.org/Test/More.html')
+        self.assertEqual(result[0]['article_url'], 'https://perldoc.perl.org/Test/More.html')
         self.assertEqual(result[0]['title'], 'Test::More - perldoc.perl.org')
-        self.assertGreater(len(result[0]['text']), 0)
+        self.assertGreater(len(result[0]['body']), 0)
 
 
 class GoogleParserTestCase(TestCase):
@@ -101,9 +101,9 @@ class GoogleParserTestCase(TestCase):
         parser = GoogleParser('testing more', 1, None)
         result = parser.run()
         self.assertEqual(len(result), 10)
-        self.assertEqual(result[0]['url'], 'https://perldoc.perl.org/Test/More.html')
+        self.assertEqual(result[0]['article_url'], 'https://perldoc.perl.org/Test/More.html')
         self.assertEqual(result[0]['title'], 'Test::More - perldoc.perl.org')
-        self.assertGreater(len(result[0]['text']), 0)
+        self.assertGreater(len(result[0]['body']), 0)
 
 
 class GoogleScholarParserTestCase(TestCase):
@@ -114,9 +114,9 @@ class GoogleScholarParserTestCase(TestCase):
         parser = GoogleScholarParser('test', 1, None)
         result = parser.run()
         self.assertEqual(len(result), 10)
-        self.assertEqual(result[0]['url'], 'http://www.jstor.org/stable/2238402')
+        self.assertEqual(result[0]['article_url'], 'http://www.jstor.org/stable/2238402')
         self.assertEqual(result[0]['title'], 'On testing more than one hypothesis')
-        self.assertGreater(len(result[0]['text']), 0)
+        self.assertGreater(len(result[0]['body']), 0)
 
     @patch('requests.get')
     def test_run_with_cites(self, mock_get):
@@ -125,12 +125,12 @@ class GoogleScholarParserTestCase(TestCase):
         result = parser.run()
         self.assertEqual(len(result), 6)
         self.assertEqual(
-            result[0]['url'],
+            result[0]['article_url'],
             'http://archpsyc.jamanetwork.com/article.aspx?articleid=492295')
         self.assertEqual(
             result[0]['title'],
             'Alternative to mental hospital treatment: I. Conceptual model, treatment program, and clinical evaluation')
-        self.assertGreater(len(result[0]['text']), 0)
+        self.assertGreater(len(result[0]['body']), 0)
 
 
 class GoogleBlogsParserTestCase(TestCase):
@@ -142,11 +142,11 @@ class GoogleBlogsParserTestCase(TestCase):
         result = parser.run()
         self.assertEqual(len(result), 10)
         self.assertEqual(
-            result[0]['url'],
+            result[0]['article_url'],
             ('http://blogs.edweek.org/edweek/high_school_and_beyond/2017/04/'
              'rhode_island_to_dump_parcc_use_massachusetts_test_instead.html'))
         self.assertEqual(result[0]['title'], 'Rhode Island to Dump PARCC, Use Massachusetts Test Instead')
-        self.assertGreater(len(result[0]['text']), 0)
+        self.assertGreater(len(result[0]['body']), 0)
 
 
 class GoogleNewsParserTestCase(TestCase):
@@ -158,12 +158,12 @@ class GoogleNewsParserTestCase(TestCase):
         result = parser.run()
         self.assertEqual(len(result), 10)
         self.assertEqual(
-            result[0]['url'],
+            result[0]['article_url'],
             'http://www.nbcnews.com/news/world/north-korean-nuclear-test-will-be-when-leaders-see-fit-n746441')
         self.assertEqual(
             result[0]['title'],
             'North Korean Nuclear Test Will Be When Leaders See Fit, Vice Minister Says - NBCNews.com')
-        self.assertGreater(len(result[0]['text']), 0)
+        self.assertGreater(len(result[0]['body']), 0)
 
 
 class SocialParserTestCase(TestCase):
@@ -174,6 +174,6 @@ class SocialParserTestCase(TestCase):
         parser = SocialParser('test', 1, None)
         result = parser.run()
         self.assertEqual(len(result), 10)
-        self.assertEqual(result[0]['url'], 'http://twitter.com/Infern_arny/statuses/854307064516161536')
+        self.assertEqual(result[0]['article_url'], 'http://twitter.com/Infern_arny/statuses/854307064516161536')
         self.assertEqual(result[0]['title'], 'twitter - @A  r  n  y')
-        self.assertGreater(len(result[0]['text']), 0)
+        self.assertGreater(len(result[0]['body']), 0)
