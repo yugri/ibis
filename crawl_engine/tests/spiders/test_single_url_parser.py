@@ -22,6 +22,7 @@ class RegressionTestCase(TestCase):
         mock_response.text = self.read_sample_file('industry.html')
         mock_response.headers = {'content-type': 'text/html'}
         mock_response.status_code = 200
+        mock_response.url = 'http://example.com/industry.html'
         mock_get.return_value = mock_response
 
         parser = ArticleParser('http://example.com/industry.html')
@@ -41,6 +42,7 @@ class RegressionTestCase(TestCase):
         mock_response = Mock()
         mock_response.text = self.read_sample_file('vietnamese.html')
         mock_response.headers = {'content-type': 'text/html'}
+        mock_response.url = 'http://example.com/vietnamese.html'
         mock_response.status_code = 200
         mock_get.return_value = mock_response
 
@@ -54,8 +56,8 @@ class RegressionTestCase(TestCase):
         parser = ArticleParser('http://httpbin.org/status/403')
         assert 'connection' in parser.run(save=False)
 
-
-    def test__fallback_article_html(self):
-        parser = ArticleParser('http://example.com/industry.html')
-        html = parser._fallback_article_html(self.read_sample_file('industry.html'))
-        assert len(html) > 0
+    def test_non_html_with_initial(self):
+        parser = ArticleParser('http://httpbin.org/image/jpeg')
+        article = parser.run(save=False, initial={'title': 'some title'})
+        assert article.status == 'trash'
+        assert article.title == 'some title'

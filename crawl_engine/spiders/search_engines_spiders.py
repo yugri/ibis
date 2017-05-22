@@ -1,16 +1,17 @@
 import logging
 import json
-import feedparser
+import requests
 
 from random import randint
 from time import sleep
 
 from django.conf import settings
 import lxml.html
-import requests
-from urllib.parse import parse_qs, urlparse, unquote
-from crawl_engine.spiders.ya_search import YaSearch
+from urllib.parse import parse_qs, urlparse, unquote, urlencode
 
+from crawl_engine.spiders.ya_search import YaSearch
+from crawl_engine.spiders.rss_spider import RSSFeedParser
+from crawl_engine.spiders.search_parser import SearchParser, ParserError
 
 logger = logging.getLogger(__name__)
 
@@ -25,22 +26,6 @@ def xpath_first_text(item, path):
     """ method for safelly get first element text_content() """
     item = xpath_first(item, path)
     return item.text_content() if item != "" else ""
-
-
-class ParserError(Exception):
-    pass
-
-
-class SearchParser:
-    """ Base class for search engine parsers """
-    def __init__(self, search_query, depth, options):
-        self.search_query = search_query
-        self.depth = depth
-        self.options = options
-
-    def _new_article(self, url, title, text):
-        """ Probably replace this with Article models """
-        return {'url': url.strip(), 'title': title.strip(), 'text': text.strip()}
 
 
 class GoogleGeneralParser(SearchParser):
@@ -115,7 +100,7 @@ class GoogleScholarParser(GoogleGeneralParser):
         return result
 
 
-class GoogleNewsParser(SearchParser):
+class GoogleNewsParser(RSSFeedParser):
     """
     Gets results from google's news.google.com and parses all them by feedparser
     Search query example: https://news.google.com/news/feeds?output=rss&q=banking&num=30.
@@ -123,6 +108,11 @@ class GoogleNewsParser(SearchParser):
     output parameter responsible for response format (ATOM or RSS)
     :return: seed_links
     """
+    def __init__(self, search_query='', depth=1, options={}):
+        params = urlencode({'q': search_query, 'output': 'rss', 'num': depth * 10})
+        url = 'https://news.google.com/news?%s' % params
+        super(GoogleNewsParser, self).__init__(url)
+
     def _parse_href(self, href):
         """
         Revise this method
@@ -137,13 +127,8 @@ class GoogleNewsParser(SearchParser):
         except KeyError:
             return href
 
-    def run(self):
-        base_url = 'https://news.google.com/news'
-        r = requests.get(base_url, {'q': self.search_query, 'output': 'rss', 'num': self.depth * 10})
-        feed = feedparser.parse(r.text)
-
-        return [self._new_article(self._parse_href(entry.link), entry.title, entry.description)
-                for entry in feed.entries]
+    def _new_article(self, url, title, text):
+        return super(GoogleNewsParser, self)._new_article(self._parse_href(url), title, text)
 
 
 class GoogleCseParser(SearchParser):
@@ -285,21 +270,3 @@ def get_search_parser(search_query, engine, depth=5, options=None):
     if engine not in SEARCH_PARSERS:
         raise NameError('Search engine %s not found' % engine)
     return SEARCH_PARSERS[engine](search_query, depth, options)
-
-
-class SearchEngineParser(object):
-    """ Backward compatibility layer for parsers """
-    def __init__(self, search_query, engine='google', depth=5, options=None):
-        self.search_query = search_query
-        self.engine = engine
-        self.parser = get_search_parser(search_query, engine, depth, options)
-
-    def run(self):
-        print(__name__)
-        try:
-            return [a.get('url') for a in self.parser.run()]
-        except Exception as e:
-            logger.info('Exception while parsing query "{0}" in search engine "{1}": {2}'.format(
-                       self.search_query, self.engine, str(e)))
-
-        return []

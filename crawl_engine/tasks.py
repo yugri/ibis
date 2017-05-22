@@ -24,7 +24,7 @@ from django.utils.timezone import utc
 from crawl_engine.models import Article, SearchQuery
 from crawl_engine.serializers import ArticleTransferSerializer
 from crawl_engine.spiders.single_url_parser import ArticleParser
-from crawl_engine.spiders.search_engines_spiders import SearchEngineParser
+from crawl_engine.spiders.search_engines_spiders import get_search_parser
 from crawl_engine.spiders.rss_spider import RSSFeedParser
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -39,13 +39,21 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task(name='crawl_engine.tasks.crawl_url')
-def crawl_url(url, search=None):
+def crawl_url(url_or_initial, search=None):
+    """ Backward compatibility code
+    shoud be removed when all parsers return initial dict
+    """
+    initial = url_or_initial
+    if isinstance(url_or_initial, str):
+        initial = {'article_url': url_or_initial}
+    url = initial.get('article_url')
+
     if Article.objects.filter(article_url=url).exists():
         return "Url was already crawled [%s]" % url
 
     try:
         parser = ArticleParser(url, search)
-        return parser.run()
+        return parser.run(save=True, initial=initial)
 
     except Exception as e:
         return 'An exception cached. TRACEBACK: %s' % e
@@ -299,14 +307,20 @@ def check_search_queries():
 
 @shared_task(name='crawl_engine.tasks.search_by_query')
 def search_by_query(query, engine, depth, options):
-    parser = SearchEngineParser(query, engine, depth, options)
-    return parser.run()
+    try:
+        parser = get_search_parser(query, engine, depth, options)
+        return parser.run()
+    except Exception as e:
+            logger.info('Exception while parsing query "{0}" in search engine "{1}": {2}'.format(
+                       query, engine, str(e)))
+
+    return []
 
 
 @shared_task(name='crawl_engine.tasks.read_rss')
 def read_rss(rss_link):
     reader = RSSFeedParser(rss_link)
-    return reader.parse_rss()
+    return reader.run()
 
 
 @shared_task(name='crawl_engine.tasks.run_job')

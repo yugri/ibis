@@ -1,30 +1,31 @@
 import feedparser
 import logging
+import requests
+from datetime import datetime
+from time import mktime
+
+from crawl_engine.spiders.search_parser import SearchParser
+
 
 logger = logging.getLogger(__name__)
 
 
-class RSSFeedParser:
+class RSSFeedParser(SearchParser):
     """
     Class for RSS feed parsing
-    :returns seed_links: list or info message
     """
     def __init__(self, rss_link):
+        super(RSSFeedParser, self).__init__()
         self.rss_link = rss_link
-        self.seed_links = []
 
-    def parse_rss(self):
-        feed = feedparser.parse(self.rss_link)
-        check_entries = False
-        try:
-            if feed.entries is not None:
-                check_entries = True
-        except AttributeError as e:
-            logger.info(e)
-            return "Can't find entries in RSS feed, reason: %s" % e
+    def run(self):
+        r = requests.get(self.rss_link)
+        feed = feedparser.parse(r.text)
 
-        if check_entries:
-            for entry in feed.entries:
-                self.seed_links.append(entry.link)
+        result = []
+        for entry in feed.entries:
+            article = self._new_article(entry.link, entry.title, entry.description)
+            article['post_date_created'] = datetime.fromtimestamp(mktime(entry.published_parsed))
+            result.append(article)
 
-            return self.seed_links
+        return result
