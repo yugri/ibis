@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import patch, Mock
 from django.test import TestCase
 from crawl_engine.tasks import crawl_url, search_by_query
