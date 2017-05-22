@@ -39,13 +39,21 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task(name='crawl_engine.tasks.crawl_url')
-def crawl_url(url, search=None):
+def crawl_url(url_or_initial, search=None):
+    """ Backward compatibility code
+    shoud be removed when all parsers return initial dict
+    """
+    initial = url_or_initial
+    if isinstance(url_or_initial, str):
+        initial = {'article_url': url_or_initial}
+    url = initial.get('article_url')
+
     if Article.objects.filter(article_url=url).exists():
         return "Url was already crawled [%s]" % url
 
     try:
         parser = ArticleParser(url, search)
-        return parser.run()
+        return parser.run(save=True, initial=initial)
 
     except Exception as e:
         return 'An exception cached. TRACEBACK: %s' % e
