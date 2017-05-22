@@ -1,7 +1,8 @@
 import pytest
 from unittest.mock import patch, Mock
 from django.test import TestCase
-from crawl_engine.tasks import crawl_url
+from crawl_engine.tasks import crawl_url, search_by_query
+from crawl_engine.spiders.search_parser import ParserError
 
 
 class CrawlUrlTestCase(TestCase):
@@ -20,3 +21,22 @@ class CrawlUrlTestCase(TestCase):
 
         self.assertEqual(crawl_url(intial), '123')
         run_mock.assert_called_with(save=True, initial=intial)
+
+
+class SearchByQueryTestCase(TestCase):
+
+    @patch('crawl_engine.tasks.get_search_parser')
+    def test_extracts_url_from_parser(self, mock_get_search_parser):
+        mock = Mock()
+        mock.run.return_value = [{'article_url': 'http://example.com'}]
+        mock_get_search_parser.return_value = mock
+        self.assertEqual(search_by_query('test', 'google', 1, {}), mock.run.return_value)
+
+    @patch('crawl_engine.tasks.get_search_parser')
+    def test_logs_exception(self, mock_get_search_parser):
+        mock = Mock()
+        mock.run.return_value = []
+        mock.run.side_effect = ParserError('error')
+        mock_get_search_parser.return_value = mock
+        with self.assertLogs('crawl_engine.tasks', level='INFO'):
+            self.assertEqual(search_by_query('test', 'google', 1, {}), [])
