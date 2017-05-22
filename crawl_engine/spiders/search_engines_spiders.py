@@ -270,21 +270,3 @@ def get_search_parser(search_query, engine, depth=5, options=None):
     if engine not in SEARCH_PARSERS:
         raise NameError('Search engine %s not found' % engine)
     return SEARCH_PARSERS[engine](search_query, depth, options)
-
-
-class SearchEngineParser(object):
-    """ Backward compatibility layer for parsers """
-    def __init__(self, search_query, engine='google', depth=5, options=None):
-        self.search_query = search_query
-        self.engine = engine
-        self.parser = get_search_parser(search_query, engine, depth, options)
-
-    def run(self):
-        print(__name__)
-        try:
-            return [a.get('url') for a in self.parser.run()]
-        except Exception as e:
-            logger.info('Exception while parsing query "{0}" in search engine "{1}": {2}'.format(
-                       self.search_query, self.engine, str(e)))
-
-        return []
