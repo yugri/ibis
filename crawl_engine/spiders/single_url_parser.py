@@ -39,42 +39,13 @@ class ArticleParser:
         for attr, value in dic.items():
             self.setattr(attr, value)
 
-    def run(self, save=True, initial={}):
-        """
-        Save DEPRECATED param. If true saves Artivle and returns article id
-        if false return unsaved article
+    def parse_binary(self):
+        self.article.status = 'trash'
 
-        Executes the regular url loading and parsing
-        :return: article.id
-        """
-
-        self.article = Article()
-
-        # we start from less trusted methods and rewrite attributes
-        # by more trusted resources
-        self.setattrs(initial)
-
-        # Try to load url and check if there is any other content type rather than html
-        r = self._download_resource(self.url)
-
-        if r is None:
-            # TODO: For now we don't RETRY. Should be implemented later
-            return "Some troubles with connection. Check Celery logs."
-
-        self.setattr('article_url', r.url)
-
-        # if not html
-        if 'html' not in r.headers.get('content-type', '').lower():
-            self.article.status = 'trash'
-            if not save:
-                return self.article
-
-            self.article.save()
-            return self.article.id
-
+    def parse_html(self, response):
         # fix request encoding issue (should test it carefully)
         FAIL_ENCODING = 'ISO-8859-1'
-        html = r.text if r.encoding != FAIL_ENCODING else r.content
+        html = response.text if response.encoding != FAIL_ENCODING else response.content
 
         # try readability parser
         try:
@@ -101,6 +72,36 @@ class ArticleParser:
         self.setattr('authors', extractArticleAuthor(html))
         self.setattr('post_date_created', extractArticlePublishedDate(self.article.article_url, html))
 
+    def run(self, save=True, initial={}):
+        """
+        Save DEPRECATED param. If true saves Artivle and returns article id
+        if false return unsaved article
+
+        Executes the regular url loading and parsing
+        :return: article.id
+        """
+
+        self.article = Article()
+
+        # we start from less trusted methods and rewrite attributes
+        # by more trusted resources
+        self.setattrs(initial)
+
+        # Try to load url and check if there is any other content type rather than html
+        r = self._download_resource(self.url)
+
+        if r is None:
+            # TODO: For now we don't RETRY. Should be implemented later
+            return "Some troubles with connection. Check Celery logs."
+
+        self.setattr('article_url', r.url)
+
+        # if not html
+        if 'html' not in r.headers.get('content-type', '').lower():
+            self.parse_binary()
+        else:
+            self.parse_html(r)
+
         # reduce number of chars and cleanup html
         self.article.body = re.sub("\s+", " ", clean_html(self.article.body))
 
@@ -120,7 +121,7 @@ class ArticleParser:
             self.article.translated_title = self.article.title
             self.article.translated = True
 
-        self.article.search = SearchQuery.objects.get(pk=self.search) if self.search is not None else None
+        self.article.search = SearchQuery.objects.filter(pk=self.search).first()
         if not save:
             return self.article
 

@@ -3,7 +3,7 @@ from unittest.mock import patch, Mock
 from django.test import TestCase
 
 from crawl_engine.spiders.single_url_parser import ArticleParser
-from crawl_engine.models import Article
+from crawl_engine.models import Article, SearchQuery
 
 
 class RegressionTestCase(TestCase):
@@ -25,7 +25,8 @@ class RegressionTestCase(TestCase):
         mock_response.url = 'http://example.com/industry.html'
         mock_get.return_value = mock_response
 
-        parser = ArticleParser('http://example.com/industry.html')
+        search = SearchQuery.objects.create()
+        parser = ArticleParser('http://example.com/industry.html', search.pk)
         article = Article.objects.get(pk=parser.run())
 
         self.assertEqual(article.body, article.translated_body)
@@ -35,6 +36,7 @@ class RegressionTestCase(TestCase):
         assert len(article.title) > 0
         assert len(article.top_image_url) > 0
         assert len(article.post_date_created) > 0
+        assert article.search is not None
 
     @patch('requests.get')
     def test_vietnamese(self, mock_get):
@@ -58,6 +60,7 @@ class RegressionTestCase(TestCase):
 
     def test_non_html_with_initial(self):
         parser = ArticleParser('http://httpbin.org/image/jpeg')
-        article = parser.run(save=False, initial={'title': 'some title'})
+        article = parser.run(save=False, initial={'title': 'some title', 'body': 'English'})
         assert article.status == 'trash'
         assert article.title == 'some title'
+        assert article.translated_body == '<p>English</p>'
